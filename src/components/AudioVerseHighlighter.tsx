@@ -1,0 +1,228 @@
+'use client'
+
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import WaveSurfer from 'wavesurfer.js';
+
+type Verse = {
+  id: number;
+  text: string;
+  verset: string;
+  startTime: number; // en secondes
+  endTime: number;   // en secondes
+  transliteration: string;
+  translation: string;
+};
+
+type AudioVerseHighlighterProps = {
+  audioUrl: string;
+  verses: Verse[];
+  infoSourate: string[];
+  children?: ReactNode;
+};
+
+const toArabicNumerals = (n: number): string => {
+  if (n < 0) return String(n);
+  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  return n.toString().split('').map(digit => arabicNumerals[parseInt(digit)]).join('');
+};
+
+const AudioVerseHighlighter = ({ audioUrl, verses, infoSourate, children }: AudioVerseHighlighterProps) => {
+  const waveformRef = useRef(null);
+  const versesRef = useRef<HTMLDivElement>(null);
+  const wavesurferRef = useRef<WaveSurfer | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
+  const [playbackRate, setPlaybackRate] = useState(1);
+
+
+  // Initialisation de WaveSurfer
+  useEffect(() => {
+    if (!waveformRef.current) return;
+
+    const wavesurfer = WaveSurfer.create({
+      container: waveformRef.current,
+      waveColor: '#e2e8f0',
+      progressColor: '#1961fc',
+      cursorColor: '#7ca7fc',
+      barWidth: 2,
+      barRadius: 3,
+      cursorWidth: 1,
+      height: 80,
+      barGap: 2,
+      // responsive: true,
+    });
+
+    wavesurfer.load(audioUrl);
+
+    wavesurfer.on('ready', () => {
+      wavesurferRef.current = wavesurfer;
+      setDuration(wavesurfer.getDuration());
+    });
+
+    wavesurfer.on('audioprocess', () => {
+      const time = wavesurfer.getCurrentTime();
+      setCurrentTime(time);
+      
+      // Trouver le verset correspondant au temps actuel
+      const currentVerse = verses.find(v => time >= v.startTime && time <= v.endTime);
+      setCurrentVerseId(currentVerse?.id || null);
+      
+      // Scroll vers le verset actif si nécessaire
+      if (currentVerse && versesRef.current) {
+        const verseElement = document.getElementById(`verse-${currentVerse.id}`);
+        if (verseElement) {
+          verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    });
+
+    wavesurfer.on('play', () => setIsPlaying(true));
+    wavesurfer.on('pause', () => setIsPlaying(false));
+    wavesurfer.on('finish', () => {
+      setIsPlaying(false);
+      setCurrentVerseId(null);
+    });
+
+    return () => wavesurfer.destroy();
+  }, [audioUrl, verses]);
+
+  // Mise à jour de la vitesse de lecture
+  useEffect(() => {
+    if (wavesurferRef.current) {
+      wavesurferRef.current.setPlaybackRate(playbackRate);
+    }
+  }, [playbackRate]);
+
+  const togglePlayPause = () => {
+    wavesurferRef.current?.playPause();
+  };
+
+  const seekToVerse = (verse: Verse) => {
+    if (wavesurferRef.current) {
+      wavesurferRef.current.seekTo(verse.startTime / duration);
+      setCurrentVerseId(verse.id);
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  return (
+    <div
+      className="flex flex-col w-full max-w-4xl mx-auto p-2 sm:p-4 bg-white rounded-lg shadow"
+      style={{ height: "100vh", maxHeight: "100dvh" }}
+    >
+      {/* Waveform et contrôles */}
+      {audioUrl ? <div className={`flex flex-col gap-3 flex-shrink-0 mt-6 ${isPlaying ? '' : '' } duration-100`}>
+        <div ref={waveformRef} className="w-full" />
+        <div className="flex items-center justify-between">
+          <button 
+            onClick={togglePlayPause}
+            className="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700"
+          >
+            {isPlaying ? <PauseIcon /> : <PlayIcon />}
+          </button>
+          <div className="font-mono text-gray-600">{infoSourate[0]} - {infoSourate[1]}</div>
+          <div className="flex items-center gap-4">
+            <div className="font-mono text-sm text-gray-600">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </div>
+            <SpeedControl playbackRate={playbackRate} onChange={setPlaybackRate} />
+          </div>
+        </div>
+      </div> : ""}
+
+      {/* Liste des versets + titre sticky */}
+      <div
+        ref={versesRef}
+        className="overflow-y-auto p-2 border border-gray-200 rounded-lg mt-4 flex-1"
+        style={{ minHeight: 0 }}
+      >
+        {children}
+        {verses.map((verse: Verse) => (
+          <div
+            key={verse.id}
+            id={`verse-${verse.id}`}
+            onClick={() => seekToVerse(verse)}
+            className={`p-3 my-1 rounded-lg cursor-pointer transition-colors ${
+              currentVerseId === verse.id
+                ? 'bg-yellow-100/40 border-l-4 border-yellow-500'
+                : 'hover:bg-gray-50'
+            }`}
+          >
+            <div className="flex flex-col gap-2 justify-end items-end">
+              <div
+                className="text-gray-800 text-2xl md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1"
+                style={{ direction: "rtl" }}
+              >
+                <span style={{ direction: "rtl" }}>{verse.text}</span>
+                <span className="text-3xl mt-1.5" style={{ direction: "rtl" }}>
+                  {toArabicNumerals(verse.id)}
+                </span>
+              </div>
+              <p className="text-gray-500 text-md mt-[-8px] self-end font-medium">
+                {verse.transliteration}
+              </p>
+              <p className="text-gray-700 self-start">
+                {verse.id}. {verse.translation}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Composants d'icônes et contrôles
+const PlayIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+    <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
+  </svg>
+);
+
+const PauseIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+    <path fillRule="evenodd" d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z" clipRule="evenodd" />
+  </svg>
+);
+
+const SpeedControl = ({ playbackRate, onChange }: { playbackRate: number; onChange: (rate: number) => void }) => {
+  const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelectSpeed = (speed: number) => {
+    onChange(speed);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative">
+      <button onClick={() => setIsOpen(!isOpen)} className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded-md">
+        x{playbackRate}
+      </button>
+      {isOpen && (
+      <div className="absolute right-0  mb-2 bg-white shadow-lg rounded-md p-1 z-50">
+        {speeds.map(speed => (
+          <button
+            key={speed}
+            onClick={() => handleSelectSpeed(speed)}
+            className={`block w-full px-3 py-1 text-left text-sm rounded ${
+              speed === playbackRate ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'
+            }`}
+          >
+            x{speed}
+          </button>
+        ))}
+      </div>
+      )}
+    </div>
+  );
+};
+
+export default AudioVerseHighlighter;
