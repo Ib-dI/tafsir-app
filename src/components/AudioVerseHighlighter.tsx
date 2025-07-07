@@ -161,7 +161,7 @@ const AudioVerseHighlighter = ({ audioUrl, verses, infoSourate, children }: Audi
                 style={{ direction: "rtl" }}
               >
                 <span style={{ direction: "rtl" }}>{verse.text}</span>
-                <span className="text-3xl mt-1.5" style={{ direction: "rtl" }}>
+                <span className="text-3xl " style={{ direction: "rtl" }}>
                   {toArabicNumerals(verse.id)}
                 </span>
               </div>
