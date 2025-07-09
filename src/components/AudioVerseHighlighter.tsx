@@ -1,5 +1,6 @@
 'use client'
 
+import { Info } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 
@@ -118,7 +119,7 @@ const AudioVerseHighlighter = ({ audioUrl, verses, infoSourate, children }: Audi
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
       {/* Waveform et contrôles */}
-      {audioUrl ? <div className={`flex flex-col gap-3 flex-shrink-0 mt-6 ${isPlaying ? '' : '' } duration-100`}>
+      {audioUrl ? <div className={`flex flex-col gap-3 flex-shrink-0 mt-6`}>
         <div ref={waveformRef} className="w-full" />
         <div className="flex items-center justify-between">
           <button 
@@ -135,7 +136,12 @@ const AudioVerseHighlighter = ({ audioUrl, verses, infoSourate, children }: Audi
             <SpeedControl playbackRate={playbackRate} onChange={setPlaybackRate} />
           </div>
         </div>
-      </div> : ""}
+      </div> :
+      <div className="relative mx-auto w-fit inline-flex max-w-full items-center gap-2 rounded-lg bg-blue-50/80 border border-[#2563eb]/30 px-3 py-1 font-medium text-gray-900 ring-1 shadow-lg shadow-blue-400/20 ring-black/10 filter backdrop-blur-[1px] transition-colors hover:bg-blue-100/80 focus:outline-hidden sm:text-sm">
+        <Info className="text-[#2563eb] w-5 h-5 mr-2 flex-shrink-0 drop-shadow" />
+        <p className='text-center w-full text-[#2563eb] truncate inline-block'>Tafsir audio non disponible</p>
+      </div>}
+      
 
       {/* Liste des versets + titre sticky */}
       <div

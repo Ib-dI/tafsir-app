@@ -6,7 +6,7 @@ export const audiosTafsir = [
 			{
 				id: "al-fatiha-1",
 				title: "Tafsir complet de Al-Fatiha",
-				url: "/audios/al-fatiha.ogg",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Fatiha.ogg",
 				timings: [
 					{ id: 1, startTime: 0.0, endTime: 0.0 },
 					{ id: 2, startTime: 93.68, endTime: 126.05 },
@@ -50,8 +50,49 @@ export const audiosTafsir = [
 			{
 				id: "an-naba-1",
 				title: "Tafsir An-Naba",
-				url: "",
-				timings: [],
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Naba'.ogg",
+				timings: [
+					{ id: 1, startTime: 31.31, endTime: 51.45 },
+					{ id: 2, startTime: 52.24, endTime: 57.82 },
+					{ id: 3, startTime: 57.82, endTime: 131.16 },
+					{ id: 4, startTime: 131.16, endTime: 145.52 },
+					{ id: 5, startTime: 145.9, endTime: 159.93 },
+					{ id: 6, startTime: 161.0, endTime: 203.01 },
+					{ id: 7, startTime: 204.11, endTime: 219.02 },
+					{ id: 8, startTime: 220.24, endTime: 258.01 },
+					{ id: 9, startTime: 259.27, endTime: 294.69 },
+					{ id: 10, startTime: 295.24, endTime: 318.96 },
+					{ id: 11, startTime: 321.37, endTime: 361.02 },
+					{ id: 12, startTime: 361.23, endTime: 374.32 },
+					{ id: 13, startTime: 378.93, endTime: 402.36 },
+					{ id: 14, startTime: 405.01, endTime: 430.67 },
+					{ id: 15, startTime: 431.68, endTime: 459.26 },
+					{ id: 16, startTime: 459.26, endTime: 478.83 },
+					{ id: 17, startTime: 498.46, endTime: 549.46 },
+					{ id: 18, startTime: 549.67, endTime: 578.07 },
+					{ id: 19, startTime: 582.02, endTime: 623.89 },
+					{ id: 20, startTime: 624.68, endTime: 707.02 },
+					{ id: 21, startTime: 709.95, endTime: 726.38 },
+					{ id: 22, startTime: 726.38, endTime: 737.19 },
+					{ id: 23, startTime: 738.07, endTime: 755.63 },
+					{ id: 24, startTime: 756.94, endTime: 774.99 },
+					{ id: 25, startTime: 775.18, endTime: 795.86 },
+					{ id: 26, startTime: 796.35, endTime: 810.9 },
+					{ id: 27, startTime: 811.95, endTime: 845.41 },
+					{ id: 28, startTime: 845.82, endTime: 870.74 },
+					{ id: 29, startTime: 872.16, endTime: 894.78 },
+					{ id: 30, startTime: 899.55, endTime: 951.98 },
+					{ id: 31, startTime: 960.05, endTime: 974.76 },
+					{ id: 32, startTime: 975.16, endTime: 986.96 },
+					{ id: 33, startTime: 988.95, endTime: 1035.2 },
+					{ id: 34, startTime: 1036.38, endTime: 1048.82 },
+					{ id: 35, startTime: 1049.44, endTime: 1077.72 },
+					{ id: 36, startTime: 1080.97, endTime: 1097.75 },
+					{ id: 37, startTime: 1097.98, endTime: 1138.57 },
+					{ id: 38, startTime: 1139.24, endTime: 1188.56 },
+					{ id: 39, startTime: 1189.43, endTime: 1253.6 },
+					{ id: 40, startTime: 1254.01, endTime: 1379.88 },
+				],
 			},
 		],
 	},
@@ -62,7 +103,7 @@ export const audiosTafsir = [
 			{
 				id: "an-naziat-1",
 				title: "Tafsir An-Nazi'at",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nazi'at.ogg",
 				timings: [
 					{ id: 1, startTime: 70.01, endTime: 93.26 },
 					{ id: 2, startTime: 94.91, endTime: 180.47 },
@@ -121,7 +162,7 @@ export const audiosTafsir = [
 			{
 				id: "abasa-1",
 				title: "Tafsir Abasa",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/'Abasa.ogg",
 				timings: [
 					{ id: 1, startTime: 225.19, endTime: 232.79 },
 					{ id: 2, startTime: 233.65, endTime: 241.14 },
@@ -176,7 +217,7 @@ export const audiosTafsir = [
 			{
 				id: "at-takwir-1",
 				title: "Tafsir At-Takwir",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Takwir.ogg",
 				timings: [
 					{ id: 1, startTime: 34.39, endTime: 47.55 },
 					{ id: 2, startTime: 48.93, endTime: 62.26 },
@@ -218,7 +259,7 @@ export const audiosTafsir = [
 			{
 				id: "al-infitar-1",
 				title: "Tafsir Al-Infitar",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Inftar.ogg",
 				timings: [
 					{ id: 1, startTime: 46.37, endTime: 58.08 },
 					{ id: 2, startTime: 59.22, endTime: 93.6 },
@@ -250,7 +291,7 @@ export const audiosTafsir = [
 			{
 				id: "al-mutaffifin-1",
 				title: "Tafsir Al-Mutaffifin",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Mutaffifin.ogg",
 				timings: [
 					{ id: 1, startTime: 156.44, endTime: 189.63 },
 					{ id: 2, startTime: 189.83, endTime: 200.82 },
@@ -299,7 +340,7 @@ export const audiosTafsir = [
 			{
 				id: "al-inshiqaq-1",
 				title: "Tafsir Al-Inshiqaq",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Inshiqaq.ogg",
 				timings: [
 					{ id: 1, startTime: 62.46, endTime: 95.67 },
 					{ id: 2, startTime: 96.38, endTime: 123.23 },
@@ -337,7 +378,7 @@ export const audiosTafsir = [
 			{
 				id: "al-buruj-1",
 				title: "Tafsir Al-Buruj",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Buruj.ogg",
 				timings: [
 					{ id: 1, startTime: 51.55, endTime: 91.81 },
 					{ id: 2, startTime: 92.84, endTime: 107.89 },
@@ -372,7 +413,7 @@ export const audiosTafsir = [
 			{
 				id: "at-tariq-1",
 				title: "Tafsir At-Tariq",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tariq.ogg",
 				timings: [
 					{ id: 1, startTime: 18.54, endTime: 29.97 },
 					{ id: 2, startTime: 31.03, endTime: 42.94 },
@@ -402,7 +443,7 @@ export const audiosTafsir = [
 			{
 				id: "al-ala-1",
 				title: "Tafsir Al-A'la",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A'la.ogg",
 				timings: [
 					{ id: 1, startTime: 34.77, endTime: 98.56 },
 					{ id: 2, startTime: 98.75, endTime: 120.92 },
@@ -434,7 +475,7 @@ export const audiosTafsir = [
 			{
 				id: "al-ghashiyah-1",
 				title: "Tafsir Al-Ghashiyah",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ghashiyah.ogg",
 				timings: [
 					{ id: 1, startTime: 93.9, endTime: 119.19 },
 					{ id: 2, startTime: 121.4, endTime: 168.09 },
@@ -473,7 +514,7 @@ export const audiosTafsir = [
 			{
 				id: "al-fajr-1",
 				title: "Tafsir Al-Fajr",
-				url: "/audios/Al-Fajr.ogg",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Fajr.ogg",
 				timings: [
 					{ id: 1, startTime: 161.54, endTime: 177.23 },
 					{ id: 2, startTime: 178.2, endTime: 196.56 },
@@ -516,7 +557,7 @@ export const audiosTafsir = [
 			{
 				id: "al-balad-1",
 				title: "Tafsir Al-Balad",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Balad.ogg",
 				timings: [
 					{ id: 1, startTime: 26.16, endTime: 43.18 },
 					{ id: 2, startTime: 44.19, endTime: 129.72 },
@@ -549,7 +590,7 @@ export const audiosTafsir = [
 			{
 				id: "ash-shams-1",
 				title: "Tafsir Ash-Shams",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ash-Shams.ogg",
 				timings: [
 					{ id: 1, startTime: 36.18, endTime: 49.65 },
 					{ id: 2, startTime: 49.95, endTime: 70.97 },
@@ -577,7 +618,7 @@ export const audiosTafsir = [
 			{
 				id: "al-layl-1",
 				title: "Tafsir Al-Layl",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Layl.ogg",
 				timings: [
 					{ id: 1, startTime: 37.19, endTime: 60.85 },
 					{ id: 2, startTime: 61.2, endTime: 71.11 },
@@ -611,7 +652,7 @@ export const audiosTafsir = [
 			{
 				id: "ad-duha-1",
 				title: "Tafsir Ad-Duha",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Adh-Dhuha.ogg",
 				timings: [
 					{ id: 1, startTime: 108.91, endTime: 143.42 },
 					{ id: 2, startTime: 143.42, endTime: 173.73 },
@@ -635,7 +676,7 @@ export const audiosTafsir = [
 			{
 				id: "ash-sharh-1",
 				title: "Tafsir Ash-Sharh",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ash-Sharh.ogg",
 				timings: [
 					{ id: 1, startTime: 19.83, endTime: 48.71 },
 					{ id: 2, startTime: 51.45, endTime: 60.87 },
@@ -656,7 +697,7 @@ export const audiosTafsir = [
 			{
 				id: "at-tin-1",
 				title: "Tafsir At-Tin",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tin.ogg",
 				timings: [
 					{ id: 1, startTime: 48.16, endTime: 87.27 },
 					{ id: 2, startTime: 91.12, endTime: 112.49 },
@@ -677,7 +718,7 @@ export const audiosTafsir = [
 			{
 				id: "al-alaq-1",
 				title: "Tafsir Al-Alaq",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-'Alaq.ogg",
 				timings: [
 					{ id: 1, startTime: 176.18, endTime: 193.78 },
 					{ id: 2, startTime: 197.21, endTime: 293.14 },
@@ -709,7 +750,7 @@ export const audiosTafsir = [
 			{
 				id: "al-qadr-1",
 				title: "Tafsir Al-Qadr",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Qadr.ogg",
 				timings: [
 					{ id: 1, startTime: 6.17, endTime: 94.07 },
 					{ id: 2, startTime: 94.49, endTime: 118.08 },
@@ -727,7 +768,7 @@ export const audiosTafsir = [
 			{
 				id: "al-bayyinah-1",
 				title: "Tafsir Al-Bayyinah",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Bayyinah.ogg",
 				timings: [
 					{ id: 1, startTime: 35.0, endTime: 73.3 },
 					{ id: 2, startTime: 74.1, endTime: 92.78 },
@@ -748,7 +789,7 @@ export const audiosTafsir = [
 			{
 				id: "az-zalzalah-1",
 				title: "Tafsir Az-Zalzalah",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Az-Zalzalah.ogg",
 				timings: [
 					{ id: 1, startTime: 25.05, endTime: 90.37 },
 					{ id: 2, startTime: 91.18, endTime: 120.58 },
@@ -769,7 +810,7 @@ export const audiosTafsir = [
 			{
 				id: "al-adiyat-1",
 				title: "Tafsir Al-Adiyat",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-'Adiyat.ogg",
 				timings: [
 					{ id: 1, startTime: 10.61, endTime: 31.48 },
 					{ id: 2, startTime: 32.81, endTime: 88.68 },
@@ -793,7 +834,7 @@ export const audiosTafsir = [
 			{
 				id: "al-qariah-1",
 				title: "Tafsir Al-Qari'ah",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Qari'ah.ogg",
 				timings: [
 					{ id: 1, startTime: 38.23, endTime: 42.58 },
 					{ id: 2, startTime: 43.45, endTime: 47.52 },
@@ -816,8 +857,17 @@ export const audiosTafsir = [
 			{
 				id: "at-takathur-1",
 				title: "Tafsir At-Takathur",
-				url: "",
-				timings: [],
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Takathur.ogg",
+				timings: [
+					{ id: 1, startTime: 123.61, endTime: 142.4 },
+					{ id: 2, startTime: 142.4, endTime: 248.18 },
+					{ id: 3, startTime: 248.67, endTime: 289.37 },
+					{ id: 4, startTime: 289.37, endTime: 304.42 },
+					{ id: 5, startTime: 304.98, endTime: 334.26 },
+					{ id: 6, startTime: 335.78, endTime: 340.86 },
+					{ id: 7, startTime: 341.82, endTime: 358.29 },
+					{ id: 8, startTime: 358.73, endTime: 391.07 },
+				],
 			},
 		],
 	},
@@ -828,7 +878,7 @@ export const audiosTafsir = [
 			{
 				id: "al-asr-1",
 				title: "Tafsir Al-Asr",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-'Asr.ogg",
 				timings: [
 					{ id: 1, startTime: 60.09, endTime: 119.65 },
 					{ id: 2, startTime: 121.0, endTime: 130.44 },
@@ -844,7 +894,7 @@ export const audiosTafsir = [
 			{
 				id: "al-humazah-1",
 				title: "Tafsir Al-Humazah",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Humazah.ogg",
 				timings: [
 					{ id: 1, startTime: 20.46, endTime: 142.16 },
 					{ id: 2, startTime: 142.44, endTime: 158.31 },
@@ -866,7 +916,7 @@ export const audiosTafsir = [
 			{
 				id: "al-fil-1",
 				title: "Tafsir Al-Fil",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Fil.ogg",
 				timings: [
 					{ id: 1, startTime: 4.0, endTime: 39.7 },
 					{ id: 2, startTime: 39.7, endTime: 57.74 },
@@ -884,7 +934,7 @@ export const audiosTafsir = [
 			{
 				id: "quraish-1",
 				title: "Tafsir Quraish",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Quraysh.ogg",
 				timings: [
 					{ id: 1, startTime: 15.35, endTime: 21.07 },
 					{ id: 2, startTime: 21.18, endTime: 58.72 },
@@ -901,7 +951,7 @@ export const audiosTafsir = [
 			{
 				id: "al-maun-1",
 				title: "Tafsir Al-Ma'un",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ma'un.ogg",
 				timings: [
 					{ id: 1, startTime: 29.74, endTime: 58.05 },
 					{ id: 2, startTime: 59.58, endTime: 105.08 },
@@ -921,7 +971,7 @@ export const audiosTafsir = [
 			{
 				id: "al-kawthar-1",
 				title: "Tafsir Al-Kawthar",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Kawthar.ogg",
 				timings: [
 					{ id: 1, startTime: 93.52, endTime: 126.5 },
 					{ id: 2, startTime: 128.08, endTime: 165.93 },
@@ -937,7 +987,7 @@ export const audiosTafsir = [
 			{
 				id: "al-kafirun-1",
 				title: "Tafsir Al-Kafirun",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Kafirun.ogg",
 				timings: [
 					{ id: 1, startTime: 105.17, endTime: 117.55 },
 					{ id: 2, startTime: 118.29, endTime: 128.01 },
@@ -956,7 +1006,7 @@ export const audiosTafsir = [
 			{
 				id: "an-nasr-1",
 				title: "Tafsir An-Nasr",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nasr.ogg",
 				timings: [
 					{ id: 1, startTime: 22.05, endTime: 36.01 },
 					{ id: 2, startTime: 37.19, endTime: 52.33 },
@@ -972,7 +1022,7 @@ export const audiosTafsir = [
 			{
 				id: "al-masad-1",
 				title: "Tafsir Al-Masad",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Masad.ogg",
 				timings: [
 					{ id: 1, startTime: 190.02, endTime: 219.75 },
 					{ id: 2, startTime: 220.52, endTime: 307.03 },
@@ -990,7 +1040,7 @@ export const audiosTafsir = [
 			{
 				id: "al-ikhlas-1",
 				title: "Tafsir Al-Ikhlas",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/Ikhlas.ogg",
 				timings: [
 					{ id: 1, startTime: 124.42, endTime: 135.49 },
 					{ id: 2, startTime: 137.62, endTime: 166.58 },
@@ -1007,7 +1057,7 @@ export const audiosTafsir = [
 			{
 				id: "al-falaq-1",
 				title: "Tafsir Al-Falaq",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Falaq.ogg",
 				timings: [
 					{ id: 1, startTime: 24.13, endTime: 59.73 },
 					{ id: 2, startTime: 62.15, endTime: 85.41 },
@@ -1025,7 +1075,7 @@ export const audiosTafsir = [
 			{
 				id: "an-nas-1",
 				title: "Tafsir An-Nas",
-				url: "",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nas.ogg",
 				timings: [
 					{ id: 1, startTime: 4.13, endTime: 29.74 },
 					{ id: 2, startTime: 29.74, endTime: 36.43 },

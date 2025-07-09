@@ -49,7 +49,7 @@ export default async function Sourate({ params: { id } }: { params: { id: string
 			<div className="container mx-auto">
 				<AudioVerseHighlighter audioUrl={audio} verses={versesWithTiming} infoSourate={infoSourate}>
 					<h1
-						className="text-4xl w-full md:text-5xl text-center font-sura text-gray-800 sticky top-[-10px] z-20 bg-[#ffbb3a]/40 backdrop-blur-lg py-1 border-b border-gray-100 "
+						className="text-4xl w-full md:text-5xl text-center font-sura text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-1 border-b border-gray-100 shadow-md"
 					>
 						<span>{data.id < 100 ? data.id < 10 ? "00" : "0": ""}{data.id}</span>
 						<span>surah</span>
