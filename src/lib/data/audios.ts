@@ -54,7 +54,7 @@ export const audiosTafsir = [
 				timings: [
 					{ id: 1, startTime: 31.31, endTime: 51.45 },
 					{ id: 2, startTime: 52.24, endTime: 57.82 },
-					{ id: 3, startTime: 57.82, endTime: 131.16 },
+					{ id: 3, startTime: 58.20, endTime: 131.16 },
 					{ id: 4, startTime: 131.16, endTime: 145.52 },
 					{ id: 5, startTime: 145.9, endTime: 159.93 },
 					{ id: 6, startTime: 161.0, endTime: 203.01 },
@@ -1040,7 +1040,7 @@ export const audiosTafsir = [
 			{
 				id: "al-ikhlas-1",
 				title: "Tafsir Al-Ikhlas",
-				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/Ikhlas.ogg",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ikhlas.ogg",
 				timings: [
 					{ id: 1, startTime: 124.42, endTime: 135.49 },
 					{ id: 2, startTime: 137.62, endTime: 166.58 },
