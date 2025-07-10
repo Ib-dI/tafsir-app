@@ -1,7 +1,7 @@
 import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
 import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapterVerses } from "@/lib/quranSimpleApi";
-import Link from "next/link";
+import AnimatedBackButton from './AnimatedBackButton';
 
 type Verse = {
 	id: number;
@@ -39,12 +39,7 @@ export default async function Sourate({ params: { id } }: { params: { id: string
 
 	return (
 		<div className="container mx-auto p-4 bg-white mt-2">
-			<Link
-				href="/sourates"
-				className="inline-block mb-4 text-blue-600 hover:underline"
-			>
-				&larr; Retour aux chapitres
-			</Link>
+			<AnimatedBackButton />
 			
 			<div className="container mx-auto">
 				<AudioVerseHighlighter audioUrl={audio} verses={versesWithTiming} infoSourate={infoSourate}>
