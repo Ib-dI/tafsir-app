@@ -4,7 +4,7 @@ import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapters } from '@/lib/quranSimpleApi';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import { useEffect, useState, useRef } from 'react'; // Importe useRef
+import { useEffect, useRef, useState } from 'react'; // Importe useRef
 
 type Chapter = {
   id: number;
@@ -20,12 +20,6 @@ type TafsirAudioPart = {
   title: string;
   url: string;
   timings: { id: number; startTime: number; endTime: number; }[];
-};
-
-type TafsirAudio = {
-  id: number;
-  name_simple: string;
-  parts: TafsirAudioPart[];
 };
 
 const containerVariants = {
@@ -109,7 +103,7 @@ export default function SouratePage() {
       );
       setFilteredChapters(results);
     }
-  }, [searchTerm, chapters, showOnlyWithAudio]);
+  }, [searchTerm, chapters, showOnlyWithAudio, sourateIdsWithAudio]);
 
   // *** NOUVELLE FONCTIONNALITÉ : Gérer le focus de la barre de recherche ***
   const handleFocus = () => {
@@ -238,7 +232,7 @@ export default function SouratePage() {
               exit={{ opacity: 0 }}
               className="text-center text-gray-500 mt-4"
             >
-              Aucun chapitre ne correspond à votre recherche ou ne contient d'audio.
+              Aucun chapitre ne correspond à votre recherche ou ne contient d&apos;audio.
             </motion.li>
           )}
         </AnimatePresence>

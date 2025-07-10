@@ -25,12 +25,6 @@ export default function HomePage() {
     visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 15 } },
   };
 
-  // Variants pour les icônes dans les cartes
-  const iconVariants = {
-    hidden: { opacity: 0, scale: 0.5 },
-    visible: { opacity: 1, scale: 1, transition: { type: "spring" as const, stiffness: 200, damping: 10 } },
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4"> {/* Arrière-plan plus sobre */}
       {/* Conteneur principal reprenant le style des cartes de sourates */}
@@ -54,7 +48,7 @@ export default function HomePage() {
           variants={itemVariants}
           className="text-lg sm:text-xl text-gray-700 mb-8 max-w-2xl mx-auto"
         >
-          Découvrez une nouvelle façon d'étudier le Coran grâce à notre plateforme intuitive,
+          Découvrez une nouvelle façon d&apos;étudier le Coran grâce à notre plateforme intuitive,
           synchronisant les audios de Tafsir avec le texte sacré.
         </motion.p>
 
