@@ -111,8 +111,8 @@ const AudioVerseHighlighter = ({
 			try {
 				wavesurfer.destroy();
 			} catch (e) {
-				// Ignore l'erreur AbortError de WaveSurfer
-				if ((e as any).name !== "AbortError") {
+				// Correction du typage
+				if (e instanceof Error && (e as Error & { name?: string }).name !== "AbortError") {
 					console.error(e);
 				}
 			}

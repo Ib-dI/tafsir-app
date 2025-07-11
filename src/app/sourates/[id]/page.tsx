@@ -3,12 +3,6 @@ import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapterVerses } from "@/lib/quranSimpleApi";
 import AnimatedBackButton from './AnimatedBackButton';
 
-interface SouratePageProps {
-  params: {
-    id: string; // C'est ici que tu déclares le type de 'id' comme string
-  };
-  // searchParams?: { [key: string]: string | string[] | undefined }; // Optionnel si tu n'en as pas besoin
-}
 
 type Verse = {
 	id: number;
