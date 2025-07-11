@@ -17,8 +17,9 @@ type Verse = {
 	transliteration: string;
 };
 
-export default async function Sourate({ params }: SouratePageProps) {
-  const { id } = params;
+export default async function Sourate({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
 	const data = await getSimpleChapterVerses(id);
 	const verses = data.verses || [];
 	const audioData = audiosTafsir.find((a) => a.id === Number(id));

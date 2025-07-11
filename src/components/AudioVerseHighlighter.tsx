@@ -49,6 +49,12 @@ const AudioVerseHighlighter = ({
 
 	// Initialisation de WaveSurfer
 	useEffect(() => {
+		// Détruire l’ancienne instance si elle existe
+		if (wavesurferRef.current) {
+			wavesurferRef.current.destroy();
+			wavesurferRef.current = null;
+		}
+
 		if (!waveformRef.current) return;
 
 		const wavesurfer = WaveSurfer.create({
@@ -100,7 +106,18 @@ const AudioVerseHighlighter = ({
 			setCurrentVerseId(null);
 		});
 
-		return () => wavesurfer.destroy();
+		// Cleanup à chaque changement
+		return () => {
+			try {
+				wavesurfer.destroy();
+			} catch (e) {
+				// Ignore l'erreur AbortError de WaveSurfer
+				if ((e as any).name !== "AbortError") {
+					console.error(e);
+				}
+			}
+			wavesurferRef.current = null;
+		};
 	}, [audioUrl, verses]);
 
 	// Mise à jour de la vitesse de lecture
