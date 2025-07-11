@@ -13,7 +13,7 @@ type Verse = {
 export default async function Sourate(params: {
     id: string;
   }) {
-const { id } = params;
+  const { id } = params;
 	const data = await getSimpleChapterVerses(id);
 	const verses = data.verses || [];
 	const audioData = audiosTafsir.find((a) => a.id === Number(id));
