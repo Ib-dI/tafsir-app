@@ -10,7 +10,10 @@ type Verse = {
 	transliteration: string;
 };
 
-export default async function Sourate({ params: { id } }: { params: { id: string } }) {
+export default async function Sourate(params: {
+    id: string;
+  }) {
+const { id } = params;
 	const data = await getSimpleChapterVerses(id);
 	const verses = data.verses || [];
 	const audioData = audiosTafsir.find((a) => a.id === Number(id));
