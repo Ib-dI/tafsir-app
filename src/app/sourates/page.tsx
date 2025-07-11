@@ -4,7 +4,7 @@ import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapters } from '@/lib/quranSimpleApi';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react'; // Importe useRef
+import { useEffect, useMemo, useRef, useState } from 'react'; // Importe useRef
 
 type Chapter = {
   id: number;
@@ -15,12 +15,6 @@ type Chapter = {
   type: string;
 };
 
-type TafsirAudioPart = {
-  id: string;
-  title: string;
-  url: string;
-  timings: { id: number; startTime: number; endTime: number; }[];
-};
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -49,8 +43,12 @@ export default function SouratePage() {
   // *** AJOUT : Référence au champ de recherche ***
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const sourateIdsWithAudio = new Set<number>(
-    audiosTafsir.filter(audio => audio.parts && audio.parts.length > 0 && audio.parts[0].url).map(audio => audio.id)
+  const sourateIdsWithAudio = useMemo(
+    () =>
+      new Set<number>(
+        audiosTafsir.filter(audio => audio.parts && audio.parts.length > 0 && audio.parts[0].url).map(audio => audio.id)
+      ),
+    [audiosTafsir]
   );
 
   useEffect(() => {

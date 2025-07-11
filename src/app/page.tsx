@@ -71,7 +71,7 @@ export default function HomePage() {
           >
             <Compass size="42" className=' text-blue-500' />
             <h3 className="text-xl font-semibold text-gray-800 mb-2">Navigation Facile</h3>
-            <p className="text-gray-600">Recherchez vos sourates par nom ou numéro et reprenez votre étude là où vous l'avez laissée.</p>
+            <p className="text-gray-600">Recherchez vos sourates par nom ou numéro et reprenez votre étude là où vous l&apos;avez laissée.</p>
           </motion.div>
         </div>
 
