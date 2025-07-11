@@ -3,6 +3,13 @@ import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapterVerses } from "@/lib/quranSimpleApi";
 import AnimatedBackButton from './AnimatedBackButton';
 
+interface SouratePageProps {
+  params: {
+    id: string; // C'est ici que tu déclares le type de 'id' comme string
+  };
+  // searchParams?: { [key: string]: string | string[] | undefined }; // Optionnel si tu n'en as pas besoin
+}
+
 type Verse = {
 	id: number;
 	text: string;
@@ -10,9 +17,7 @@ type Verse = {
 	transliteration: string;
 };
 
-export default async function Sourate(params: {
-    id: string;
-  }) {
+export default async function Sourate({ params }: SouratePageProps) {
   const { id } = params;
 	const data = await getSimpleChapterVerses(id);
 	const verses = data.verses || [];
