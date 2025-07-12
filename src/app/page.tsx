@@ -40,7 +40,7 @@ export default function HomePage() {
           variants={itemVariants}
           className="text-4xl sm:text-5xl font-bold text-gray-800 mb-6 leading-tight" // Font-bold pour harmoniser
         >
-          Apprenez le Tafsir du Noble Coran
+          Apprenez le Tafsir du Noble Coran en Shi-Maoré
         </motion.h1>
 
         {/* Sous-titre / Description */}
@@ -49,7 +49,7 @@ export default function HomePage() {
           className="text-lg sm:text-xl text-gray-700 mb-8 max-w-2xl mx-auto"
         >
           Découvrez une nouvelle façon d&apos;étudier le Coran grâce à notre plateforme intuitive,
-          synchronisant les audios de Tafsir avec le texte sacré.
+          synchronisant les audios de Tafsir en Shi-Maoré avec le texte sacré.
         </motion.p>
 
         {/* Section des fonctionnalités */}

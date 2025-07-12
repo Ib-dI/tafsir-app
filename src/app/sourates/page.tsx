@@ -3,6 +3,7 @@
 import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapters } from '@/lib/quranSimpleApi';
 import { AnimatePresence, motion } from 'framer-motion';
+import { AudioLines } from "lucide-react";
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react'; // Importe useRef
 
@@ -145,6 +146,7 @@ export default function SouratePage() {
     );
   }
 
+
   return (
     <div className="container w-full mx-auto p-4 bg-white shadow-lg rounded-lg mt-8">
       <h1 className="text-5xl font-bold text-center mb-6 text-gray-800">Chapitres du Coran</h1>
@@ -203,7 +205,9 @@ export default function SouratePage() {
                 className="py-4 px-2 w-full md:w-80 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
               >
                 <Link href={`/sourates/${chapter.id}`} className="flex-grow flex justify-between items-center gap-2">
-                  <div className="text-sm font-mono font-semibold text-blue-500 bg-slate-200 p-1 w-10 flex items-center justify-center rounded-full">
+                  <div
+                    className={`text-sm font-mono font-semibold text-blue-500 bg-slate-200 p-1 w-10 flex items-center justify-center rounded-full`}
+                  >
                     {chapter.id}
                   </div>
                   <div className="w-full">
@@ -215,6 +219,11 @@ export default function SouratePage() {
                       </span>
                       <span className="font-mono text-xs">- <span className=" font-semibold">{chapter.total_verses} </span>versets</span>
                     </p>
+                    {sourateIdsWithAudio.has(chapter.id) ? <div className="flex">
+                      <AudioLines size={18} className="inline-block text-blue-500" />
+                      <AudioLines size={18} className="inline-block text-gray-400" />
+                      <AudioLines size={18} className="inline-block text-gray-400" />
+                    </div> : ""}
                   </div>
                   <span className="text-sm font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded-full">
                     {chapter.type === 'meccan' ? 'Mecque' : 'Médine'}
