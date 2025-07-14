@@ -1,17 +1,25 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { useSearchParams } from "next/navigation"; // Importe useSearchParams
 
 export default function AnimatedBackButton() {
+  const searchParams = useSearchParams();
+  // Lit le paramètre 'showAudio' de l'URL actuelle (par exemple, /sourates/1?showAudio=all)
+  const showAudioParam = searchParams.get('showAudio');
+
+  // Construit le href pour le bouton de retour en fonction du paramètre récupéré
+  const backToSouratesHref = showAudioParam === 'all' ? '/sourates?showAudio=all' : '/sourates';
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ type: "spring" as const, stiffness: 100, damping: 10, delay: 0.1 }}
+      transition={{ type: "spring", stiffness: 100, damping: 10, delay: 0.1 }}
       className="mb-4"
     >
-      <Link href="/sourates" passHref>
+      <Link href={backToSouratesHref} passHref>
         <motion.button
           whileHover={{ scale: 1.05, backgroundColor: "#BFDBFE" }}
           whileTap={{ scale: 0.95 }}
@@ -25,4 +33,4 @@ export default function AnimatedBackButton() {
       </Link>
     </motion.div>
   );
-} 
+}

@@ -1,59 +1,72 @@
-import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
+// src/app/sourates/[id]/page.tsx
+// CE FICHIER EST UN SERVER COMPONENT
+
 import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapterVerses } from "@/lib/quranSimpleApi";
-import AnimatedBackButton from './AnimatedBackButton';
+import AnimatedBackButton from './AnimatedBackButton'; // Assure-toi que ce chemin est correct
+import SourateInteractiveContent from './SourateInteractiveContent'; // NOUVEAU CLIENT COMPONENT
 
+// Définition des types des props pour un Server Component
+interface SouratePageProps {
+  params: Promise<{ id: string }>; // Le paramètre dynamique est directement disponible ici
+  searchParams: { [key: string]: string | string[] | undefined }; // Les paramètres de recherche sont aussi directement disponibles
+}
 
 type Verse = {
-	id: number;
-	text: string;
-	translation: string;
-	transliteration: string;
+  id: number;
+  text: string;
+  translation: string;
+  transliteration: string;
 };
 
-export default async function Sourate({ params }: { params: Promise<{ id: string }> }) {
+// Types pour les audios Tafsir (utilisés pour passer à SourateInteractiveContent)
+type TafsirAudioPart = {
+  id: string;
+  title: string;
+  url: string;
+  timings: { id: number; startTime: number; endTime: number; }[];
+}
+
+type TafsirAudio = {
+  id: number;
+  name_simple: string;
+  parts: TafsirAudioPart[];
+}
+
+
+export default async function Sourate({ params, searchParams }: SouratePageProps) {
   const resolvedParams = await params;
-  const { id } = resolvedParams;
-	const data = await getSimpleChapterVerses(id);
-	const verses = data.verses || [];
-	const audioData = audiosTafsir.find((a) => a.id === Number(id));
-	const part = audioData?.parts?.[0];
-	const audio = part?.url ?? "";
-	const timings = part?.timings ?? [];
-	const infoSourate = [data?.id, data?.transliteration]
+  const { id } = resolvedParams; // Accède directement à l'ID
+  const chapterId = Number(id); // Convertir l'ID de la sourate en nombre
 
-	const versesWithTiming = verses.map((verse: Verse) => {
-		const timing = timings.find((t: { id: number; startTime: number; endTime: number }) => t.id === verse.id);
-		return {
-			...verse,
-			startTime: timing?.startTime ?? 0,
-			endTime: timing?.endTime ?? 0,
-			verset: verse.text,
-		};
-	});
+  const data = await getSimpleChapterVerses(id); // Récupère tous les versets
+  const verses = data?.verses || [];
+  const infoSourate = data ? [data.id, data.transliteration] : [0, ""];
 
-	if (!data) {
-		return (
-			<div className="flex items-center justify-center min-h-screen bg-gray-50 text-red-600">
-				Erreur lors du chargement des versets ou chapitre introuvable.
-			</div>
-		);
-	}
+  // Trouve toutes les données audio pour cette sourate
+  const currentAudioTafsir = audiosTafsir.find((a) => a.id === chapterId);
+  const audioParts = currentAudioTafsir?.parts || [];
 
-	return (
-		<div className="container mx-auto p-4 bg-white mt-2">
-			<AnimatedBackButton />
-			
-			<div className="container mx-auto">
-				<AudioVerseHighlighter audioUrl={audio} verses={versesWithTiming} infoSourate={infoSourate}>
-					<h1
-						className="text-4xl w-full md:text-5xl text-center font-sura text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-1 border-b border-gray-100 shadow-md"
-					>
-						<span>{data.id < 100 ? data.id < 10 ? "00" : "0": ""}{data.id}</span>
-						<span>surah</span>
-					</h1>
-				</AudioVerseHighlighter>
-			</div>
-		</div>
-	);
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 text-red-600">
+        Erreur lors du chargement des versets ou chapitre introuvable.
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-4 bg-white mt-2">
+      {/* Le bouton de retour est un Client Component qui lit ses propres searchParams */}
+      <AnimatedBackButton />
+      
+      {/* Passe toutes les données nécessaires au Client Component interactif */}
+      <SourateInteractiveContent
+        verses={verses}
+        audioParts={audioParts}
+        infoSourate={infoSourate}
+        chapterId={chapterId}
+      />
+    </div>
+  );
 }

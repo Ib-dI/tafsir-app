@@ -5,7 +5,8 @@ import { getSimpleChapters } from '@/lib/quranSimpleApi';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AudioLines } from "lucide-react";
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react'; // Importe useRef
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'; // Ajout de useCallback
+import { useRouter, useSearchParams } from "next/navigation"
 
 type Chapter = {
   id: number;
@@ -15,7 +16,6 @@ type Chapter = {
   total_verses: number;
   type: string;
 };
-
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -34,14 +34,20 @@ const itemVariants = {
 };
 
 export default function SouratePage() {
+  const router = useRouter();
+  const searchParams = useSearchParams(); // Hook pour lire les paramètres d'URL
+
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [filteredChapters, setFilteredChapters] = useState<Chapter[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
-  const [showOnlyWithAudio, setShowOnlyWithAudio] = useState<boolean>(true);
 
-  // *** AJOUT : Référence au champ de recherche ***
+  // Initialise showOnlyWithAudio à partir du paramètre d'URL 'showAudio'
+  // Si 'showAudio' est 'all', alors false (afficher tout), sinon true (afficher avec audio seulement)
+  // On le définit après le premier rendu via useEffect pour s'assurer que searchParams est prêt
+  const [showOnlyWithAudio, setShowOnlyWithAudio] = useState<boolean>(true); // Valeur par défaut robuste
+
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const sourateIdsWithAudio = useMemo(
@@ -49,20 +55,30 @@ export default function SouratePage() {
       new Set<number>(
         audiosTafsir.filter(audio => audio.parts && audio.parts.length > 0 && audio.parts[0].url).map(audio => audio.id)
       ),
-    [audiosTafsir]
+    [] // audiosTafsir est une constante, pas besoin de la mettre en dépendance ici
   );
 
+  // Premier useEffect: Charger les chapitres et initialiser le filtre basé sur l'URL
   useEffect(() => {
-    async function loadChapters() {
+    async function loadChaptersAndSetInitialFilter() {
       try {
         setLoading(true);
         const fetchedChapters = await getSimpleChapters();
         if (fetchedChapters) {
-          const chaptersWithAudio = fetchedChapters.filter((chapter: Chapter) =>
-            sourateIdsWithAudio.has(chapter.id)
-          );
-          setChapters(fetchedChapters);
-          setFilteredChapters(showOnlyWithAudio ? chaptersWithAudio : fetchedChapters);
+          setChapters(fetchedChapters); // Stocke tous les chapitres
+
+          // Lire la valeur du paramètre d'URL une fois que searchParams est prêt
+          const initialShowAudioFromUrl = searchParams.get('showAudio') !== 'all';
+          setShowOnlyWithAudio(initialShowAudioFromUrl);
+
+          // Appliquer le filtre initial immédiatement après avoir chargé les chapitres
+          let initialChaptersToFilter = fetchedChapters;
+          if (initialShowAudioFromUrl) {
+            initialChaptersToFilter = fetchedChapters.filter((chapter: Chapter) =>
+              sourateIdsWithAudio.has(chapter.id)
+            );
+          }
+          setFilteredChapters(initialChaptersToFilter); // Initialise filteredChapters ici
         } else {
           setError(true);
         }
@@ -73,15 +89,20 @@ export default function SouratePage() {
         setLoading(false);
       }
     }
-    loadChapters();
-  }, []);
+    loadChaptersAndSetInitialFilter();
+  }, [searchParams, sourateIdsWithAudio]); // Dépend de searchParams et sourateIdsWithAudio (même si constant, bonne pratique)
+
 
   // Défilement vers le haut de la page au montage (pour navigation)
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Effet pour re-filtrer quand le terme de recherche OU l'état du filtre audio change
+  // Ce useEffect s'exécutera après le chargement initial si chapters, searchTerm ou showOnlyWithAudio changent
   useEffect(() => {
+    if (loading) return; // Ne filtre pas si les chapitres ne sont pas encore chargés (pour éviter le filtrage sur chapters vides)
+
     let currentChaptersToFilter = chapters;
 
     if (showOnlyWithAudio) {
@@ -102,34 +123,45 @@ export default function SouratePage() {
       );
       setFilteredChapters(results);
     }
-  }, [searchTerm, chapters, showOnlyWithAudio, sourateIdsWithAudio]);
+  }, [searchTerm, chapters, showOnlyWithAudio, sourateIdsWithAudio, loading]); // Ajout de 'loading' pour déclencher le filtre après le chargement
 
-  // *** NOUVELLE FONCTIONNALITÉ : Gérer le focus de la barre de recherche ***
-  const handleFocus = () => {
+
+  const handleFocus = useCallback(() => { // Utilisez useCallback pour cette fonction
     if (searchInputRef.current) {
-      // Obtient la position du champ de recherche par rapport à la fenêtre
       const inputRect = searchInputRef.current.getBoundingClientRect();
-      // Calcule la position de défilement nécessaire pour que le haut du champ
-      // soit à 10px du haut de la fenêtre (ou ajuste si nécessaire)
-      const offset = 10; // Marge en haut du champ une fois scrollé
+      const offset = 10;
       const scrollPosition = window.scrollY + inputRect.top - offset;
 
-      // Défile doucement vers la position calculée
       window.scrollTo({
         top: scrollPosition,
         behavior: 'smooth'
       });
     }
-  };
+  }, []); // Aucune dépendance car searchInputRef.current est constant sur le cycle de vie du composant
 
-  // Une fonction handleBlur si tu veux réinitialiser le défilement (souvent pas nécessaire)
   const handleBlur = () => {
-    // Optionnel: tu pourrais vouloir défiler à nouveau vers le haut de la page
-    // ou à une autre position une fois que le clavier disparaît.
-    // Pour l'instant, nous laissons le comportement par défaut (le navigateur gère la disparition du clavier).
+    // Laisser vide pour le moment, ou ajouter une logique si nécessaire
   };
 
-  if (loading) {
+  // Nouvelle fonction pour gérer le changement du filtre et mettre à jour l'URL
+  const toggleShowOnlyWithAudio = () => {
+    const newState = !showOnlyWithAudio;
+    setShowOnlyWithAudio(newState);
+
+    // Crée une nouvelle URLSearchParams à partir de l'actuelle
+    const currentParams = new URLSearchParams(searchParams.toString());
+    if (newState) {
+      currentParams.delete('showAudio'); // Si true, on n'a pas besoin du paramètre (URL plus propre)
+    } else {
+      currentParams.set('showAudio', 'all'); // Si false, on met 'all'
+    }
+
+    // Met à jour l'URL sans recharger la page
+    router.replace(`?${currentParams.toString()}`);
+  };
+
+
+  if (loading && chapters.length === 0) { // Condition de chargement plus robuste
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-blue-600">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
@@ -146,12 +178,10 @@ export default function SouratePage() {
     );
   }
 
-
   return (
     <div className="container w-full mx-auto p-4 bg-white shadow-lg rounded-lg mt-8">
       <h1 className="text-5xl font-bold text-center mb-6 text-gray-800">Chapitres du Coran</h1>
 
-      {/* Barre de recherche animée */}
       <motion.div
         className="mb-4"
         initial={{ opacity: 0, y: -50 }}
@@ -159,14 +189,14 @@ export default function SouratePage() {
         transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }}
       >
         <input
-          ref={searchInputRef} // *** AJOUT : Attache la référence à l'input ***
+          ref={searchInputRef}
           type="text"
           placeholder="Rechercher une sourate (nom, traduction, numéro...)"
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onFocus={handleFocus} // *** AJOUT : Écoute l'événement focus ***
-          onBlur={handleBlur}   // *** AJOUT : Écoute l'événement blur ***
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
       </motion.div>
 
@@ -178,7 +208,7 @@ export default function SouratePage() {
         className="mb-6 text-center"
       >
         <button
-          onClick={() => setShowOnlyWithAudio(!showOnlyWithAudio)}
+          onClick={toggleShowOnlyWithAudio} // Utilise la nouvelle fonction
           className={`px-5 py-2 rounded-full text-white font-semibold transition-colors duration-300 ${
             showOnlyWithAudio ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
           }`}
@@ -187,13 +217,12 @@ export default function SouratePage() {
         </button>
       </motion.div>
 
-      {/* Liste des chapitres animée */}
       <motion.ul
         className="w-full items-center flex flex-col md:flex-row flex-wrap justify-center gap-4"
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        transition={{ staggerChildren: 0.05 }} // Assure que staggerChildren est bien ici
+        transition={{ staggerChildren: 0.05 }}
       >
         <AnimatePresence mode="popLayout">
           {filteredChapters.length > 0 ? (
@@ -204,7 +233,11 @@ export default function SouratePage() {
                 layout
                 className="py-4 px-2 w-full md:w-80 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
               >
-                <Link href={`/sourates/${chapter.id}`} className="flex-grow flex justify-between items-center gap-2">
+                {/* Lien vers la sourate individuelle - IMPORANT : Conserver le paramètre d'URL */}
+                <Link
+                  href={`/sourates/${chapter.id}${!showOnlyWithAudio ? '?showAudio=all' : ''}`}
+                  className="flex-grow flex justify-between items-center gap-2"
+                >
                   <div
                     className={`text-sm font-mono font-semibold text-blue-500 bg-slate-200 p-1 w-10 flex items-center justify-center rounded-full`}
                   >
@@ -219,11 +252,18 @@ export default function SouratePage() {
                       </span>
                       <span className="font-mono text-xs">- <span className=" font-semibold">{chapter.total_verses} </span>versets</span>
                     </p>
-                    {sourateIdsWithAudio.has(chapter.id) ? <div className="flex">
-                      <AudioLines size={18} className="inline-block text-blue-500" />
-                      <AudioLines size={18} className="inline-block text-gray-400" />
-                      <AudioLines size={18} className="inline-block text-gray-400" />
-                    </div> : ""}
+                    {/* Affichage conditionnel des icônes audio */}
+                    {sourateIdsWithAudio.has(chapter.id) ? (
+                      <div className="flex">
+                        <AudioLines size={18} className="inline-block text-blue-500" />
+                        <AudioLines size={18} className="inline-block text-gray-400" />
+                        <AudioLines size={18} className="inline-block text-gray-400" />
+                      </div>
+                    ) : (
+                      // Optionnel: Vous pouvez ajouter un placeholder vide ou d'autres icônes
+                      // pour maintenir la cohérence de la mise en page si aucune icône n'est présente
+                      <div className="h-[18px]"></div> // Crée un espace vide de la même hauteur que les icônes
+                    )}
                   </div>
                   <span className="text-sm font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded-full">
                     {chapter.type === 'meccan' ? 'Mecque' : 'Médine'}
