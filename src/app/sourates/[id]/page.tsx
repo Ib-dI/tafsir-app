@@ -9,7 +9,7 @@ import SourateInteractiveContent from './SourateInteractiveContent'; // NOUVEAU 
 // Définition des types des props pour un Server Component
 interface SouratePageProps {
   params: Promise<{ id: string }>; // Le paramètre dynamique est directement disponible ici
-  searchParams: { [key: string]: string | string[] | undefined }; // Les paramètres de recherche sont aussi directement disponibles
+  
 }
 
 
