@@ -86,13 +86,13 @@ export default function SourateInteractiveContent({ verses: initialVerses, audio
   return (
     <div className="container mx-auto">
       {/* Barre de sélection des parties audio AVEC les flèches */}
-      {/* Cette section n'est rendue que s'il y a des parties audio disponibles */}
+      {/* Cette section n'est rendue que s'il y a plus d'une partie audio disponible */}
       {audioParts.length > 1 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 100, damping: 10, delay: 0.3 }}
-          className="flex flex-col md:flex-row items-center gap-2 mb-6 p-3 bg-gray-50 rounded-lg shadow-inner justify-center"
+          className="flex flex-row items-center gap-2 mb-6 p-3 bg-gray-50 rounded-lg shadow-inner justify-center"
         >
           {/* Flèche Gauche */}
           <motion.button
@@ -109,9 +109,9 @@ export default function SourateInteractiveContent({ verses: initialVerses, audio
             </svg>
           </motion.button>
 
-          {/* Boutons de sélection de partie */}
-          <div className="flex flex-wrap gap-2 justify-center flex-grow">
-            <span className="text-gray-700 font-medium self-center hidden md:block">Parties Tafsir :</span>
+          {/* Boutons de sélection de partie pour Desktop */}
+          <div className="hidden md:flex flex-wrap gap-2 justify-center flex-grow">
+            <span className="text-gray-700 font-medium self-center">Parties Tafsir :</span>
             {audioParts.map((part) => (
               <motion.button
                 key={part.id}
@@ -127,6 +127,27 @@ export default function SourateInteractiveContent({ verses: initialVerses, audio
                 {part.title || `Partie ${audioParts.indexOf(part) + 1}`}
               </motion.button>
             ))}
+          </div>
+
+          {/* Dropdown de sélection de partie pour Mobile */}
+          <div className="flex flex-grow md:hidden items-center justify-center gap-2">
+            <label htmlFor="part-select" className="sr-only">Sélectionner une partie</label>
+            <select
+                id="part-select"
+                value={selectedPart?.id || ''}
+                onChange={(e) => {
+                    const selectedId = e.target.value;
+                    const part = audioParts.find(p => p.id === selectedId);
+                    if (part) setSelectedPart(part);
+                }}
+                className="block w-full max-w-[200px] px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            >
+                {audioParts.map((part, index) => (
+                    <option key={part.id} value={part.id}>
+                        {part.title || `Partie ${index + 1}`}
+                    </option>
+                ))}
+            </select>
           </div>
 
           {/* Flèche Droite */}
