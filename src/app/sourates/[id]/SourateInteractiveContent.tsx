@@ -19,11 +19,7 @@ type TafsirAudioPart = {
   timings: { id: number; startTime: number; endTime: number; }[];
 };
 
-type TafsirAudio = {
-  id: number;
-  name_simple: string;
-  parts: TafsirAudioPart[];
-};
+
 
 interface SourateInteractiveContentProps {
   verses: Verse[]; // Versets passés depuis le Server Component
@@ -32,7 +28,7 @@ interface SourateInteractiveContentProps {
   chapterId: number; // ID du chapitre passé depuis le Server Component
 }
 
-export default function SourateInteractiveContent({ verses: initialVerses, audioParts, infoSourate, chapterId }: SourateInteractiveContentProps) {
+export default function SourateInteractiveContent({ verses: initialVerses, audioParts, infoSourate }: SourateInteractiveContentProps) {
   const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(null);
 
   // Initialise selectedPart lorsque le composant est monté ou que les parties audio changent

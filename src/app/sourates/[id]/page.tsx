@@ -12,12 +12,6 @@ interface SouratePageProps {
   searchParams: { [key: string]: string | string[] | undefined }; // Les paramètres de recherche sont aussi directement disponibles
 }
 
-type Verse = {
-  id: number;
-  text: string;
-  translation: string;
-  transliteration: string;
-};
 
 // Types pour les audios Tafsir (utilisés pour passer à SourateInteractiveContent)
 type TafsirAudioPart = {
@@ -27,14 +21,9 @@ type TafsirAudioPart = {
   timings: { id: number; startTime: number; endTime: number; }[];
 }
 
-type TafsirAudio = {
-  id: number;
-  name_simple: string;
-  parts: TafsirAudioPart[];
-}
 
 
-export default async function Sourate({ params, searchParams }: SouratePageProps) {
+export default async function Sourate({ params}: SouratePageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams; // Accède directement à l'ID
   const chapterId = Number(id); // Convertir l'ID de la sourate en nombre
