@@ -52,6 +52,22 @@ export default function HomePage() {
           synchronisant les audios de Tafsir en Shi-Maoré avec le texte sacré.
         </motion.p>
 
+        {/* Bouton d'appel à l'action - déplacé ici */}
+        <motion.div
+          variants={itemVariants}
+          className="mb-8 flex justify-center"
+        >
+          <Link href="/sourates" passHref>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-blue-600 order-1 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-md transition-all duration-300 ease-in-out"
+            >
+              Commencer le Tafsir
+            </motion.button>
+          </Link>
+        </motion.div>
+
         {/* Section des fonctionnalités */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           {/* Carte de fonctionnalité 1 */}
@@ -74,21 +90,6 @@ export default function HomePage() {
             <p className="text-gray-600">Recherchez vos sourates par nom ou numéro et reprenez votre étude là où vous l&apos;avez laissée.</p>
           </motion.div>
         </div>
-
-        {/* Bouton d'appel à l'action */}
-        <motion.div
-          variants={itemVariants}
-        >
-          <Link href="/sourates" passHref>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-md transition-all duration-300 ease-in-out" // Shadow-md harmonisé
-            >
-              Commencer le Tafsir
-            </motion.button>
-          </Link>
-        </motion.div>
       </motion.div>
 
       {/* Pied de page simple */}
