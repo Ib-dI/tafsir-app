@@ -13,15 +13,6 @@ interface SouratePageProps {
 }
 
 
-// Types pour les audios Tafsir (utilisés pour passer à SourateInteractiveContent)
-type TafsirAudioPart = {
-  id: string;
-  title: string;
-  url: string;
-  timings: { id: number; startTime: number; endTime: number; }[];
-}
-
-
 
 export default async function Sourate({ params}: SouratePageProps) {
   const resolvedParams = await params;

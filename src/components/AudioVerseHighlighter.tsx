@@ -1,9 +1,9 @@
 'use client';
 
+import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import WaveSurfer from "wavesurfer.js";
-import {motion} from "framer-motion"
 
 type Verse = {
   id: number;
@@ -161,10 +161,13 @@ const AudioVerseHighlighter = ({
             console.log('Wake Lock relâché.');
             wakeLockRef.current = null; // Réinitialise la référence
           });
-        } catch (err: any) {
-          // L'utilisateur a refusé ou une erreur s'est produite
-          console.error(`Erreur Wake Lock: ${err.name}, ${err.message}`);
-          wakeLockRef.current = null; // S'assurer que la référence est réinitialisée si l'acquisition échoue
+        } catch (err) {
+          if (err instanceof Error) {
+            console.error(`Erreur Wake Lock: ${err.name}, ${err.message}`);
+          } else {
+            console.error("Erreur Wake Lock inconnue", err);
+          }
+          wakeLockRef.current = null;
         }
       } else {
         console.warn('API Wake Lock non supportée par ce navigateur.');
