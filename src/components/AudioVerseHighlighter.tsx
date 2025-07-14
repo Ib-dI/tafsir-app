@@ -272,12 +272,12 @@ const AudioVerseHighlighter = ({
 							{isPlaying ? <PauseIcon /> : <PlayIcon />}
 						</button>
 
-						<div className="font-mono text-gray-600">
-							{infoSourate[0]} - {infoSourate[1]}
+						<div className="font-mono spacing-[0.86px] text-xs md:text-sm whitespace-nowrap text-gray-600">
+							{infoSourate[0]} {infoSourate[1]}
 						</div>
 
 						<div className="flex items-center gap-4">
-							<div className="font-mono text-sm text-gray-600">
+							<div className="font-mono text-xs md:text-sm text-gray-600 whitespace-nowrap">
 								{formatTime(currentTime)} / {formatTime(duration)}
 							</div>
 							<SpeedControl

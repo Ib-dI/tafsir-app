@@ -61,7 +61,7 @@ export default function HomePage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-blue-600 order-1 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-md transition-all duration-300 ease-in-out"
+              className="bg-blue-600 order-1 hover:bg-blue-700 text-white font-bold py-3 px-4 md:px-8 rounded-full text-xl shadow-md transition-all duration-300 ease-in-out whitespace-nowrap"
             >
               Commencer le Tafsir
             </motion.button>

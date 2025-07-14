@@ -5,8 +5,8 @@ import { getSimpleChapters } from '@/lib/quranSimpleApi';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AudioLines } from "lucide-react";
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react'; // Ajout de useCallback
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'; // Ajout de useCallback
 
 type Chapter = {
   id: number;
@@ -239,7 +239,7 @@ export default function SouratePage() {
                   className="flex-grow flex justify-between items-center gap-2"
                 >
                   <div
-                    className={`text-sm font-mono font-semibold text-blue-500 bg-slate-200 p-1 w-10 flex items-center justify-center rounded-full`}
+                    className="text-sm font-mono font-semibold text-blue-500 bg-slate-200 w-8 h-8 flex items-center justify-center rounded-full flex-shrink-0"
                   >
                     {chapter.id}
                   </div>
