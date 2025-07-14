@@ -26,8 +26,8 @@ export const audiosTafsir = [
 		parts: [
 			{
 				id: "al-mursalat-1",
-				title: "Tafsir Al-Mursalat - Partie 1",
-				url: "/audios/Al-mursalat-part1.ogg",
+				title: "Al-Mursalat - Partie 1",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-mursalat-part1.ogg",
 				timings: [
 					{ id: 1, startTime: 59.23, endTime: 75.56 },
 					{ id: 2, startTime: 75.68, endTime: 87.52 },
@@ -61,8 +61,8 @@ export const audiosTafsir = [
 			},
 			{
 				id: "al-mursalat-2",
-				title: "Tafsir Al-Mursalat - Partie 2",
-				url: "/audios/Al-mursalat-part2.ogg",
+				title: "Al-Mursalat - Partie 2",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-mursalat-part2.ogg",
 				timings: [
 					{ id: 29, startTime: 105.65, endTime: 153.45 },
 					{ id: 30, startTime: 153.45, endTime: 171.76 },
