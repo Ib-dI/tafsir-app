@@ -40,7 +40,7 @@ export default function HomePage() {
           variants={itemVariants}
           className="text-4xl sm:text-5xl font-bold text-gray-800 mb-6 leading-tight" // Font-bold pour harmoniser
         >
-          Apprenez le Tafsir du Noble Coran en Shi-Maoré
+          Apprenez le Tafsir du Coran en <span className="relative inline-block"><span className="absolute inset-0 flex -rotate-2 transform items-center justify-center rounded-md bg-[#ff3131]/90" style={{ opacity: 1, filter: 'blur(0px)', transform: 'none' }}><span className="px-3 pt-1 pb-2 text-white" style={{ opacity: 1, filter: 'blur(0px)', transform: 'none' }}>Shi-Maoré</span></span><span className="invisible px-3 pt-1 pb-2">Shi-Maoré</span></span>
         </motion.h1>
 
         {/* Sous-titre / Description */}

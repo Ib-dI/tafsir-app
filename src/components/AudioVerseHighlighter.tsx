@@ -233,14 +233,14 @@ const AudioVerseHighlighter = ({
       {/* Waveform et contrôles ou message d'audio non disponible */}
       <div className="relative flex flex-col gap-3 flex-shrink-0 mt-6">
         {/* Le conteneur du waveform */}
-        <div
+        {audioUrl && (<div
           ref={waveformRef}
           className="relative w-full transition-opacity duration-300"
           style={{ minHeight: 80 }} // Hauteur fixe pour le loader
-        />
+        />)}
 
         {/* Loader superposé */}
-        {isLoading && (
+        {isLoading && audioUrl &&(
           <div className="absolute left-0 top-0 w-full h-[80px] z-10 flex flex-col items-center justify-center bg-white/80 rounded">
             <p className="text-gray-600 text-sm mb-2">
               Chargement de l’audio...
@@ -263,32 +263,31 @@ const AudioVerseHighlighter = ({
         )}
 
         {/* Contrôles audio (visibles si pas en chargement et pas d'erreur, ou si audioUrl est vide) */}
-        {(
-          <div className={`flex items-center justify-between ${
-							isLoading ? "opacity-70" : "opacity-100"
-						} w-full transition-opacity duration-300`}>
-            <button
-              onClick={togglePlayPause}
-              className="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700"
-            >
-              {isPlaying ? <PauseIcon /> : <PlayIcon />}
-            </button>
+				{ audioUrl && (
+					<div className={`flex items-center justify-between w-full ${isLoading || audioError ? "opacity-50 pointer-events-none" : ""}`}>
+						<button
+							onClick={togglePlayPause}
+							className="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700"
+						>
+							{isPlaying ? <PauseIcon /> : <PlayIcon />}
+						</button>
 
-            <div className="font-mono text-gray-600">
-              {infoSourate[0]} - {infoSourate[1]}
-            </div>
+						<div className="font-mono text-gray-600">
+							{infoSourate[0]} - {infoSourate[1]}
+						</div>
 
-            <div className="flex items-center gap-4">
-              <div className="font-mono text-sm text-gray-600">
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </div>
-              <SpeedControl
-                playbackRate={playbackRate}
-                onChange={setPlaybackRate}
-              />
-            </div>
-          </div>
-        )}
+						<div className="flex items-center gap-4">
+							<div className="font-mono text-sm text-gray-600">
+								{formatTime(currentTime)} / {formatTime(duration)}
+							</div>
+							<SpeedControl
+								playbackRate={playbackRate}
+								onChange={setPlaybackRate}
+							/>
+						</div>
+					</div>
+				)}
+      
 
         {/* Message "Tafsir audio non disponible" si audioUrl est vide et pas en chargement */}
         {!audioUrl && !isLoading && (
