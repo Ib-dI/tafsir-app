@@ -194,6 +194,15 @@ const AudioVerseHighlighter = ({
     };
   }, [isPlaying, audioUrl, audioError]); // Dépend de l'état de lecture, de la présence d'une URL audio et de l'état d'erreur
 
+	useEffect(()=> {
+		if (versesRef.current) {
+			versesRef.current.scrollTo({
+				top: 0,
+				behavior: 'smooth'
+			})
+		}
+	}, [audioUrl]) // Déclanché quand l'URL audio change
+
   // Mise à jour de la vitesse de lecture
   useEffect(() => {
     if (wavesurferRef.current) {
