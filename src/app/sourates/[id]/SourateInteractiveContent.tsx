@@ -3,6 +3,7 @@
 import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
+import suraGlyphMap from "@/lib/data/surahGlyphMap.json"
 
 // Définitions des types 
 type Verse = {
@@ -33,7 +34,7 @@ export default function SourateInteractiveContent({
 	const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
 		null
 	);
-
+  
 	// Etats pour la gestion du swipe
 	const touchStartX = useRef(0);
 	const touchEndX = useRef(0);
@@ -256,17 +257,11 @@ export default function SourateInteractiveContent({
 					verses={versesToDisplay} // Passe les versets (filtrés ou tous)
 					infoSourate={infoSourate.map(String)} // Assure que infoSourate est un tableau de strings pour la prop
 				>
-					<h1 className="text-4xl w-full md:text-5xl text-center font-sura text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-1 border-b border-gray-100 shadow-md">
-						<span>
-							{Number(infoSourate[0]) < 100
-								? Number(infoSourate[0]) < 10
-									? "00"
-									: "0"
-								: ""}
-							{infoSourate[0]}
-						</span>
-						<span className="">surah</span>
-					</h1>
+          <div className="w-full md:text-5xl text-center font-quran text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-2 border-b border-gray-100 shadow flex items-center justify-center" style={{ minHeight: "3.6rem" }}>
+      <h1 className="absolute">
+        <span className="text-9xl  font-normal leading-normal">{suraGlyphMap[String(infoSourate[0]) as keyof typeof suraGlyphMap]}</span>
+      </h1>
+      </div>
 				</AudioVerseHighlighter>
 			</div>
 		</div>

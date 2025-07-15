@@ -1,4 +1,4 @@
-// src/app/sourates/[id]/page.tsx
+
 // CE FICHIER EST UN SERVER COMPONENT
 
 import { audiosTafsir } from "@/lib/data/audios";
@@ -11,8 +11,6 @@ interface SouratePageProps {
   params: Promise<{ id: string }>; // Le paramètre dynamique est directement disponible ici
   
 }
-
-
 
 export default async function Sourate({ params}: SouratePageProps) {
   const resolvedParams = await params;
@@ -39,7 +37,6 @@ export default async function Sourate({ params}: SouratePageProps) {
     <div className="container mx-auto p-4 bg-white mt-2">
       {/* Le bouton de retour est un Client Component qui lit ses propres searchParams */}
       <AnimatedBackButton />
-      
       {/* Passe toutes les données nécessaires au Client Component interactif */}
       <SourateInteractiveContent
         verses={verses}
