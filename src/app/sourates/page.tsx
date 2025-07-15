@@ -239,18 +239,18 @@ export default function SouratePage() {
                   className="flex-grow flex justify-between items-center gap-2"
                 >
                   <div
-                    className="text-sm font-mono font-semibold text-blue-500 bg-slate-200 w-8 h-8 flex items-center justify-center rounded-full flex-shrink-0"
+                    className="text-sm font-mono font-semibold text-blue-500 bg-slate-200 w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0"
                   >
                     {chapter.id}
                   </div>
                   <div className="w-full">
-                    <strong className="text-lg text-gray-800">{chapter.transliteration}</strong>{' - '}
-                    <span className="text-lg rounded-md font-uthmanic">{chapter.name}</span>
+                    <strong className="text-md text-gray-800">{chapter.transliteration}</strong>{' - '}
+                    <span className="text-md rounded-md font-uthmanic">{chapter.name}</span>
                     <p className="text-gray-700">
                       <span className="font-semibold truncate overflow-hidden whitespace-nowrap inline-block align-bottom max-w-[110px]">
                         {chapter.translation}
                       </span>
-                      <span className="font-mono text-xs">- <span className=" font-semibold">{chapter.total_verses} </span>versets</span>
+                      <span className="font-mono text-xs">-<span className=" font-semibold">{chapter.total_verses} </span><span className="ml-[-2px]">versets</span></span>
                     </p>
                     {/* Affichage conditionnel des icônes audio */}
                     {sourateIdsWithAudio.has(chapter.id) ? (
