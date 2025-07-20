@@ -394,7 +394,7 @@ export default function SourateInteractiveContent({
       {/* Affichage de l'ID utilisateur (pour le débogage/vérification) */}
       {isAuthReady && !userId && (
         <div className="text-center text-xs text-red-500 mb-2">
-          Erreur : Impossible d'obtenir l'ID utilisateur. Progression non sauvegardée.
+          Erreur : Impossible d&#39;obtenir l&#39;ID utilisateur. Progression non sauvegardée.
           Vérifiez votre configuration Firebase et vos règles de sécurité.
         </div>
       )}
