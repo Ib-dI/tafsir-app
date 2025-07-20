@@ -1,10 +1,12 @@
 'use client';
 
 import { audiosTafsir } from "@/lib/data/audios";
+import { auth, db } from '@/lib/firebase';
 import { getSimpleChapters } from '@/lib/quranSimpleApi';
+import { onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AudioLines } from "lucide-react";
-import Link from 'next/link';
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'; // Ajout de useCallback
 
@@ -47,6 +49,10 @@ export default function SouratePage() {
   // Si 'showAudio' est 'all', alors false (afficher tout), sinon true (afficher avec audio seulement)
   // On le définit après le premier rendu via useEffect pour s'assurer que searchParams est prêt
   const [showOnlyWithAudio, setShowOnlyWithAudio] = useState<boolean>(true); // Valeur par défaut robuste
+
+  const [completedChapters, setCompletedChapters] = useState<Set<number>>(new Set());
+  const [completedChaptersByPartId, setCompletedChaptersByPartId] = useState<Set<string>>(new Set());
+  const [userId, setUserId] = useState<string | null>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -91,6 +97,35 @@ export default function SouratePage() {
     }
     loadChaptersAndSetInitialFilter();
   }, [searchParams, sourateIdsWithAudio]); // Dépend de searchParams et sourateIdsWithAudio (même si constant, bonne pratique)
+
+  // Auth anonyme (factorisé)
+  useEffect(() => {
+    if (!auth) return;
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) setUserId(user.uid);
+      else {
+        await signInAnonymously(auth);
+        setUserId(auth.currentUser?.uid ?? null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Écoute la progression
+  useEffect(() => {
+    if (!db || !userId) return;
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    if (!projectId) return;
+    const progressRef = collection(db, `artifacts/${projectId}/users/${userId}/progress`);
+    return onSnapshot(progressRef, (snapshot) => {
+      const completed = new Set<string>();
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.partId) completed.add(data.partId);
+      });
+      setCompletedChaptersByPartId(completed);
+    });
+  }, [userId]);
 
 
   // Défilement vers le haut de la page au montage (pour navigation)
@@ -226,51 +261,104 @@ export default function SouratePage() {
       >
         <AnimatePresence mode="popLayout">
           {filteredChapters.length > 0 ? (
-            filteredChapters.map((chapter: Chapter) => (
-              <motion.li
-                key={chapter.id}
-                variants={itemVariants}
-                layout
-                className="py-4 px-2 w-full md:w-80 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-              >
-                {/* Lien vers la sourate individuelle - IMPORANT : Conserver le paramètre d'URL */}
-                <Link
-                  href={`/sourates/${chapter.id}${!showOnlyWithAudio ? '?showAudio=all' : ''}`}
-                  className="flex-grow flex justify-between items-center gap-2"
+            filteredChapters.map((chapter: Chapter) => {
+              // Trouver les parties audio pour cette sourate
+              const audioData = audiosTafsir.find(a => a.id === chapter.id);
+              const partIds = audioData?.parts?.map(part => part.id) || [];
+              // Parties terminées pour cette sourate
+              const completedPartIds = new Set(
+                Array.from(completedChaptersByPartId).filter(
+                  partId => partIds.includes(partId)
+                )
+              );
+              const totalParts = partIds.length;
+              const completedParts = completedPartIds.size;
+              const isFullyCompleted = totalParts > 0 && completedParts === totalParts;
+              const progressPercent = totalParts > 0 ? Math.round((completedParts / totalParts) * 100) : 0;
+              return (
+                <motion.li
+                  key={chapter.id}
+                  variants={itemVariants}
+                  layout
+                  className={`group py-4 px-2 w-full md:w-80 rounded-lg transition-colors duration-200 relative cursor-pointer
+                    ${isFullyCompleted ? 'bg-emerald-50 hover:bg-emerald-100' : 'bg-gray-50 hover:bg-gray-100'}
+                  `}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => router.push(`/sourates/${chapter.id}${!showOnlyWithAudio ? '?showAudio=all' : ''}`)}
+                  tabIndex={0}
+                  role="button"
+                  style={{ textDecoration: 'none' }}
                 >
-                  <div
-                    className="text-sm font-mono font-semibold text-blue-500 bg-slate-200 w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0"
-                  >
-                    {chapter.id}
+                  {/* Barre de progression flottante en haut à droite */}
+                  {totalParts > 0 && (
+                    <div className={`absolute bottom-2 right-2 z-20 flex items-center`}>
+                      <div className={`w-16 h-2 rounded-full overflow-hidden shadow-sm ${isFullyCompleted ? 'bg-emerald-100' : 'bg-gray-200'}`}>
+                        <div
+                          className={`h-full rounded-full transition-all ${isFullyCompleted ? 'bg-green-400' : 'bg-green-500 hover:border border-amber-50'}`}
+                          style={{ width: `${progressPercent}%` }}
+                        />
+                      </div>
+                      <span className={`ml-2 text-xs font-semibold ${isFullyCompleted ? 'text-emerald-800' : 'text-gray-600'}`}>{progressPercent}%</span>
+                    </div>
+                  )}
+                  {/* Badge progression en bas à droite */}
+                  {/* {isFullyCompleted && (
+                    <span
+                      className="absolute bottom-2 right-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500 border-2 border-white shadow z-10"
+                      title="Sourate complétée"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 10.5L8.5 14L15 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                  )} */}
+                  <div className="flex-grow flex justify-between items-center gap-2">
+                    <div className={`text-sm font-mono font-semibold w-8 h-8 flex items-center justify-center rounded-full flex-shrink-0
+                      ${isFullyCompleted ? 'bg-white text-emerald-700 shadow group-hover:bg-white group-hover:text-emerald-700' : 'bg-slate-200 text-blue-500'}
+                    `}>
+                      {chapter.id}
+                    </div>
+                    <div className="flex flex-col flex-grow min-w-0">
+                      <div className="flex items-center gap-2">
+                        <strong className={`text-md truncate ${isFullyCompleted ? 'text-emerald-800' : 'text-gray-800'}`}>{chapter.transliteration}</strong>
+                        <span className={`text-md rounded-md font-uthmanic truncate ${isFullyCompleted ? 'text-emerald-600' : ''}`}>{chapter.name}</span>
+                      </div>
+                      <p className={`text-sm truncate ${isFullyCompleted ? 'text-emerald-800' : 'text-gray-700'}`}> 
+                        <span className="font-semibold truncate overflow-hidden whitespace-nowrap inline-block align-bottom max-w-[110px]">
+                          {chapter.translation}
+                        </span>
+                        <span className="font-mono text-xs"> - <span className="font-semibold">{chapter.total_verses}</span> versets</span>
+                      </p>
+                    </div>
+                    <div className={`text-sm font-semibold px-2 py-1 rounded-full mt-2 inline-block
+                      ${isFullyCompleted ? 'bg-white text-emerald-700 border border-emerald-200 group-hover:bg-white group-hover:text-emerald-700' : 'text-blue-500 bg-blue-100'}
+                    `}>
+                      {chapter.type === 'meccan' ? 'Mecque' : 'Médine'}
+                    </div>
                   </div>
-                  <div className="w-full">
-                    <strong className="text-md text-gray-800">{chapter.transliteration}</strong>{' - '}
-                    <span className="text-md rounded-md font-uthmanic">{chapter.name}</span>
-                    <p className="text-gray-700">
-                      <span className="font-semibold truncate overflow-hidden whitespace-nowrap inline-block align-bottom max-w-[110px]">
-                        {chapter.translation}
-                      </span>
-                      <span className="font-mono text-xs">-<span className=" font-semibold">{chapter.total_verses} </span><span className="ml-[-2px]">versets</span></span>
-                    </p>
+                  <div className="ml-9">
                     {/* Affichage conditionnel des icônes audio */}
                     {sourateIdsWithAudio.has(chapter.id) ? (
-                      <div className="flex">
-                        <AudioLines size={18} className="inline-block text-blue-500" />
-                        <AudioLines size={18} className="inline-block text-gray-400" />
-                        <AudioLines size={18} className="inline-block text-gray-400" />
-                      </div>
+                      isFullyCompleted ? (
+                        <div className="flex">
+                          <AudioLines size={18} className="inline-block text-emerald-600" />
+                          <AudioLines size={18} className="inline-block text-emerald-300" />
+                        </div>
+                      ) : (
+                        <div className="flex">
+                          <AudioLines size={18} className="inline-block text-blue-500" />
+                          <AudioLines size={18} className="inline-block text-gray-400" />
+                        </div>
+                      )
                     ) : (
-                      // Optionnel: Vous pouvez ajouter un placeholder vide ou d'autres icônes
-                      // pour maintenir la cohérence de la mise en page si aucune icône n'est présente
-                      <div className="h-[18px]"></div> // Crée un espace vide de la même hauteur que les icônes
+                      <div className="h-[18px]"></div>
                     )}
                   </div>
-                  <span className="text-sm font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded-full">
-                    {chapter.type === 'meccan' ? 'Mecque' : 'Médine'}
-                  </span>
-                </Link>
-              </motion.li>
-            ))
+                  
+                </motion.li>
+              );
+            })
           ) : (
             <motion.li
               key="no-results"

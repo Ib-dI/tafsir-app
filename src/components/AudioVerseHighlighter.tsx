@@ -20,6 +20,7 @@ type AudioVerseHighlighterProps = {
   verses: Verse[];
   infoSourate: string[];
   children?: ReactNode;
+  onAudioFinished?: () => void;
 };
 
 const toArabicNumerals = (n: number): string => {
@@ -37,6 +38,7 @@ const AudioVerseHighlighter = ({
   verses,
   infoSourate,
   children,
+  onAudioFinished,
 }: AudioVerseHighlighterProps) => {
   const waveformRef = useRef(null);
   const versesRef = useRef<HTMLDivElement>(null);
@@ -48,12 +50,18 @@ const AudioVerseHighlighter = ({
   const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [audioError, setAudioError] = useState<boolean>(false); // Nouvel état pour les erreurs audio
+  const [hasFinished, setHasFinished] = useState(false);
 
   // NOUVEAU: Référence pour le Wake Lock
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
   // Initialisation de WaveSurfer et gestion du chargement
   useEffect(() => {
+    console.log("AudioVerseHighlighter useEffect triggered", {
+      audioUrl,
+      versesLength: verses.length
+    });
+    setHasFinished(false);
     // Détruire l’ancienne instance si elle existe
     if (wavesurferRef.current) {
       wavesurferRef.current.destroy();
@@ -70,11 +78,13 @@ const AudioVerseHighlighter = ({
     // Gérer le cas où audioUrl est vide (pas d'audio disponible)
     if (!audioUrl) {
       setIsLoading(false); // Pas de chargement si pas d'URL
+      console.log("AudioVerseHighlighter: setIsLoading(false)");
       return; // Ne pas tenter d'initialiser WaveSurfer
     }
 
     // Si une audioUrl est présente, on commence le chargement
     setIsLoading(true); // Démarre le spinner de chargement
+    console.log("AudioVerseHighlighter: setIsLoading(true)");
 
     if (!waveformRef.current) return;
 
@@ -91,20 +101,36 @@ const AudioVerseHighlighter = ({
       // responsive: true,
     });
 
-    wavesurfer.load(audioUrl);
+    wavesurfer.load(audioUrl)
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          setAudioError(true);
+          setIsLoading(false);
+          console.log("AudioVerseHighlighter: setIsLoading(false)");
+        }
+      });
 
     wavesurfer.on("ready", () => {
       wavesurferRef.current = wavesurfer;
       setDuration(wavesurfer.getDuration());
       setIsLoading(false); // Arrête le spinner une fois prêt
+      console.log("AudioVerseHighlighter: setIsLoading(false)");
     });
 
     // Gérer les erreurs de chargement
     wavesurfer.on("error", (err) => {
-      console.error("WaveSurfer error:", err);
-      setAudioError(true); // Indique une erreur
-      setIsLoading(false); // Arrête le spinner en cas d'erreur
-      setIsPlaying(false); // S'assurer que la lecture est arrêtée
+      // Ignore AbortError, c'est normal lors d'un changement rapide
+      if (
+        err instanceof Error &&
+        (err as Error & { name?: string }).name === "AbortError"
+      ) {
+        // Ne rien faire
+      } else {
+        setAudioError(true); // Indique une vraie erreur
+        setIsLoading(false); // Arrête le spinner en cas d'erreur
+        console.log("AudioVerseHighlighter: setIsLoading(false)");
+        setIsPlaying(false); // S'assurer que la lecture est arrêtée
+      }
     });
 
     wavesurfer.on("audioprocess", () => {
@@ -130,8 +156,13 @@ const AudioVerseHighlighter = ({
     wavesurfer.on("play", () => setIsPlaying(true));
     wavesurfer.on("pause", () => setIsPlaying(false));
     wavesurfer.on("finish", () => {
-      setIsPlaying(false);
-      setCurrentVerseId(null);
+      console.log("AudioVerseHighlighter: finish event triggered");
+      if (!hasFinished) {
+        setHasFinished(true);
+        setIsPlaying(false);
+        setCurrentVerseId(null);
+        onAudioFinished?.();
+      }
     });
 
     // Cleanup à chaque changement
@@ -139,13 +170,18 @@ const AudioVerseHighlighter = ({
       try {
         wavesurfer.destroy();
       } catch (e) {
-        if (e instanceof Error && (e as Error & { name?: string }).name !== "AbortError") {
+        if (
+          e instanceof Error &&
+          (e as Error & { name?: string }).name === "AbortError"
+        ) {
+          // Ignore AbortError, c'est normal lors d'un changement rapide
+        } else {
           console.error(e);
         }
       }
       wavesurferRef.current = null;
     };
-  }, [audioUrl, verses]); // Dépend de audioUrl et verses
+  }, [audioUrl, verses]); // Dépend de audioUrl et verses uniquement
 
   // NOUVEAU HOOK POUR GÉRER LE WAKE LOCK
   useEffect(() => {
@@ -154,11 +190,9 @@ const AudioVerseHighlighter = ({
         try {
           // Demande un wake lock de type 'screen' pour empêcher l'écran de s'éteindre
           wakeLockRef.current = await navigator.wakeLock.request('screen');
-          console.log('Wake Lock acquis !');
 
           // Gérer la perte de wake lock (ex: l'utilisateur change d'onglet)
           wakeLockRef.current.addEventListener('release', () => {
-            console.log('Wake Lock relâché.');
             wakeLockRef.current = null; // Réinitialise la référence
           });
         } catch (err) {
@@ -234,11 +268,51 @@ const AudioVerseHighlighter = ({
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
+  useEffect(() => {
+    console.log("AudioVerseHighlighter mounted");
+    return () => {
+      console.log("AudioVerseHighlighter unmounted");
+    };
+  }, []);
+
   return (
     <div
       className="flex flex-col w-full max-w-4xl mx-auto p-2 sm:p-4 bg-white rounded-lg shadow"
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
+      {/* Overlay pour verset long en cours de lecture */}
+      {(() => {
+        const currentVerse = verses.find(v => v.id === currentVerseId);
+        if (currentVerse && currentVerse.text.length > 120 && audioUrl) {
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ type: "spring", stiffness: 100, damping: 10 }}
+              className="fixed top-36 left-0 w-full z-[100] flex justify-center pointer-events-none"
+              style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+            >
+              <div
+                className="bg-yellow-50 rounded-lg shadow-lg border border-yellow-400 px-4 py-3 max-w-2xl w-full mx-2 flex flex-col items-end animate-fade-in"
+                style={{ direction: "rtl" }}
+              >
+                <div className="text-gray-800 text-2xl md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1">
+                  <span>{currentVerse.text}</span>
+                  <span className="text-3xl">{toArabicNumerals(currentVerse.id)}</span>
+                </div>
+                <p className="text-gray-500 text-md mt-[-8px] self-end font-medium">
+                  {currentVerse.transliteration}
+                </p>
+                <p className="text-gray-700 self-start">
+                  {currentVerse.id}. {currentVerse.translation}
+                </p>
+              </div>
+            </motion.div>
+          );
+        }
+        return null;
+      })()}
       {/* Waveform et contrôles ou message d'audio non disponible */}
       <div className="relative flex flex-col gap-3 flex-shrink-0 mt-6">
         {/* Le conteneur du waveform */}
@@ -251,7 +325,7 @@ const AudioVerseHighlighter = ({
         {/* Loader superposé */}
         {isLoading && audioUrl &&(
           <div className="absolute left-0 top-0 w-full h-[80px] z-10 flex flex-col items-center justify-center bg-white/80 rounded">
-            <p className="text-gray-600 text-sm mb-2">
+            <p className="text-blue-500 text-sm mb-2">
               Chargement de l’audio...
             </p>
             <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />

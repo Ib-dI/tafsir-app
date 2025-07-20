@@ -30,7 +30,7 @@ export default function Header() {
       initial="hidden"
       animate="visible"
       variants={navVariants} // Applique l'animation à l'en-tête entier
-      className="bg-white border-b border-gray-200 shadow-md" // shadow-md pour l'homogénéité
+      className="bg-white border-b border-gray-200 shadow" // shadow-md pour l'homogénéité
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo + nom */}

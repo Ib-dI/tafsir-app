@@ -1,108 +1,222 @@
-"use client";
+'use client';
+
+// Importez les instances pré-initialisées depuis votre fichier src/lib/firebase.ts
+import { auth, db } from '@/lib/firebase';
 
 import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
-import { useEffect, useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import suraGlyphMap from "@/lib/data/surahGlyphMap.json"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+// Importations Firestore spécifiques pour les opérations
+import { onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, where } from 'firebase/firestore';
+
+// Import pour suraGlyphMap
+import suraGlyphMap from "@/lib/data/surahGlyphMap.json";
+
 
 // Définitions des types 
 type Verse = {
-	id: number;
-	text: string;
-	translation: string;
-	transliteration: string;
+  id: number;
+  text: string;
+  translation: string;
+  transliteration: string;
 };
 
 type TafsirAudioPart = {
-	id: string;
-	title: string;
-	url: string;
-	timings: { id: number; startTime: number; endTime: number }[];
+  id: string;
+  title: string;
+  url: string;
+  timings: { id: number; startTime: number; endTime: number }[];
 };
 interface SourateInteractiveContentProps {
-	verses: Verse[];
-	audioParts: TafsirAudioPart[];
-	infoSourate: (number | string)[];
-	chapterId: number; 
+  verses: Verse[];
+  audioParts: TafsirAudioPart[];
+  infoSourate: (number | string)[];
+  chapterId: number; // Réintroduit la prop chapterId
 }
 
 export default function SourateInteractiveContent({
-	verses: initialVerses,
-	audioParts,
-	infoSourate,
+  verses: initialVerses,
+  audioParts,
+  infoSourate,
+  chapterId, // Récupère la prop chapterId
 }: SourateInteractiveContentProps) {
-	const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
-		null
-	);
+  // Logs pour le débogage
+  console.log("SourateInteractiveContent: Composant monté et rendu.");
+  console.log("SourateInteractiveContent: Vérification des instances Firebase importées - auth:", !!auth, "db:", !!db);
+  console.log("SourateInteractiveContent: NEXT_PUBLIC_FIREBASE_PROJECT_ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+
+
+  const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
+    null
+  );
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
+
+  const [completedPartIds, setCompletedPartIds] = useState<Set<string>>(new Set());
   
-	// Etats pour la gestion du swipe
-	const touchStartX = useRef(0);
-	const touchEndX = useRef(0);
-	const swipeThreshold = 50; // Distance minimale pour considérer un swipe (en pixels)
+  
+  // Etats pour la gestion du swipe
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const swipeThreshold = 50; // Distance minimale pour considérer un swipe (en pixels)
 
-	// Initialise selectedPart lorsque le composant est monté ou que les parties audio changent
-	useEffect(() => {
-		if (audioParts.length > 0 && !selectedPart) {
-			setSelectedPart(audioParts[0]);
-		}
-	}, [audioParts, selectedPart]); // Dépendances pour réagir aux changements
+  // Initialise selectedPart lorsque le composant est monté ou que les parties audio changent
+  useEffect(() => {
+    if (audioParts.length > 0 && !selectedPart) {
+      setSelectedPart(audioParts[0]);
+    }
+  }, [audioParts, selectedPart]); // Garde selectedPart pour éviter un loop infini si initialement null
 
-	// Défilement vers le haut de la page lorsque la partie sélectionné change
-	useEffect(() => {
-		if (selectedPart) {
-			window.scrollTo({ top: 0, behavior: "smooth" });
-		}
-	}, [selectedPart]); // Déclanché à chaque fois que selectedPart change
+  // Défilement vers le haut de la page lorsque la partie sélectionné change
+  useEffect(() => {
+    if (selectedPart) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [selectedPart]); // Déclanché à chaque fois que selectedPart change
 
-	// Recalcule les versets à afficher pour la partie sélectionnée.
-	// Si aucune partie n'est sélectionnée (ex: pas d'audio du tout),
-	// on passe tous les versets pour qu'ils soient affichés sans surlignage audio.
-	const versesToDisplay = selectedPart
-		? initialVerses
-				.filter((verse) => {
-					// Vérifie si l'ID du verset est présent dans les timings de la partie sélectionnée
-					return selectedPart.timings.some((timing) => timing.id === verse.id);
-				})
-				.map((verse) => {
-					// Ajoute les informations de timing et 'verset'
-					const timing = selectedPart.timings.find((t) => t.id === verse.id);
-					return {
-						...verse,
-						startTime: timing?.startTime ?? 0,
-						endTime: timing?.endTime ?? 0,
-						verset: verse.text,
-					};
-				})
-		: initialVerses.map((verse) => ({
-				// Si pas de partie sélectionnée, affiche tous les versets sans timings audio
-				...verse,
-				startTime: 0,
-				endTime: 0,
-				verset: verse.text,
-		  }));
+  // useEffect: Gère l'authentification et récupère l'ID utilisateur
+  useEffect(() => {
+    if (!auth) {
+        console.error("SourateInteractiveContent: ERREUR - Firebase Auth n'est pas initialisé. Vérifiez src/lib/firebase.ts et .env.local.");
+        setUserId(crypto.randomUUID()); // Fallback pour éviter de bloquer l'app si Firebase est mal configuré
+        setIsAuthReady(true);
+        return;
+    }
 
-	// Déterminer l'URL audio à passer. Si pas de partie sélectionnée, c'est vide.
-	const currentAudioUrl = selectedPart?.url || "";
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            setUserId(user.uid);
+        } else {
+            console.log("SourateInteractiveContent: Aucun utilisateur Firebase. Tentative de connexion anonyme...");
+            try {
+                await signInAnonymously(auth); // Utilise l'instance 'auth' importée
+                const newUid = auth.currentUser?.uid;
+                setUserId(newUid || crypto.randomUUID());
+            } catch (error) {
+                console.error("SourateInteractiveContent: ERREUR - Erreur d'authentification anonyme Firebase:", error);
+                setUserId(crypto.randomUUID()); // Fallback si l'authentification échoue
+            }
+        }
+        setIsAuthReady(true);
+    });
 
-	// Logique de navigation entre les parties audio
-	const currentPartIndex = selectedPart
-		? audioParts.findIndex((p) => p.id === selectedPart.id)
-		: -1;
-	const canGoPrevious = currentPartIndex > 0;
-	const canGoNext =
-		currentPartIndex !== -1 && currentPartIndex < audioParts.length - 1;
+    return () => unsubscribe(); // Nettoyage de l'écouteur
+  }, []); // S'exécute une seule fois au montage
 
-	const goToPreviousPart = useCallback(() => {
-		if (canGoPrevious) {
-			setSelectedPart(audioParts[currentPartIndex - 1]);
-		}
-	}, [canGoPrevious, currentPartIndex, audioParts]);
+  // useEffect: Écoute les changements de progression depuis Firestore
+  useEffect(() => {
+    if (!isAuthReady || !db || !userId) {
+        return;
+    }
 
-	const goToNextPart = useCallback(() => {
-		if (canGoNext) {
-			setSelectedPart(audioParts[currentPartIndex + 1]);
-		}
-	}, [canGoNext, currentPartIndex, audioParts]);
+    // Utilisez process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID comme projectId pour le chemin Firestore
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID; 
+    if (!projectId) {
+        console.error("SourateInteractiveContent: ERREUR - NEXT_PUBLIC_FIREBASE_PROJECT_ID n'est pas défini. Vérifiez .env.local.");
+        return;
+    }
+
+    const progressCollectionRef = collection(db, `artifacts/${projectId}/users/${userId}/progress`);
+    const q = query(progressCollectionRef, where("chapterId", "==", chapterId));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const newCompletedPartIds = new Set<string>();
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.partId) {
+          newCompletedPartIds.add(data.partId);
+        }
+      });
+      setCompletedPartIds(newCompletedPartIds);
+      console.log("Progression mise à jour", Array.from(newCompletedPartIds));
+    }, (error: Error) => {
+      console.error("SourateInteractiveContent: ERREUR d'écoute de la progression Firestore:", error);
+    });
+
+    return () => unsubscribe(); // Nettoyage de l'écouteur de snapshot
+  }, [isAuthReady, db, userId, chapterId]);
+
+  // Fonction pour marquer une partie comme complétée
+  const markPartAsCompleted = useCallback(async (completedChapterId: number, completedPartId: string) => {
+    console.log("markPartAsCompleted called", completedChapterId, completedPartId);
+    if (!db || !userId) {
+      console.warn("SourateInteractiveContent: AVERTISSEMENT - Firestore ou User ID non disponible. Impossible de marquer la partie comme complétée.");
+      return;
+    }
+
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID; 
+    if (!projectId) {
+        console.error("SourateInteractiveContent: ERREUR - NEXT_PUBLIC_FIREBASE_PROJECT_ID n'est pas défini lors de l'écriture.");
+        return;
+    }
+
+    const docPath = `artifacts/${projectId}/users/${userId}/progress`;
+    const docId = `${completedChapterId}_${completedPartId}`;
+
+    try {
+      const progressDocRef = doc(db, docPath, docId);
+      await setDoc(progressDocRef, {
+        chapterId: completedChapterId,
+        partId: completedPartId,
+        completedAt: serverTimestamp(),
+      }, { merge: true });
+    } catch (error) {
+      console.error(`SourateInteractiveContent: ERREUR LORS DE L'ÉCRITURE Firestore pour ${docId}:`, error);
+      // C'est ici que les erreurs de règles de sécurité ou de connexion apparaîtront
+    }
+  }, [db, userId]);
+
+  // Recalcule les versets à afficher pour la partie sélectionnée.
+  // Si aucune partie n'est sélectionnée (ex: pas d'audio du tout),
+  // on passe tous les versets pour qu'ils soient affichés sans surlignage audio.
+  const versesToDisplay = selectedPart
+    ? initialVerses
+        .filter((verse) => {
+          // Vérifie si l'ID du verset est présent dans les timings de la partie sélectionnée
+          return selectedPart.timings.some((timing) => timing.id === verse.id);
+        })
+        .map((verse) => {
+          // Ajoute les informations de timing et 'verset'
+          const timing = selectedPart.timings.find((t) => t.id === verse.id);
+          return {
+            ...verse,
+            startTime: timing?.startTime ?? 0,
+            endTime: timing?.endTime ?? 0,
+            verset: verse.text,
+          };
+        })
+    : initialVerses.map((verse) => ({
+        // Si pas de partie sélectionnée, affiche tous les versets sans timings audio
+        ...verse,
+        startTime: 0,
+        endTime: 0,
+        verset: verse.text,
+      }));
+
+  // Déterminer l'URL audio à passer. Si pas de partie sélectionnée, c'est vide.
+  const currentAudioUrl = selectedPart?.url || "";
+
+  // Logique de navigation entre les parties audio
+  const currentPartIndex = selectedPart
+    ? audioParts.findIndex((p) => p.id === selectedPart.id)
+    : -1;
+  const canGoPrevious = currentPartIndex > 0;
+  const canGoNext =
+    currentPartIndex !== -1 && currentPartIndex < audioParts.length - 1;
+
+  const goToPreviousPart = useCallback(() => {
+    if (canGoPrevious) {
+      setSelectedPart(audioParts[currentPartIndex - 1]);
+    }
+  }, [canGoPrevious, currentPartIndex, audioParts]);
+
+  const goToNextPart = useCallback(() => {
+    if (canGoNext) {
+      setSelectedPart(audioParts[currentPartIndex + 1]);
+    }
+  }, [canGoNext, currentPartIndex, audioParts]);
 
   // Fonctions de gestion des événements tactiles (swipe)
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -126,144 +240,196 @@ export default function SourateInteractiveContent({
     }
   }
 
-	return (
-		<div className="container mx-auto">
-			{/* Barre de sélection des parties audio AVEC les flèches */}
-			{/* Cette section n'est rendue que s'il y a plus d'une partie audio disponible */}
-			{audioParts.length > 1 && (
-				<motion.div
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{
-						type: "spring",
-						stiffness: 100,
-						damping: 10,
-						delay: 0.3,
-					}}
-					className="flex flex-row items-center gap-2 mb-6 p-3 bg-gray-50 rounded-lg shadow-inner justify-center"
-				>
-					{/* Flèche Gauche */}
-					<motion.button
-						onClick={goToPreviousPart}
-						disabled={!canGoPrevious} // Désactive si on ne peut pas aller en arrière
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						className={`p-2 rounded-full transition-colors duration-200 ${
-							canGoPrevious
-								? "bg-blue-600 text-white hover:bg-blue-700"
-								: "bg-gray-300 text-gray-500 cursor-not-allowed"
-						}`}
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							strokeWidth="2.5"
-							stroke="currentColor"
-							className="w-6 h-6"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M15.75 19.5L8.25 12l7.5-7.5"
-							/>
-						</svg>
-					</motion.button>
+  // MODIFICATION ICI: Appel goToNextPart si possible
+  const handleAudioFinished = useCallback(() => {
+    if (!selectedPart) return;
 
-					{/* Boutons de sélection de partie pour Desktop */}
-					<div className="hidden md:flex flex-wrap gap-2 justify-center flex-grow">
-						<span className="text-gray-700 font-medium self-center">
-							Parties Tafsir :
-						</span>
-						{audioParts.map((part) => (
-							<motion.button
-								key={part.id}
-								onClick={() => setSelectedPart(part)}
-								whileHover={{ scale: 1.03 }}
-								whileTap={{ scale: 0.97 }}
-								className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-									selectedPart?.id === part.id
-										? "bg-blue-600 text-white shadow-md"
-										: "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-								}`}
-							>
-								{part.title || `Partie ${audioParts.indexOf(part) + 1}`}
-							</motion.button>
-						))}
-					</div>
+    // Marquer comme complétée seulement si ce n'est pas déjà fait
+    if (!completedPartIds.has(selectedPart.id)) {
+      markPartAsCompleted(chapterId, selectedPart.id);
+    }
 
-					{/* Dropdown de sélection de partie pour Mobile */}
-					<div className="flex flex-grow md:hidden items-center justify-center gap-2">
-						<label htmlFor="part-select" className="sr-only">
-							Sélectionner une partie
-						</label>
-						<select
-							id="part-select"
-							value={selectedPart?.id || ""}
-							onChange={(e) => {
-								const selectedId = e.target.value;
-								const part = audioParts.find((p) => p.id === selectedId);
-								if (part) setSelectedPart(part);
-							}}
-							className="block w-full max-w-[200px] px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-						>
-							{audioParts.map((part, index) => (
-								<option key={part.id} value={part.id}>
-									{part.title || `Partie ${index + 1}`}
-								</option>
-							))}
-						</select>
-					</div>
+    // Aller à la partie suivante seulement si elle existe
+    if (canGoNext) {
+      goToNextPart();
+    }
+    // Sinon, ne rien faire (pas de setState inutile)
+  }, [chapterId, selectedPart, markPartAsCompleted, completedPartIds, canGoNext, goToNextPart]);
 
-					{/* Flèche Droite */}
-					<motion.button
-						onClick={goToNextPart}
-						disabled={!canGoNext} // Désactive si on ne peut pas aller en avant
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						className={`p-2 rounded-full transition-colors duration-200 ${
-							canGoNext
-								? "bg-blue-600 text-white hover:bg-blue-700"
-								: "bg-gray-300 text-gray-500 cursor-not-allowed"
-						}`}
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							strokeWidth="2.5"
-							stroke="currentColor"
-							className="w-6 h-6"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								d="M8.25 4.5l7.5 7.5-7.5 7.5"
-							/>
-						</svg>
-					</motion.button>
-				</motion.div>
-			)}
+  const memoizedVersesToDisplay = useMemo(() => versesToDisplay, [selectedPart, initialVerses]);
+  const memoizedInfoSourate = useMemo(() => infoSourate.map(String), [infoSourate]);
 
-			{/* Le composant AudioVerseHighlighter est TOUJOURS rendu */}
-			<div className="container mx-auto"
+  console.log("SourateInteractiveContent render", { currentAudioUrl, memoizedVersesToDisplayLength: memoizedVersesToDisplay.length });
+  if (!isAuthReady || !db || !userId) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 text-blue-600">
+        Initialisation de la connexion...
+      </div>
+    );
+  }
+  return (
+    <div className="container mx-auto">
+      {/* Barre de sélection des parties audio AVEC les flèches */}
+      {/* Cette section n'est rendue que s'il y a plus d'une partie audio disponible */}
+      {audioParts.length > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            type: "spring",
+            stiffness: 100,
+            damping: 10,
+            delay: 0.3,
+          }}
+          className="flex flex-row items-center gap-2 mb-6 p-3 bg-gray-50 rounded-lg shadow-inner justify-center"
+        >
+          {/* Flèche Gauche */}
+          <motion.button
+            onClick={goToPreviousPart}
+            disabled={!canGoPrevious} // Désactive si on ne peut pas aller en arrière
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className={`p-2 rounded-full transition-colors duration-200 ${
+              canGoPrevious
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2.5"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
+          </motion.button>
+
+          {/* Boutons de sélection de partie pour Desktop */}
+          <div className="hidden md:flex flex-wrap gap-2 justify-center flex-grow">
+            <span className="text-gray-700 font-medium self-center">
+              Parties Tafsir :
+            </span>
+            {audioParts.map((part) => (
+              <motion.button
+                key={part.id}
+                onClick={() => setSelectedPart(part)}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                  selectedPart?.id === part.id
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                }`}
+              >
+                {part.title || `Partie ${audioParts.indexOf(part) + 1}`}
+                {/* Indicateur de complétion pour les parties */}
+                {completedPartIds.has(part.id) && (
+                  <span className="ml-2 text-green-300">✓</span>
+                )}
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Dropdown de sélection de partie pour Mobile */}
+          <div className="flex flex-grow md:hidden items-center justify-center gap-2">
+            <label htmlFor="part-select" className="sr-only">
+              Sélectionner une partie
+            </label>
+            <select
+              id="part-select"
+              value={selectedPart?.id || ""}
+              onChange={(e) => {
+                const selectedId = e.target.value;
+                const part = audioParts.find((p) => p.id === selectedId);
+                if (part) setSelectedPart(part);
+              }}
+              className="block w-full max-w-[200px] px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            >
+              {audioParts.map((part, index) => (
+                <option key={part.id} value={part.id}>
+                  {part.title || `Partie ${index + 1}`}
+                  {completedPartIds.has(part.id) ? ' ✓' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Flèche Droite */}
+          <motion.button
+            onClick={goToNextPart}
+            disabled={!canGoNext} // Désactive si on ne peut pas aller en avant
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className={`p-2 rounded-full transition-colors duration-200 ${
+              canGoNext
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2.5"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </motion.button>
+        </motion.div>
+      )}
+
+      {/* Affichage de l'ID utilisateur (pour le débogage/vérification) */}
+      {isAuthReady && !userId && (
+        <div className="text-center text-xs text-red-500 mb-2">
+          Erreur : Impossible d'obtenir l'ID utilisateur. Progression non sauvegardée.
+          Vérifiez votre configuration Firebase et vos règles de sécurité.
+        </div>
+      )}
+
+
+      {/* Le composant AudioVerseHighlighter est TOUJOURS rendu */}
+      <div className="container mx-auto"
       onTouchStart={handleTouchStart} // Ecoute les événements tactiles
       onTouchMove={handleTouchMove} // Met à jour la position du doigt
       onTouchEnd={handleTouchEnd} // Gère la fin du swipe
-      >  
+      >   
 
-				<AudioVerseHighlighter
-					audioUrl={currentAudioUrl} // Passe l'URL (peut être vide)
-					verses={versesToDisplay} // Passe les versets (filtrés ou tous)
-					infoSourate={infoSourate.map(String)} // Assure que infoSourate est un tableau de strings pour la prop
-				>
-          <div className="w-full md:text-5xl text-center font-quran text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-2 border-b border-gray-100 shadow flex items-center justify-center" style={{ minHeight: "3.6rem" }}>
-      <h1 className="absolute">
-        <span className="text-9xl  font-normal leading-normal">{suraGlyphMap[String(infoSourate[0]) as keyof typeof suraGlyphMap]}</span>
-      </h1>
+        <AudioVerseHighlighter
+          audioUrl={currentAudioUrl}
+          verses={memoizedVersesToDisplay}
+          infoSourate={memoizedInfoSourate}
+          onAudioFinished={selectedPart ? handleAudioFinished : undefined}
+        >
+          <div className="w-full md:text-5xl text-center font-quran text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-6 border-b border-gray-100 shadow flex items-center justify-center" style={{ minHeight: "5rem" }}>
+          <h1 className="absolute w-full flex items-center justify-center h-full">
+            <div className="w-fit max-w-3xl bg-white/90 shadow rounded-2xl px-8 py-2 flex items-center justify-center mx-auto" style={{height: '90%', minHeight: 0}}>
+              <span
+                className="text-9xl font-normal leading-normal text-gray-800 bg-clip-text "
+                style={{
+          
+                  textShadow: '0 2px 6px rgba(0,0,0,0.18)',
+                }}
+              >
+                {suraGlyphMap[String(infoSourate[0]) as keyof typeof suraGlyphMap]}
+              </span>
+            </div>
+          </h1>
+          </div>
+        </AudioVerseHighlighter>
       </div>
-				</AudioVerseHighlighter>
-			</div>
-		</div>
-	);
+    </div>
+  );
 }

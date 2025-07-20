@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html suppressHydrationWarning lang="fr">
       <head>
         <link rel="icon" href="/fingerprint.webp" type="image/webp" />
       </head>
