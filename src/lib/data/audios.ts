@@ -20,6 +20,54 @@ export const audiosTafsir = [
 		],
 	},
 	{
+		id: 72,
+		name_simple: "Al-Jinn",
+		parts: [
+			{
+				id: "al-jinn-1",
+				title: "Al-Jinn - Partie 1",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Jinn-part1.ogg",
+				timings: [
+					{ id: 1, startTime: 88.88, endTime: 185.12 },
+					{ id: 2, startTime: 185.12, endTime: 226.94 },
+					{ id: 3, startTime: 228.63, endTime: 272.29 },
+					{ id: 4, startTime: 273.1, endTime: 339.47 },
+					{ id: 5, startTime: 340.5, endTime: 408.62 },
+					{ id: 6, startTime: 412.5, endTime: 489.09 },
+					{ id: 7, startTime: 491.49, endTime: 619.38 },
+					{ id: 8, startTime: 619.8, endTime: 761.08 },
+					{ id: 9, startTime: 761.84, endTime: 829.12 },
+					{ id: 10, startTime: 829.34, endTime: 912.52 },
+					{ id: 11, startTime: 917.34, endTime: 968.82 },
+					{ id: 12, startTime: 973.15, endTime: 1018.65 },
+					{ id: 13, startTime: 1019.25, endTime: 1080.56 },
+					{ id: 14, startTime: 1081.99, endTime: 1149.19 },
+					{ id: 15, startTime: 1149.4, endTime: 1247.8 },
+				],
+			},
+			{
+				id: "al-jinn-2",
+				title: "Al-Jinn - Partie 2",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Jinn-part2.ogg",
+				timings: [
+					{ id: 16, startTime: 121.90, endTime: 191.10 },
+{ id: 17, startTime: 193.08, endTime: 284.01 },
+{ id: 18, startTime: 284.82, endTime: 347.88 },
+{ id: 19, startTime: 349.24, endTime: 449.23 },
+{ id: 20, startTime: 449.23, endTime: 524.84 },
+{ id: 21, startTime: 526.05, endTime: 575.55 },
+{ id: 22, startTime: 576.36, endTime: 619.51 },
+{ id: 23, startTime: 620.96, endTime: 766.41 },
+{ id: 24, startTime: 768.10, endTime: 867.08 },
+{ id: 25, startTime: 867.69, endTime: 907.32 },
+{ id: 26, startTime: 908.91, endTime: 926.47 },
+{ id: 27, startTime: 927.50, endTime: 1015.46 },
+{ id: 28, startTime: 1016.93, endTime: 1263.81 },
+				],
+			},
+		],
+	},
+	{
 		id: 73,
 		name_simple: "Al-Muzzammil",
 		parts: [
@@ -1363,4 +1411,5 @@ export const audiosTafsir = [
 			},
 		],
 	},
+	
 ];

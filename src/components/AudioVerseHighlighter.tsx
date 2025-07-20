@@ -283,7 +283,7 @@ const AudioVerseHighlighter = ({
       {/* Overlay pour verset long en cours de lecture */}
       {(() => {
         const currentVerse = verses.find(v => v.id === currentVerseId);
-        if (currentVerse && currentVerse.text.length > 120 && audioUrl) {
+        if (currentVerse && currentVerse.text.length > 140 && audioUrl) {
           return (
             <motion.div
               initial={{ opacity: 0, y: -30 }}
