@@ -50,7 +50,6 @@ export default function SouratePage() {
   // On le définit après le premier rendu via useEffect pour s'assurer que searchParams est prêt
   const [showOnlyWithAudio, setShowOnlyWithAudio] = useState<boolean>(true); // Valeur par défaut robuste
 
-  const [completedChapters, setCompletedChapters] = useState<Set<number>>(new Set());
   const [completedChaptersByPartId, setCompletedChaptersByPartId] = useState<Set<string>>(new Set());
   const [userId, setUserId] = useState<string | null>(null);
 
