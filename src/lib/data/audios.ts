@@ -152,8 +152,8 @@ export const audiosTafsir = [
 				title: "Nuh",
 				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Nuh.ogg",
 				timings: [
-					{ id: 62, startTime: 10.72, endTime: 102.4 },
-					{ id: 63, startTime: 104.97, endTime: 206.48 },
+					{ id: 1, startTime: 10.72, endTime: 102.4 },
+					{ id: 2, startTime: 104.97, endTime: 206.48 },
 					{ id: 3, startTime: 208.52, endTime: 268.57 },
 					{ id: 4, startTime: 268.98, endTime: 412.15 },
 					{ id: 5, startTime: 412.76, endTime: 450.05 },
