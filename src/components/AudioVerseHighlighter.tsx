@@ -57,10 +57,6 @@ const AudioVerseHighlighter = ({
 
   // Initialisation de WaveSurfer et gestion du chargement
   useEffect(() => {
-    console.log("AudioVerseHighlighter useEffect triggered", {
-      audioUrl,
-      versesLength: verses.length
-    });
     setHasFinished(false);
     // Détruire l’ancienne instance si elle existe
     if (wavesurferRef.current) {
@@ -78,13 +74,11 @@ const AudioVerseHighlighter = ({
     // Gérer le cas où audioUrl est vide (pas d'audio disponible)
     if (!audioUrl) {
       setIsLoading(false); // Pas de chargement si pas d'URL
-      console.log("AudioVerseHighlighter: setIsLoading(false)");
       return; // Ne pas tenter d'initialiser WaveSurfer
     }
 
     // Si une audioUrl est présente, on commence le chargement
     setIsLoading(true); // Démarre le spinner de chargement
-    console.log("AudioVerseHighlighter: setIsLoading(true)");
 
     if (!waveformRef.current) return;
 
@@ -106,7 +100,6 @@ const AudioVerseHighlighter = ({
         if (err.name !== "AbortError") {
           setAudioError(true);
           setIsLoading(false);
-          console.log("AudioVerseHighlighter: setIsLoading(false)");
         }
       });
 
@@ -114,7 +107,6 @@ const AudioVerseHighlighter = ({
       wavesurferRef.current = wavesurfer;
       setDuration(wavesurfer.getDuration());
       setIsLoading(false); // Arrête le spinner une fois prêt
-      console.log("AudioVerseHighlighter: setIsLoading(false)");
     });
 
     // Gérer les erreurs de chargement
@@ -128,7 +120,6 @@ const AudioVerseHighlighter = ({
       } else {
         setAudioError(true); // Indique une vraie erreur
         setIsLoading(false); // Arrête le spinner en cas d'erreur
-        console.log("AudioVerseHighlighter: setIsLoading(false)");
         setIsPlaying(false); // S'assurer que la lecture est arrêtée
       }
     });
@@ -156,7 +147,6 @@ const AudioVerseHighlighter = ({
     wavesurfer.on("play", () => setIsPlaying(true));
     wavesurfer.on("pause", () => setIsPlaying(false));
     wavesurfer.on("finish", () => {
-      console.log("AudioVerseHighlighter: finish event triggered");
       if (!hasFinished) {
         setHasFinished(true);
         setIsPlaying(false);
@@ -283,32 +273,37 @@ const AudioVerseHighlighter = ({
       {/* Overlay pour verset long en cours de lecture */}
       {(() => {
         const currentVerse = verses.find(v => v.id === currentVerseId);
-        if (currentVerse && currentVerse.text.length > 140 && audioUrl) {
+        if (currentVerse && currentVerse.text.length > 250 && audioUrl) {
           return (
-            <motion.div
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ type: "spring", stiffness: 100, damping: 10 }}
-              className="fixed top-36 left-0 w-full z-[100] flex justify-center pointer-events-none"
-              style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
-            >
-              <div
-                className="bg-yellow-50 rounded-lg shadow-lg border border-yellow-400 px-4 py-3 max-w-2xl w-full mx-2 flex flex-col items-end animate-fade-in"
-                style={{ direction: "rtl" }}
+            <>
+              {/* BACKDROP FLUO */}
+              <div className="fixed inset-0 z-[90] bg-black/10 backdrop-blur-[3px] pointer-events-none" />
+              {/* OVERLAY */}
+              <motion.div
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ type: "spring", stiffness: 100, damping: 10 }}
+                className="fixed top-36 left-0 w-full z-[100] flex justify-center pointer-events-none"
+                style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
               >
-                <div className="text-gray-800 text-2xl md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1">
-                  <span>{currentVerse.text}</span>
-                  <span className="text-3xl">{toArabicNumerals(currentVerse.id)}</span>
+                <div
+                  className="bg-yellow-50 rounded-lg shadow-lg border border-yellow-400 px-4 py-3 max-w-2xl w-full mx-2 flex flex-col items-end animate-fade-in"
+                  style={{ direction: "rtl" }}
+                >
+                  <div className="text-gray-800 text-2xl md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1">
+                    <span>{currentVerse.text}</span>
+                    <span className="text-3xl">{toArabicNumerals(currentVerse.id)}</span>
+                  </div>
+                  <p className="text-gray-500 text-md mt-[-8px] self-end font-medium">
+                    {currentVerse.transliteration}
+                  </p>
+                  <p className="text-gray-700 self-start">
+                    {currentVerse.id}. {currentVerse.translation}
+                  </p>
                 </div>
-                <p className="text-gray-500 text-md mt-[-8px] self-end font-medium">
-                  {currentVerse.transliteration}
-                </p>
-                <p className="text-gray-700 self-start">
-                  {currentVerse.id}. {currentVerse.translation}
-                </p>
-              </div>
-            </motion.div>
+              </motion.div>
+            </>
           );
         }
         return null;

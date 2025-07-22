@@ -4,6 +4,13 @@
 import { auth, db } from '@/lib/firebase';
 
 import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -43,9 +50,7 @@ export default function SourateInteractiveContent({
   chapterId, // Récupère la prop chapterId
 }: SourateInteractiveContentProps) {
   // Logs pour le débogage
-  console.log("SourateInteractiveContent: Composant monté et rendu.");
-  console.log("SourateInteractiveContent: Vérification des instances Firebase importées - auth:", !!auth, "db:", !!db);
-  console.log("SourateInteractiveContent: NEXT_PUBLIC_FIREBASE_PROJECT_ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+  // console.log("SourateInteractiveContent: NEXT_PUBLIC_FIREBASE_PROJECT_ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
 
 
   const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
@@ -56,6 +61,7 @@ export default function SourateInteractiveContent({
 
   const [completedPartIds, setCompletedPartIds] = useState<Set<string>>(new Set());
   
+  const buttonRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
   
   // Etats pour la gestion du swipe
   const touchStartX = useRef(0);
@@ -75,6 +81,19 @@ export default function SourateInteractiveContent({
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [selectedPart]); // Déclanché à chaque fois que selectedPart change
+
+  useEffect(() => {
+    if (selectedPart) {
+      const button = buttonRefs.current.get(selectedPart.id);
+      if (button) {
+        button.scrollIntoView({
+          behavior: 'smooth',
+          inline: 'center',
+          block: 'nearest',
+        });
+      }
+    }
+  }, [selectedPart]);
 
   // useEffect: Gère l'authentification et récupère l'ID utilisateur
   useEffect(() => {
@@ -130,7 +149,6 @@ export default function SourateInteractiveContent({
         }
       });
       setCompletedPartIds(newCompletedPartIds);
-      console.log("Progression mise à jour", Array.from(newCompletedPartIds));
     }, (error: Error) => {
       console.error("SourateInteractiveContent: ERREUR d'écoute de la progression Firestore:", error);
     });
@@ -268,7 +286,7 @@ export default function SourateInteractiveContent({
     );
   }
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto ">
       {/* Barre de sélection des parties audio AVEC les flèches */}
       {/* Cette section n'est rendue que s'il y a plus d'une partie audio disponible */}
       {audioParts.length > 1 && (
@@ -286,7 +304,7 @@ export default function SourateInteractiveContent({
           {/* Flèche Gauche */}
           <motion.button
             onClick={goToPreviousPart}
-            disabled={!canGoPrevious} // Désactive si on ne peut pas aller en arrière
+            disabled={!canGoPrevious}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             className={`p-2 rounded-full transition-colors duration-200 ${
@@ -311,60 +329,44 @@ export default function SourateInteractiveContent({
             </svg>
           </motion.button>
 
-          {/* Boutons de sélection de partie pour Desktop */}
-          <div className="hidden md:flex flex-wrap gap-2 justify-center flex-grow">
-            <span className="text-gray-700 font-medium self-center">
-              Parties Tafsir :
-            </span>
-            {audioParts.map((part) => (
-              <motion.button
-                key={part.id}
-                onClick={() => setSelectedPart(part)}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-                  selectedPart?.id === part.id
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-                }`}
-              >
-                {part.title || `Partie ${audioParts.indexOf(part) + 1}`}
-                {/* Indicateur de complétion pour les parties */}
-                {completedPartIds.has(part.id) && (
-                  <span className="ml-2 text-green-300">✓</span>
-                )}
-              </motion.button>
-            ))}
-          </div>
-
-          {/* Dropdown de sélection de partie pour Mobile */}
-          <div className="flex flex-grow md:hidden items-center justify-center gap-2">
-            <label htmlFor="part-select" className="sr-only">
-              Sélectionner une partie
-            </label>
-            <select
-              id="part-select"
+          {/* Select universel (desktop et mobile) */}
+          <div className="flex flex-grow items-center justify-center gap-2 w-full">
+            <Select
               value={selectedPart?.id || ""}
-              onChange={(e) => {
-                const selectedId = e.target.value;
-                const part = audioParts.find((p) => p.id === selectedId);
+              onValueChange={(value) => {
+                const part = audioParts.find((p) => p.id === value);
                 if (part) setSelectedPart(part);
               }}
-              className="block w-full max-w-[200px] px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
-              {audioParts.map((part, index) => (
-                <option key={part.id} value={part.id}>
-                  {part.title || `Partie ${index + 1}`}
-                  {completedPartIds.has(part.id) ? ' ✓' : ''}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full max-w-[260px]">
+                <SelectValue placeholder="Sélectionner une partie" />
+              </SelectTrigger>
+              <SelectContent className='font-sans'>
+                {audioParts.map((part, index) => (
+                  <SelectItem key={part.id} value={part.id}>
+                    <span className="flex items-center gap-2">
+                      {part.title || `Partie ${index + 1}`}
+                      {completedPartIds.has(part.id) && (
+                        <span
+                      className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-green-500 border-2 border-white shadow z-10"
+                      title="Sourate complétée"
+                    >
+                      <svg width="5" height="85" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 10.5L8.5 14L15 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                      )}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Flèche Droite */}
           <motion.button
             onClick={goToNextPart}
-            disabled={!canGoNext} // Désactive si on ne peut pas aller en avant
+            disabled={!canGoNext}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             className={`p-2 rounded-full transition-colors duration-200 ${
@@ -398,7 +400,34 @@ export default function SourateInteractiveContent({
           Vérifiez votre configuration Firebase et vos règles de sécurité.
         </div>
       )}
-
+      {/* Affichage de la pastille de complétion pour la partie sélectionnée */}
+      {selectedPart && (
+        <div className="flex justify-center mb-4">
+          <span
+        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+          completedPartIds.has(selectedPart.id)
+            ? "bg-green-100 text-green-800"
+            : "bg-gray-200 text-gray-600"
+        }`}
+          >
+        {completedPartIds.has(selectedPart.id) ? (
+          <>
+            <svg className="w-4 h-4 mr-1 text-green-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Partie complétée
+          </>
+        ) : (
+          <>
+            <svg className="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
+            </svg>
+            Partie non complétée
+          </>
+        )}
+          </span>
+        </div>
+      )}
 
       {/* Le composant AudioVerseHighlighter est TOUJOURS rendu */}
       <div className="container mx-auto"

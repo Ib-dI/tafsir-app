@@ -25,5 +25,5 @@ const db = getFirestore(app);
 // Exporte les instances pour qu'elles puissent être importées et utilisées ailleurs
 export { app, auth, db };
 
-console.log("Firebase initialized in src/lib/firebase.ts");
-console.log("Firebase Config (from .env.local):", firebaseConfig.projectId); // Log pour vérifier le projectId
+// console.log("Firebase initialized in src/lib/firebase.ts");
+// console.log("Firebase Config (from .env.local):", firebaseConfig.projectId); // Log pour vérifier le projectId
