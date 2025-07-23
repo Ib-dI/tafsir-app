@@ -90,7 +90,7 @@ const AudioVerseHighlighter = ({
       barWidth: 2,
       barRadius: 3,
       cursorWidth: 1,
-      height: 80,
+      height: 60,
       barGap: 2,
       // responsive: true,
     });
