@@ -270,6 +270,7 @@ const AudioVerseHighlighter = ({
       className="flex flex-col w-full max-w-4xl mx-auto p-2 sm:p-4 bg-white rounded-lg shadow"
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
+      
       {/* Overlay pour verset long en cours de lecture */}
       {(() => {
         const currentVerse = verses.find(v => v.id === currentVerseId);
@@ -388,10 +389,11 @@ const AudioVerseHighlighter = ({
       {/* Liste des versets + titre sticky */}
       <div
         ref={versesRef}
-        className="overflow-y-auto p-2 border border-gray-200 rounded-lg mt-4 flex-1"
+        className="overflow-y-auto relative p-2 border border-gray-200 rounded-lg mt-4 flex-1"
         style={{ minHeight: 0 }}
       >
         {children}
+        
         {verses.map((verse: Verse) => (
           <div
             key={verse.id}

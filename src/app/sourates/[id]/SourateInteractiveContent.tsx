@@ -430,7 +430,7 @@ export default function SourateInteractiveContent({
       )}
 
       {/* Le composant AudioVerseHighlighter est TOUJOURS rendu */}
-      <div className="container mx-auto"
+      <div className="container mx-auto "
       onTouchStart={handleTouchStart} // Ecoute les événements tactiles
       onTouchMove={handleTouchMove} // Met à jour la position du doigt
       onTouchEnd={handleTouchEnd} // Gère la fin du swipe
@@ -442,8 +442,9 @@ export default function SourateInteractiveContent({
           infoSourate={memoizedInfoSourate}
           onAudioFinished={selectedPart ? handleAudioFinished : undefined}
         >
-          <div className="w-full md:text-5xl text-center font-quran text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-6 border-b border-gray-100 shadow flex items-center justify-center" style={{ minHeight: "5rem" }}>
-          <h1 className="absolute w-full flex items-center justify-center h-full">
+          
+          <div className=" w-full md:text-5xl text-center  text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-6 border-b border-gray-100 shadow flex items-center justify-center" style={{ minHeight: "5rem" }}>
+          <h1 className=" font-quran absolute w-full flex items-center justify-center h-full">
             <div className="w-fit max-w-3xl bg-white/90 shadow rounded-2xl px-8 py-2 flex items-center justify-center mx-auto" style={{height: '90%', minHeight: 0}}>
               <span
                 className="text-9xl font-normal leading-normal text-gray-800 bg-clip-text "
