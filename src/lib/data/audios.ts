@@ -144,6 +144,42 @@ export const audiosTafsir = [
 	// 	],
 	// },
 	{
+		id: 61,
+		name_simple: "As-Saff",
+		parts: [
+			{
+				id: "as-saff-1",
+				title: "As-Saff - Partie 1",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/As-Saff-part1.ogg",
+				timings: [
+					{ id: 1, startTime: 58.83, endTime: 140.52 },
+					{ id: 2, startTime: 140.52, endTime: 307.61 },
+					{ id: 3, startTime: 307.61, endTime: 456.56 },
+					{ id: 4, startTime: 456.56, endTime: 578.33 },
+					{ id: 5, startTime: 578.33, endTime: 756.56 },
+					{ id: 6, startTime: 756.56, endTime: 1093.84 },
+					{ id: 7, startTime: 1093.84, endTime: 1141.41 },
+					{ id: 8, startTime: 1141.41, endTime: 1200.35 },
+					{ id: 9, startTime: 1200.35, endTime: 1250.18 },
+					{ id: 10, startTime: 1251.2, endTime: 1295.3 },
+				],
+			},
+			{
+				id: "as-saff-2",
+				title: "As-Saff - Partie 2",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/As-Saff-part2.ogg",
+				timings: [
+					{ id: 10, startTime: 8.74, endTime: 46.21 },
+					{ id: 11, startTime: 46.21, endTime: 141.34 },
+					{ id: 12, startTime: 141.59, endTime: 244.82 },
+					{ id: 13, startTime: 244.82, endTime: 376.44 },
+					{ id: 14, startTime: 377.91, endTime: 703.62 },
+				],
+			},
+		],
+	},
+
+	{
 		id: 62,
 		name_simple: "Al-Jumu'ah",
 		parts: [
