@@ -144,6 +144,30 @@ export const audiosTafsir = [
 	// 	],
 	// },
 	{
+		id: 63,
+		name_simple: "Al-Munafiqun",
+		parts: [
+			{
+				id: "al-munafiqun-1",
+				title: "Al-Munafiqun",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Munafiqun-clean.ogg",
+				timings: [
+					{ id: 1, startTime: 4.39, endTime: 142.16 },
+					{ id: 2, startTime: 142.16, endTime: 389.79 },
+					{ id: 3, startTime: 389.79, endTime: 472.76 },
+					{ id: 4, startTime: 472.76, endTime: 795.08 },
+					{ id: 5, startTime: 797.69, endTime: 933.58 },
+					{ id: 6, startTime: 934.26, endTime: 1041.35 },
+					{ id: 7, startTime: 1041.79, endTime: 1201.44 },
+					{ id: 8, startTime: 1201.44, endTime: 1275.93 },
+					{ id: 9, startTime: 1276.52, endTime: 1385.71 },
+					{ id: 10, startTime: 1386.54, endTime: 1516.54 },
+					{ id: 11, startTime: 1517.0, endTime: 1614.69 },
+				],
+			},
+		],
+	},
+	{
 		id: 64,
 		name_simple: "At-Taghabun",
 		parts: [
