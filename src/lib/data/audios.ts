@@ -144,6 +144,123 @@ export const audiosTafsir = [
 	// 	],
 	// },
 	{
+		id: 64,
+		name_simple: "At-Taghabun",
+		parts: [
+			{
+				id: "at-taghabun-1",
+				title: "At-Taghabun - Partie 1",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Taghabun-part1.ogg",
+				timings: [
+					{ id: 13, startTime: 41.24, endTime: 193.4 },
+					{ id: 2, startTime: 194.15, endTime: 272.84 },
+					{ id: 3, startTime: 272.93, endTime: 448.9 },
+					{ id: 4, startTime: 449.47, endTime: 544.03 },
+					{ id: 5, startTime: 544.44, endTime: 641.38 },
+					{ id: 6, startTime: 641.38, endTime: 899.54 },
+					{ id: 7, startTime: 908.9, endTime: 1017.33 },
+					{ id: 8, startTime: 1017.49, endTime: 1068.2 },
+					{ id: 9, startTime: 1068.2, endTime: 1450.66 },
+				],
+			},
+			{
+				id: "at-taghabun-2",
+				title: "At-Taghabun - Partie 2",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Taghabun-part2.ogg",
+				timings: [
+					{ id: 10, startTime: 55.77, endTime: 122.74 },
+					{ id: 11, startTime: 124.36, endTime: 264.01 },
+					{ id: 12, startTime: 300.4, endTime: 434.86 },
+					{ id: 13, startTime: 434.86, endTime: 460.03 },
+					{ id: 14, startTime: 460.03, endTime: 764.7 },
+					{ id: 15, startTime: 764.7, endTime: 852.83 },
+					{ id: 16, startTime: 854.18, endTime: 1065.5 },
+					{ id: 17, startTime: 1065.5, endTime: 1186.11 },
+					{ id: 18, startTime: 1186.11, endTime: 1282.23 },
+				],
+			},
+		],
+	},
+	{
+		id: 65,
+		name_simple: "At-Talaq",
+		parts: [
+			{
+				id: "at-talaq-1",
+				title: "At-Talaq - Partie 1",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Talaq-part1.ogg",
+				timings: [
+					{ id: 1, startTime: 196.38, endTime: 684.1 },
+					{ id: 2, startTime: 684.29, endTime: 1030.47 },
+					{ id: 3, startTime: 1030.47, endTime: 1290.18 },
+				],
+			},
+			{
+				id: "at-talaq-2",
+				title: "At-Talaq - Partie 2",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Talaq-part2.ogg",
+				timings: [
+					{ id: 4, startTime: 49.52, endTime: 201.74 },
+					{ id: 5, startTime: 201.74, endTime: 307.86 },
+					{ id: 6, startTime: 308.02, endTime: 846.22 },
+				],
+			},
+			{
+				id: "at-talaq-3",
+				title: "At-Talaq - Partie 3",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Talaq-part3.ogg",
+				timings: [
+					{ id: 7, startTime: 41.18, endTime: 220.24 },
+					{ id: 8, startTime: 220.24, endTime: 313.95 },
+					{ id: 9, startTime: 313.95, endTime: 342.68 },
+					{ id: 10, startTime: 342.68, endTime: 457.09 },
+					{ id: 11, startTime: 457.94, endTime: 671.63 },
+					{ id: 12, startTime: 671.63, endTime: 821.14 },
+				],
+			},
+		],
+	},
+	{
+		id: 66,
+		name_simple: "At-Tahrim",
+		parts: [
+			{
+				id: "at-tahrim-1",
+				title: "At-Tahrim - Partie 1",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tahrim-part1.ogg",
+				timings: [
+					{ id: 1, startTime: 6.06, endTime: 69.59 },
+					{ id: 2, startTime: 76.46, endTime: 226.31 },
+					{ id: 3, startTime: 228.7, endTime: 378.05 },
+					{ id: 4, startTime: 379.87, endTime: 759.45 },
+					{ id: 5, startTime: 762.84, endTime: 1095.54 },
+				],
+			},
+			{
+				id: "at-tahrim-2",
+				title: "At-Tahrim - Partie 2",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tahrim-part2.ogg",
+				timings: [
+					{ id: 6, startTime: 57.27, endTime: 473.21 },
+					{ id: 7, startTime: 479.81, endTime: 573.67 },
+					{ id: 8, startTime: 575.62, endTime: 1083.96 },
+				],
+			},
+			{
+				id: "at-tahrim-3",
+				title: "At-Tahrim - Partie 3",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tahrim-part3-fixed.ogg",
+				timings: [
+					{ id: 9, startTime: 74.17, endTime: 218.69 },
+					{ id: 10, startTime: 218.69, endTime: 506.41 },
+					{ id: 11, startTime: 506.41, endTime: 673.1 },
+					{ id: 12, startTime: 673.1, endTime: 995.02 },
+				],
+			},
+		],
+	},
+
+	{
 		id: 67,
 		name_simple: "Al-Mulk",
 		parts: [
