@@ -144,6 +144,31 @@ export const audiosTafsir = [
 	// 	],
 	// },
 	{
+		id: 62,
+		name_simple: "Al-Jumu'ah",
+		parts: [
+			{
+				id: "al-jumuah-1",
+				title: "Al-Jumu'ah - Partie 1",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Jumuah.ogg",
+				timings: [
+					{ id: 1, startTime: 67.13, endTime: 143.63 },
+					{ id: 2, startTime: 143.63, endTime: 374.32 },
+					{ id: 3, startTime: 374.32, endTime: 447.88 },
+					{ id: 4, startTime: 447.88, endTime: 544.08 },
+					{ id: 5, startTime: 546.57, endTime: 757.44 },
+					{ id: 6, startTime: 757.44, endTime: 889.73 },
+					{ id: 7, startTime: 889.94, endTime: 996.1 },
+					{ id: 8, startTime: 996.1, endTime: 1091.07 },
+					{ id: 9, startTime: 1091.23, endTime: 1253.48 },
+					{ id: 10, startTime: 1253.48, endTime: 1396.9 },
+					{ id: 11, startTime: 1396.9, endTime: 1571.64 },
+				],
+			},
+		],
+	},
+
+	{
 		id: 63,
 		name_simple: "Al-Munafiqun",
 		parts: [
