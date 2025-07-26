@@ -202,12 +202,12 @@ export const audiosTafsir = [
 					{ id: 102, startTime: 626.63, endTime: 935.91 },
 				],
 			},
-			{
-				id: "al-baqarah-12",
-				title: "Al-Baqarah - Partie 12",
-				url: "",
-				timings: [],
-			},
+			// {
+			// 	id: "al-baqarah-12",
+			// 	title: "Al-Baqarah - Partie 12",
+			// 	url: "",
+			// 	timings: [],
+			// },
 		],
 	},
 	{
