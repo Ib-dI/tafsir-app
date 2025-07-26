@@ -71,10 +71,10 @@ export default function SourateInteractiveContent({
 
 	const buttonRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
 
-	// Etats pour la gestion du swipe
-	const touchStartX = useRef(0);
-	const touchEndX = useRef(0);
-	const swipeThreshold = 50; // Distance minimale pour considérer un swipe (en pixels)
+	// // Etats pour la gestion du swipe
+	// const touchStartX = useRef(0);
+	// const touchEndX = useRef(0);
+	// const swipeThreshold = 50; // Distance minimale pour considérer un swipe (en pixels)
 
 	// Initialise selectedPart lorsque le composant est monté ou que les parties audio changent
 	useEffect(() => {
