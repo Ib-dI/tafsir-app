@@ -19,7 +19,7 @@ export default async function Sourate({ params}: SouratePageProps) {
 
   const data = await getSimpleChapterVerses(id); // Récupère tous les versets
   const verses = data?.verses || [];
-  const infoSourate = data ? [data.id, data.transliteration] : [0, ""];
+  const infoSourate = data ? [data.id, data.transliteration, data.translation] : [0, ""];
 
   // Trouve toutes les données audio pour cette sourate
   const currentAudioTafsir = audiosTafsir.find((a) => a.id === chapterId);

@@ -267,14 +267,14 @@ const AudioVerseHighlighter = ({
 
   return (
     <div
-      className="flex flex-col w-full max-w-4xl mx-auto p-2 sm:p-4 bg-white rounded-lg shadow"
+      className="flex flex-col w-full max-w-4xl mx-auto p-2 sm:p-4 bg-white rounded-lg shadow relative overflow-visible"
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
       
       {/* Overlay pour verset long en cours de lecture */}
       {(() => {
         const currentVerse = verses.find(v => v.id === currentVerseId);
-        if (currentVerse && currentVerse.text.length > 250 && audioUrl) {
+        if (currentVerse && currentVerse.text.length > 175 && audioUrl) {
           return (
             <>
               {/* BACKDROP FLUO */}
@@ -285,7 +285,7 @@ const AudioVerseHighlighter = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
                 transition={{ type: "spring", stiffness: 100, damping: 10 }}
-                className="fixed top-36 left-0 w-full z-[100] flex justify-center pointer-events-none"
+                className="fixed top-[130px] left-0 w-full z-[100] flex justify-center pointer-events-none overflow-y-auto"
                 style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
               >
                 <div
@@ -296,10 +296,16 @@ const AudioVerseHighlighter = ({
                     <span>{currentVerse.text}</span>
                     <span className="text-3xl">{toArabicNumerals(currentVerse.id)}</span>
                   </div>
-                  <p className="text-gray-500 text-md mt-[-8px] self-end font-medium">
+                  <p
+                  className="text-gray-500 text-md mt-[-8px] self-end font-medium"
+                    style={{ direction: "ltr" }}
+                  >
                     {currentVerse.transliteration}
                   </p>
-                  <p className="text-gray-700 self-start">
+                  <p
+                  className="text-gray-700 self-start"
+                    style={{ direction: "ltr" }}
+                    >
                     {currentVerse.id}. {currentVerse.translation}
                   </p>
                 </div>
@@ -310,7 +316,7 @@ const AudioVerseHighlighter = ({
         return null;
       })()}
       {/* Waveform et contrôles ou message d'audio non disponible */}
-      <div className="relative flex flex-col gap-3 flex-shrink-0 mt-6">
+      <div className="relative flex flex-col flex-shrink-0 mt-6">
         {/* Le conteneur du waveform */}
         {audioUrl && (<div
           ref={waveformRef}
@@ -355,7 +361,7 @@ const AudioVerseHighlighter = ({
 							{infoSourate[0]} {infoSourate[1]}
 						</div>
 
-						<div className="flex items-center gap-4">
+						<div className="flex items-center gap-2">
 							<div className="font-mono text-xs md:text-sm text-gray-600 whitespace-nowrap">
 								{formatTime(currentTime)} / {formatTime(duration)}
 							</div>
@@ -384,12 +390,26 @@ const AudioVerseHighlighter = ({
             </div>
           </motion.div>
         )}
+        {/* Carte de traduction AU-DESSUS VISUELLEMENT */}
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{
+      type: "spring",
+      stiffness: 140,
+      damping: 10,
+      delay: 0.4,
+    }}
+    className="absolute text-red-800 -bottom-7 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 rounded-sm shadow uppercase bg-yellow-50/40 z-10 text-sm font-medium pointer-events-none"
+  >
+    {infoSourate[2]}
+  </motion.div>
       </div>
 
-      {/* Liste des versets + titre sticky */}
+      {/* Liste des versets */}
       <div
         ref={versesRef}
-        className="overflow-y-auto relative p-2 border border-gray-200 rounded-lg mt-4 flex-1"
+        className="overflow-y-auto z-20 relative p-2 border border-gray-200 rounded-lg mt-5 flex-1"
         style={{ minHeight: 0 }}
       >
         {children}
@@ -484,7 +504,7 @@ const SpeedControl = ({
         x{playbackRate}
       </button>
       {isOpen && (
-        <div className="absolute right-0  mb-2 bg-white shadow-lg rounded-md p-1 z-50">
+        <div className="absolute right-0 mb-2 bg-white shadow-lg rounded-md p-1 z-50">
           {speeds.map((speed) => (
             <button
               key={speed}
