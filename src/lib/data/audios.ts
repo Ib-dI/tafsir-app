@@ -252,7 +252,7 @@ export const audiosTafsir = [
 			{
 				id: "al-imran-4",
 				title: "Al-Imran - Partie 4",
-				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ali'Imran-part4.ogg",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ali'Imran-part4-fixed.ogg",
 				timings: [
 					{ id: 14, startTime: 40.87, endTime: 298.05 },
 					{ id: 15, startTime: 298.05, endTime: 631.61 },
