@@ -199,7 +199,8 @@ export const audiosTafsir = [
 					{ id: 99, startTime: 467.66, endTime: 509.83 },
 					{ id: 100, startTime: 509.83, endTime: 556.28 },
 					{ id: 101, startTime: 556.28, endTime: 626.63 },
-					{ id: 102, startTime: 626.63, endTime: 935.91 },
+					{ id: 102, startTime: 626.63, endTime: 852.99 },
+					{ id: 103, startTime: 852.99, endTime: 935.91 },
 				],
 			},
 			// {
@@ -227,18 +228,27 @@ export const audiosTafsir = [
 					{ id: 6, startTime: 944.39, endTime: 1170.23 },
 				],
 			},
-			// {
-			// 	id: "al-imran-2",
-			// 	title: "Al-Imran - Partie 2",
-			// 	url: "",
-			// 	timings: [],
-			// },
-			// {
-			// 	id: "al-imran-3",
-			// 	title: "Al-Imran - Partie 3",
-			// 	url: "",
-			// 	timings: [],
-			// },
+			{
+				id: "al-imran-2",
+				title: "Al-Imran - Partie 2",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ali'Imran-part2.ogg",
+				timings: [
+			{ id: 7, startTime: 41.12, endTime: 521.51 },
+			{ id: 8, startTime: 524.57, endTime: 571.51 },
+			{ id: 9, startTime: 571.51, endTime: 664.82 },
+			],
+			},
+			{
+				id: "al-imran-3",
+				title: "Al-Imran - Partie 3",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ali'Imran-part3.ogg",
+				timings: [
+			{ id: 10, startTime: 82.54, endTime: 202.76 },
+			{ id: 11, startTime: 202.86, endTime: 362.34 },
+			{ id: 12, startTime: 362.42, endTime: 414.1 },
+			{ id: 13, startTime: 414.1, endTime: 851.56 },
+			],
+			},
 			// {
 			// 	id: "al-imran-4",
 			// 	title: "Al-Imran - Partie 4",
