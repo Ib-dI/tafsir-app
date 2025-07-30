@@ -214,7 +214,7 @@ export default function SouratePage() {
 
   return (
     <div className="container w-full mx-auto p-4 bg-white shadow-lg rounded-lg mt-8">
-      <h1 className="text-5xl font-bold text-center mb-6 text-gray-800">Chapitres du Coran</h1>
+      <h1 className="text-4xl md:text-5xl text-balance font-bold text-center mb-6 text-gray-800">Chapitres du Coran</h1>
 
       <motion.div
         className="mb-4"
