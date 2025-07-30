@@ -21,7 +21,7 @@ type AudioVerseHighlighterProps = {
 	infoSourate: string[];
 	children?: ReactNode;
 	onAudioFinished?: () => void;
-  // remainingVerses?: Verse[]; // Nouvel prop pour les versets restants
+	// remainingVerses?: Verse[]; // Nouvel prop pour les versets restants
 };
 
 const toArabicNumerals = (n: number): string => {
@@ -302,12 +302,12 @@ const AudioVerseHighlighter = ({
 											{toArabicNumerals(currentVerse.id)}
 										</span>
 									</div>
-									<p
+									{currentVerse.transliteration.length < 500 && <p
 										className="text-gray-500 text-md mt-[-8px] self-end font-medium"
 										style={{ direction: "ltr" }}
 									>
 										{currentVerse.transliteration}
-									</p>
+									</p>}
 									<p
 										className="text-gray-700 self-start"
 										style={{ direction: "ltr" }}

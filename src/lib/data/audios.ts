@@ -801,7 +801,6 @@ export const audiosTafsir = [
 			// },
 		],
 	},
-
 	{
 		id: 32,
 		name_simple: "As-Sajda",
@@ -850,6 +849,39 @@ export const audiosTafsir = [
 					{ id: 30, startTime: 1094.73, endTime: 1136.65 },
 				],
 			},
+		],
+	},
+	{
+		id: 60,
+		name_simple: "Al-Mumtahana",
+		parts: [
+			{
+				id: "al-mumtahana-1",
+				title: "Al-Mumtahana - Partie 1",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Mumtahanah-part1.ogg",
+				timings: [
+					{ id: 1, startTime: 303.97, endTime: 592.80 },
+					{ id: 2, startTime: 592.80, endTime: 741.74 },
+					{ id: 3, startTime: 741.74, endTime: 812.45 },
+					{ id: 4, startTime: 812.45, endTime: 1113.95 },
+					{ id: 5, startTime: 1113.95, endTime: 1186.75 },
+					{ id: 6, startTime: 1186.75, endTime: 1254.33 },
+				],
+			},
+			// {
+			// 	id: "al-mumtahana-2",
+			// 	title: "Al-Mumtahana - Partie 2",
+			// 	url: "",
+			// 	timings: [
+			// 		{ id: 7, startTime: 66.39, endTime: 177.06 },
+			// 		{ id: 8, startTime: 177.06, endTime: 296.86 },
+			// 		{ id: 9, startTime: 299.63, endTime: 419.53 },
+			// 		{ id: 10, startTime: 419.53, endTime: 859.39 },
+			// 		{ id: 11, startTime: 859.39, endTime: 1013.78 },
+			// 		{ id: 12, startTime: 1013.78, endTime: 1188.89 },
+			// 		{ id: 13, startTime: 1190.04, endTime: 1355.23 },
+			// 	],
+			// },
 		],
 	},
 
