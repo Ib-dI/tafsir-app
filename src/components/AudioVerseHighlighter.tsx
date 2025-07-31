@@ -289,21 +289,21 @@ const AudioVerseHighlighter = ({
 								animate={{ opacity: 1, y: 0 }}
 								exit={{ opacity: 0, y: -30 }}
 								transition={{ type: "spring", stiffness: 100, damping: 10 }}
-								className="fixed top-[130px] left-0 w-full z-[100] flex justify-center pointer-events-none overflow-y-auto"
+								className="fixed top-[50px] md:top-[265px] left-0 w-full z-[100] flex justify-center pointer-events-none overflow-y-auto"
 								style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
 							>
 								<div
 									className="bg-yellow-50 rounded-lg shadow-lg border border-yellow-400 px-4 py-3 max-w-2xl w-full mx-2 flex flex-col items-end animate-fade-in"
 									style={{ direction: "rtl" }}
 								>
-									<div className="text-gray-800 text-2xl md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1">
+									<div className="text-gray-800 text-[22px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1">
 										<span>{currentVerse.text}</span>
 										<span className="text-3xl">
 											{toArabicNumerals(currentVerse.id)}
 										</span>
 									</div>
-									{currentVerse.transliteration.length < 500 && <p
-										className="text-gray-500 text-md mt-[-8px] self-end font-medium"
+									{currentVerse.transliteration.length < 350 && <p
+										className="text-gray-500 text-md mt-[-5px] self-end font-medium"
 										style={{ direction: "ltr" }}
 									>
 										{currentVerse.transliteration}
