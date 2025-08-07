@@ -321,7 +321,7 @@ export default function SouratePage() {
                     <div className="flex flex-col flex-grow min-w-0">
                       <div className="flex items-center gap-2">
                         <strong className={`text-md truncate ${isFullyCompleted ? 'text-emerald-800' : 'text-gray-800'}`}>{chapter.transliteration}</strong>
-                        <span className={`text-md font-uthmanic truncate ${isFullyCompleted ? 'text-emerald-600' : ''}`}>{chapter.name}</span>
+                        <span className={`text-xl font-sura truncate -mt-1 ${isFullyCompleted ? 'text-emerald-600' : ''}`}>{`surah${chapter.id < 10 ? "00": chapter.id < 100 ? "0" : ''}${chapter.id}`}</span>
                       </div>
                       <p className={`text-sm truncate ${isFullyCompleted ? 'text-emerald-800' : 'text-gray-700'}`}> 
                         <span className="font-semibold truncate overflow-hidden whitespace-nowrap inline-block align-bottom max-w-[110px]">

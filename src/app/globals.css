@@ -6,16 +6,11 @@
 }
 @font-face {
   font-family: 'Surah';
-  src: url('/fonts/sura_names.woff2') format('woff2');
+  src: url('/fonts/surah-name-v4.ttf') format('truetype');
   font-weight: 400;
   font-display: swap;
 }
-@font-face {
-  font-family: 'Tajwid';
-  src: url('/fonts/p440.woff2') format('woff2');
-  font-weight: 400;
-  font-display: swap;
-}
+
 @font-face {
   font-family: 'QuranKarim114';
   src: url('/fonts/Quran_karim_114.ttf') format('truetype');
@@ -31,7 +26,6 @@
 
   --font-uthmanic: Uthmanic;
   --font-sura: Surah;
-  --font-tajwid: Tajwid;
   --font-quran: QuranKarim114;
 }
 

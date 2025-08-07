@@ -1032,6 +1032,51 @@ export const audiosTafsir = [
 		],
 	},
 	{
+		id: 59,
+		name_simple: "Al-Hashr",
+		parts: [
+			{
+				id: "al-hashr-1",
+				title: "Al-Hashr - Partie 1",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Hashr-part1.ogg",
+				timings: [
+					{ id: 1, startTime: 35.88, endTime: 397.9 },
+					{ id: 2, startTime: 397.9, endTime: 621.11 },
+					{ id: 3, startTime: 621.11, endTime: 681.08 },
+					{ id: 4, startTime: 681.08, endTime: 753.16 },
+					{ id: 5, startTime: 753.16, endTime: 865.83 },
+					{ id: 6, startTime: 865.83, endTime: 972.08 },
+					{ id: 7, startTime: 972.08, endTime: 1284.14 },
+					{ id: 8, startTime: 1284.14, endTime: 1373.38 },
+					{ id: 9, startTime: 1373.38, endTime: 1455.41 },
+					{ id: 10, startTime: 1455.41, endTime: 1676.88 },
+				],
+			},
+			{
+				id: "al-hashr-2",
+				title: "Al-Hashr - Partie 2",
+				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Hashr-part2.ogg",
+				timings: [
+					{ id: 11, startTime: 63.41, endTime: 231.8 },
+					{ id: 12, startTime: 231.8, endTime: 376.48 },
+					{ id: 13, startTime: 376.48, endTime: 442.2 },
+					{ id: 14, startTime: 442.2, endTime: 633.69 },
+					{ id: 15, startTime: 633.69, endTime: 728.4 },
+					{ id: 16, startTime: 728.4, endTime: 925.13 },
+					{ id: 17, startTime: 925.13, endTime: 953.57 },
+					{ id: 18, startTime: 953.57, endTime: 1028.91 },
+					{ id: 19, startTime: 1028.91, endTime: 1070.24 },
+					{ id: 20, startTime: 1070.24, endTime: 1092.02 },
+					{ id: 21, startTime: 1092.02, endTime: 1193.59 },
+					{ id: 22, startTime: 1193.59, endTime: 1273.85 },
+					{ id: 23, startTime: 1273.85, endTime: 1447.79 },
+					{ id: 24, startTime: 1447.79, endTime: 1570.81 },
+				],
+			},
+		],
+	},
+
+	{
 		id: 60,
 		name_simple: "Al-Mumtahana",
 		parts: [

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import WaveSurfer from "wavesurfer.js";
+// import confetti from "canvas-confetti";
 
 type Verse = {
 	id: number;
@@ -55,6 +56,26 @@ const AudioVerseHighlighter = ({
 
 	// NOUVEAU: Référence pour le Wake Lock
 	const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+	// const launchConfetti = () => {
+	// 	confetti({
+	// 		particleCount: 100,
+	// 		spread: 70,
+	// 		origin: { y: 0.6 },
+	// 		colors: ["#26ccff", "#a25afd", "#ff5e7e", "#88ff5a", "#fcff42", "#ffa62d","#ff36ff"],
+	// 	});
+	// 	confetti({
+	// 		particleCount: 50,
+	// 		angle: 120,
+	// 		spread: 55,
+	// 		origin: {x:0.5, y: 1 },
+	// 	});
+	// 	confetti({
+	// 		particleCount: 50,
+	// 		angle: 60,
+	// 		spread: 55,
+	// 		origin: { y: 1 },
+	// 	});
+	// };
 
 	// Initialisation de WaveSurfer et gestion du chargement
 	useEffect(() => {
@@ -151,6 +172,14 @@ const AudioVerseHighlighter = ({
 				setHasFinished(true);
 				setIsPlaying(false);
 				setCurrentVerseId(null);
+				// 🎉 Lancer les confettis ici
+				// confetti({
+				// 	particleCount: 150,
+				// 	spread: 100,
+				// 	origin: { y: 0.6 },
+				// 	scalar: 1.2,
+				// });
+				// launchConfetti()
 				onAudioFinished?.();
 			}
 		});
@@ -302,12 +331,14 @@ const AudioVerseHighlighter = ({
 											{toArabicNumerals(currentVerse.id)}
 										</span>
 									</div>
-									{currentVerse.transliteration.length < 350 && <p
-										className="text-gray-500 text-md mt-[-5px] self-end font-medium"
-										style={{ direction: "ltr" }}
-									>
-										{currentVerse.transliteration}
-									</p>}
+									{currentVerse.transliteration.length < 350 && (
+										<p
+											className="text-gray-500 text-md mt-[-5px] self-end font-medium"
+											style={{ direction: "ltr" }}
+										>
+											{currentVerse.transliteration}
+										</p>
+									)}
 									<p
 										className="text-gray-700 self-start"
 										style={{ direction: "ltr" }}
