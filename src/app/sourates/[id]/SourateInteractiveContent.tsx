@@ -57,7 +57,6 @@ export default function SourateInteractiveContent({
 	chapterId, // Récupère la prop chapterId
 }: SourateInteractiveContentProps) {
 	// Logs pour le débogage
-	// console.log("SourateInteractiveContent: NEXT_PUBLIC_FIREBASE_PROJECT_ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
 
 	const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
 		null
@@ -333,10 +332,10 @@ export default function SourateInteractiveContent({
 		[infoSourate]
 	);
 
-	console.log("SourateInteractiveContent render", {
-		currentAudioUrl,
-		memoizedVersesToDisplayLength: memoizedVersesToDisplay.length,
-	});
+	// console.log("SourateInteractiveContent render", {
+	// 	currentAudioUrl,
+	// 	memoizedVersesToDisplayLength: memoizedVersesToDisplay.length,
+	// });
 	if (!isAuthReady || !db || !userId) {
 		return (
 			<div className="flex items-center justify-center min-h-screen bg-gray-50 text-blue-600">

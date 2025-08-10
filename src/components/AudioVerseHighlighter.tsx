@@ -53,6 +53,7 @@ const AudioVerseHighlighter = ({
 	const [playbackRate, setPlaybackRate] = useState(1);
 	const [audioError, setAudioError] = useState<boolean>(false); // Nouvel état pour les erreurs audio
 	const [hasFinished, setHasFinished] = useState(false);
+	
 
 	// NOUVEAU: Référence pour le Wake Lock
 	const wakeLockRef = useRef<WakeLockSentinel | null>(null);
@@ -470,6 +471,9 @@ const AudioVerseHighlighter = ({
 				style={{ minHeight: 0 }}
 			>
 				{children}
+				{Number(infoSourate[0])!== 1 && Number(infoSourate[0])!== 9 && verses[0]?.id === 1 && (
+					<p className="text-gray-800 text-center text-5xl font-bismillah">5</p>
+				)}
 
 				{verses.map((verse: Verse) => (
 					<div

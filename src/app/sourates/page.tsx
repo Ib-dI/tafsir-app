@@ -252,7 +252,7 @@ export default function SouratePage() {
       </motion.div>
 
       <motion.ul
-        className="w-full items-center flex flex-col md:flex-row flex-wrap justify-center gap-4"
+        className="w-full items-center flex flex-col md:flex-row flex-wrap justify-center md:gap-4 gap-2"
         variants={containerVariants}
         initial="hidden"
         animate="show"
