@@ -14,6 +14,7 @@ type Verse = {
 	endTime: number; // en secondes
 	transliteration: string;
 	translation: string;
+	noAudio?: boolean; // nouveau flag
 };
 
 type AudioVerseHighlighterProps = {
@@ -273,7 +274,12 @@ const AudioVerseHighlighter = ({
 		}
 	};
 
+	// Modification de la fonction seekToVerse
 	const seekToVerse = (verse: Verse) => {
+		if (verse.noAudio) {
+			return; // Ne rien faire pour les versets sans audio
+		}
+		
 		if (wavesurferRef.current && (verse.startTime > 0 || verse.endTime > 0)) {
 			// Calcul de la position de seek en fonction de la durée totale
 			// Assurez-vous que duration est > 0 pour éviter la division par zéro
@@ -435,7 +441,7 @@ const AudioVerseHighlighter = ({
 							damping: 10,
 							delay: 0.1,
 						}}
-						className="flex items-center justify-center w-full h-[80px]" // Style pour centrer le message
+						className="flex -mt-3 items-center justify-center w-full h-[60px]" // Style pour centrer le message
 					>
 						<div className="relative mx-auto w-fit inline-flex max-w-full items-center gap-2 rounded-lg bg-blue-50/80 border border-[#2563eb]/30 px-3 py-1 font-medium text-gray-900 ring-1 shadow-lg shadow-blue-400/20 ring-black/10 filter backdrop-blur-[1px] transition-colors hover:bg-blue-100/80 focus:outline-hidden sm:text-sm">
 							<Info className="text-[#2563eb] w-5 h-5 mr-2 flex-shrink-0 drop-shadow" />
@@ -476,23 +482,28 @@ const AudioVerseHighlighter = ({
 					<div
 						key={verse.id}
 						id={`verse-${verse.id}`}
-						onClick={() => seekToVerse(verse)}
-						className={`p-3 my-1 rounded-lg cursor-pointer transition-colors ${
+						onClick={() => !verse.noAudio && seekToVerse(verse)}
+						className={`p-3 my-1 rounded-lg ${!verse.noAudio ? 'cursor-pointer' : ''} transition-colors ${
 							currentVerseId === verse.id && audioUrl // Surligne seulement si audioUrl est présent
-								? "bg-yellow-100/40 border-l-4 border-yellow-500 shadow"
-								: "hover:bg-gray-50"
+								? "bg-yellow-100/40 border-l-4 border-[0.7px] border-yellow-500 shadow"
+								: verse.noAudio 
+									? "bg-gray-50/50 border-l-4 border-[0.7px] border-blue-200" 
+									: "hover:bg-gray-50"
 						}`}
 					>
 						<div className="flex flex-col gap-2 justify-end items-end">
-							<div
-								className="text-gray-800 mt-2 text-[23px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center md:gap-1"
-								style={{ direction: "rtl" }}
-							>
-								<span style={{ direction: "rtl" }}>{verse.text} {toArabicNumerals(verse.id)}</span>
+							{verse.noAudio && (
+								<span className="self-start text-xs text-blue-500 font-medium mb-1">
+									Verset sans audio
+								</span>
+							)}
+							<div className="text-gray-800 mt-2 text-[23px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center md:gap-1"
+								style={{ direction: "rtl" }}>
+								<span style={{ direction: "rtl" }}>
+									{verse.text} {toArabicNumerals(verse.id)}
+								</span>
 							</div>
-							<p className="text-gray-500 text-right text-md mt-[-8px] font-medium"
-							// style={{ textAlign: "right", direction: "ltr" }}
-							>
+							<p className="text-gray-500 text-right text-md mt-[-8px] font-medium">
 								{verse.transliteration}
 							</p>
 							<p className="text-gray-700 -mt-2 self-start">

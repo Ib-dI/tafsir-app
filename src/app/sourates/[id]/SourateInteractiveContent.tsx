@@ -50,13 +50,59 @@ interface SourateInteractiveContentProps {
 	chapterId: number; // Réintroduit la prop chapterId
 }
 
+// Dans SourateInteractiveContent.tsx, ajoutez cette fonction helper juste avant le composant principal
+const getRemainingVerses = (verses: Verse[], audioParts: TafsirAudioPart[]): Verse[] | null => {
+  // Crée un Set de tous les IDs de versets couverts par les parties audio
+  const coveredVerseIds = new Set(
+    audioParts.flatMap(part => part.timings.map(timing => timing.id))
+  );
+
+  // Trouve les versets qui ne sont pas couverts
+  const remainingVerses = verses.filter(verse => !coveredVerseIds.has(verse.id));
+
+  // Retourne null si aucun verset restant, sinon retourne les versets
+  return remainingVerses.length > 0 ? remainingVerses : null;
+};
+
 export default function SourateInteractiveContent({
 	verses: initialVerses,
-	audioParts,
+	audioParts: initialAudioParts,
 	infoSourate,
-	chapterId, // Récupère la prop chapterId
+	chapterId,
 }: SourateInteractiveContentProps) {
 	// Logs pour le débogage
+
+	// Modification: Initialize audioParts state first
+	const [audioParts] = useState(() => {
+		// Créer un Set avec tous les IDs de versets déjà couverts
+		const coveredVerseIds = new Set(
+			initialAudioParts.flatMap((part) => part.timings.map((timing) => timing.id))
+		);
+
+		// Trouver les versets qui ne sont pas dans les parties existantes
+		const remainingVerses = initialVerses.filter(
+			(verse) => !coveredVerseIds.has(verse.id)
+		);
+
+		// Si on trouve des versets restants, créer une nouvelle partie
+		if (remainingVerses.length > 0) {
+			const newPart = {
+				id: "remaining-verses",
+				title: `Partie ${initialAudioParts.length + 1}`,
+				url: "", // pas d'audio
+				timings: remainingVerses.map((verse) => ({
+					id: verse.id,
+					startTime: 0,
+					endTime: 0,
+				})),
+			};
+
+			// Retourner le tableau avec la nouvelle partie ajoutée
+			return [...initialAudioParts, newPart];
+		}
+
+		return initialAudioParts;
+	});
 
 	const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
 		null
@@ -199,63 +245,65 @@ export default function SourateInteractiveContent({
 
 			const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 			if (!projectId) {
-				console.error(
-					"SourateInteractiveContent: ERREUR - NEXT_PUBLIC_FIREBASE_PROJECT_ID n'est pas défini lors de l'écriture."
-				);
+				console.error("Project ID not found");
 				return;
 			}
 
-			const docPath = `artifacts/${projectId}/users/${userId}/progress`;
-			const docId = `${completedChapterId}_${completedPartId}`;
-
 			try {
-				const progressDocRef = doc(db, docPath, docId);
-				await setDoc(
-					progressDocRef,
-					{
-						chapterId: completedChapterId,
-						partId: completedPartId,
-						completedAt: serverTimestamp(),
-					},
-					{ merge: true }
+				const progressRef = doc(
+					db,
+					`artifacts/${projectId}/users/${userId}/progress/${completedPartId}`
 				);
+				await setDoc(progressRef, {
+					chapterId: completedChapterId,
+					partId: completedPartId,
+					completedAt: serverTimestamp(),
+				});
 			} catch (error) {
-				console.error(
-					`SourateInteractiveContent: ERREUR LORS DE L'ÉCRITURE Firestore pour ${docId}:`,
-					error
-				);
-				// C'est ici que les erreurs de règles de sécurité ou de connexion apparaîtront
+				console.error("Error marking part as completed:", error);
 			}
 		},
 		[db, userId]
 	);
 
-	// Recalcule les versets à afficher pour la partie sélectionnée.
-	// Si aucune partie n'est sélectionnée (ex: pas d'audio du tout),
-	// on passe tous les versets pour qu'ils soient affichés sans surlignage audio.
+	// Modification du versesToDisplay pour gérer les versets restants
 	const versesToDisplay = selectedPart
-		? initialVerses
-				.filter((verse) => {
-					// Vérifie si l'ID du verset est présent dans les timings de la partie sélectionnée
-					return selectedPart.timings.some((timing) => timing.id === verse.id);
-				})
-				.map((verse) => {
-					// Ajoute les informations de timing et 'verset'
-					const timing = selectedPart.timings.find((t) => t.id === verse.id);
-					return {
-						...verse,
-						startTime: timing?.startTime ?? 0,
-						endTime: timing?.endTime ?? 0,
-						verset: verse.text,
-					};
-				})
-		: initialVerses.map((verse) => ({
-				// Si pas de partie sélectionnée, affiche tous les versets sans timings audio
-				...verse,
-				startTime: 0,
-				endTime: 0,
-				verset: verse.text,
-		  }));
+  ? initialVerses
+      .filter((verse) => {
+        if (selectedPart.id === "remaining-verses") {
+          const coveredVerseIds = new Set(
+            initialAudioParts.flatMap((part) => part.timings.map((timing) => timing.id))
+          );
+          return !coveredVerseIds.has(verse.id);
+        }
+        return selectedPart.timings.some((timing) => timing.id === verse.id);
+      })
+      .map((verse) => {
+        if (selectedPart.id === "remaining-verses") {
+          return {
+            ...verse,
+            startTime: 0,
+            endTime: 0,
+            verset: verse.text,
+            noAudio: true
+          };
+        }
+        // Récupérer le timing correspondant au verset pour les parties avec audio
+        const timing = selectedPart.timings.find((t) => t.id === verse.id);
+        return {
+          ...verse,
+          startTime: timing?.startTime || 0,
+          endTime: timing?.endTime || 0,
+          verset: verse.text,
+          noAudio: false
+        };
+      })
+  : initialVerses.map((verse) => ({
+      ...verse,
+      startTime: 0,
+      endTime: 0,
+      verset: verse.text
+    }));
 
 	// Déterminer l'URL audio à passer. Si pas de partie sélectionnée, c'est vide.
 	const currentAudioUrl = selectedPart?.url || "";
@@ -306,22 +354,20 @@ export default function SourateInteractiveContent({
 
 	// MODIFICATION ICI: Appel goToNextPart si possible
 	const handleAudioFinished = useCallback(() => {
-	if (!selectedPart) return;
+		if (!selectedPart) return;
 
-	// Marquer comme complété si ce n’est pas déjà fait
-	if (!completedPartIds.has(selectedPart.id)) {
-		markPartAsCompleted(chapterId, selectedPart.id);
-	}
+		// Marquer comme complété si ce n’est pas déjà fait
+		if (!completedPartIds.has(selectedPart.id)) {
+			markPartAsCompleted(chapterId, selectedPart.id);
+		}
 
-	// Passer à la suite
-	const currentIndex = audioParts.findIndex((p) => p.id === selectedPart.id);
-	if (currentIndex !== -1 && currentIndex < audioParts.length - 1) {
-		const nextPart = audioParts[currentIndex + 1];
-		setSelectedPart(nextPart);
-	}
-}, [selectedPart, chapterId, completedPartIds, audioParts, markPartAsCompleted]);
-
-
+		// Passer à la suite
+		const currentIndex = audioParts.findIndex((p) => p.id === selectedPart.id);
+		if (currentIndex !== -1 && currentIndex < audioParts.length - 1) {
+			const nextPart = audioParts[currentIndex + 1];
+			setSelectedPart(nextPart);
+		}
+	}, [selectedPart, chapterId, completedPartIds, audioParts, markPartAsCompleted]);
 
 	const memoizedVersesToDisplay = useMemo(
 		() => versesToDisplay,
@@ -401,30 +447,28 @@ export default function SourateInteractiveContent({
 							</SelectTrigger>
 							<SelectContent className="font-sans">
 								{audioParts.map((part, index) => (
-									<SelectItem key={part.id} value={part.id}>
+									<SelectItem
+                    key={part.id}
+                    value={part.id}
+                    className={part.id === 'remaining-verses' ? 'text-blue-600 font-medium' : ''}
+                  >
 										<span className="flex items-center gap-2">
-											{part.title || `Partie ${index + 1}`}
-											{completedPartIds.has(part.id) && (
-												<span
-													className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-green-500 border-2 border-white shadow z-10"
-													title="Sourate complétée"
-												>
-													<svg
-														width="5"
-														height="85"
-														viewBox="0 0 20 20"
-														fill="none"
-														xmlns="http://www.w3.org/2000/svg"
-													>
-														<path
-															d="M5 10.5L8.5 14L15 7"
-															stroke="white"
-															strokeWidth="2"
-															strokeLinecap="round"
-															strokeLinejoin="round"
-														/>
-													</svg>
-												</span>
+											{part.id === 'remaining-verses' ? (
+												<>
+													{part.title} ({part.timings.length})
+													<span className="text-xs text-blue-500">(sans audio)</span>
+												</>
+											) : (
+												<>
+													{part.title || `Partie ${index + 1}`}
+													{completedPartIds.has(part.id) && (
+														<span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-green-500 border-2 border-white shadow z-10">
+															<svg width="5" height="85" viewBox="0 0 20 20" fill="none">
+																<path d="M5 10.5L8.5 14L15 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+															</svg>
+														</span>
+													)}
+												</>
 											)}
 										</span>
 									</SelectItem>
@@ -471,57 +515,57 @@ export default function SourateInteractiveContent({
 					de sécurité.
 				</div>
 			)}
-			{/* Affichage de la pastille de complétion pour la partie sélectionnée */}
-			{selectedPart && (
-				<div className="flex justify-center mb-2">
-					<span
-						className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-							completedPartIds.has(selectedPart.id)
-								? "bg-green-100 text-green-800"
-								: "bg-gray-200 text-gray-600"
-						}`}
-					>
-						{completedPartIds.has(selectedPart.id) ? (
-							<>
-								<svg
-									className="w-4 h-4 mr-1 text-green-500"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										d="M5 13l4 4L19 7"
-									/>
-								</svg>
-								Partie complétée
-							</>
-						) : (
-							<>
-								<svg
-									className="w-4 h-4 mr-1 text-gray-400"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									viewBox="0 0 24 24"
-								>
-									<circle
-										cx="12"
-										cy="12"
-										r="10"
-										stroke="currentColor"
-										strokeWidth="2"
-										fill="none"
-									/>
-								</svg>
-								Partie non complétée
-							</>
-						)}
-					</span>
-				</div>
-			)}
+			{/* Affichage de la pastille de complétion uniquement pour les parties avec audio */}
+			{selectedPart && selectedPart.id !== 'remaining-verses' && (
+  <div className="flex justify-center mb-2">
+    <span
+      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+        completedPartIds.has(selectedPart.id)
+          ? "bg-green-100 text-green-800"
+          : "bg-gray-200 text-gray-600"
+      }`}
+    >
+      {completedPartIds.has(selectedPart.id) ? (
+        <>
+          <svg
+            className="w-4 h-4 mr-1 text-green-500"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          Partie complétée
+        </>
+      ) : (
+        <>
+          <svg
+            className="w-4 h-4 mr-1 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+          </svg>
+          Partie non complétée
+        </>
+      )}
+    </span>
+  </div>
+)}
 
 			{/* Le composant AudioVerseHighlighter est TOUJOURS rendu */}
 			<div

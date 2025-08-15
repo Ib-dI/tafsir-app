@@ -112,9 +112,9 @@ export const audiosTafsir = [
 				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Baqarah-part6.ogg",
 				timings: [
 					{ id: 49, startTime: 79.41, endTime: 333.51 },
-					{ id: 50, startTime: 334.52, endTime: 532.59 },
-					{ id: 51, startTime: 532.66, endTime: 545.1 },
-					{ id: 52, startTime: 545.88, endTime: 671.7 },
+					{ id: 50, startTime: 334.52, endTime: 532.66 },
+					{ id: 51, startTime: 532.66, endTime: 650.16 },
+					{ id: 52, startTime: 650.16, endTime: 681.42 },
 					{ id: 53, startTime: 681.42, endTime: 782.23 },
 					{ id: 54, startTime: 786.18, endTime: 1008.9 },
 					{ id: 55, startTime: 1010.91, endTime: 1191.97 },
