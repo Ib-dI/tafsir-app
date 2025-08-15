@@ -34,7 +34,7 @@ export default async function Sourate({ params}: SouratePageProps) {
   }
 
   return (
-    <div className="container mx-auto p-4 bg-white mt-2">
+    <div className="container mx-auto p-2 md:p-4 bg-white mt-1">
       {/* Le bouton de retour est un Client Component qui lit ses propres searchParams */}
       <AnimatedBackButton />
       {/* Passe toutes les données nécessaires au Client Component interactif */}

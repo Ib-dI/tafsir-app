@@ -357,7 +357,7 @@ export default function SourateInteractiveContent({
 						damping: 10,
 						delay: 0.3,
 					}}
-					className="flex flex-row items-center gap-2 mb-2 p-3 bg-gray-50 rounded-lg shadow-inner justify-center"
+					className="flex flex-row items-center gap-2 mb-2 p-3  bg-gray-50 rounded-lg shadow-inner justify-center"
 				>
 					{/* Flèche Gauche */}
 					<motion.button
@@ -525,7 +525,7 @@ export default function SourateInteractiveContent({
 
 			{/* Le composant AudioVerseHighlighter est TOUJOURS rendu */}
 			<div
-				className="container mx-auto "
+				className="container mx-auto"
 				// onTouchStart={handleTouchStart} // Ecoute les événements tactiles
 				// onTouchMove={handleTouchMove} // Met à jour la position du doigt
 				// onTouchEnd={handleTouchEnd} // Gère la fin du swipe
@@ -538,16 +538,14 @@ export default function SourateInteractiveContent({
 					onAudioFinished={handleAudioFinished}
 				>
 					<div
-						className=" w-full md:text-5xl text-center  text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-6 border-b border-gray-100 shadow flex items-center justify-center"
-						style={{ minHeight: "3.8rem" }}
+						className="w-full md:text-5xl  text-center text-gray-800 sticky top-[-10px] z-20 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 backdrop-blur-lg py-6 border-b border-gray-100 shadow flex items-center justify-center md:min-h-[3.8rem] "
 					>
-						<h1 className=" z-30 font-quran absolute w-full flex items-center justify-center h-full">
+						<h1 className="z-30 font-quran absolute w-full flex items-center justify-center h-full">
 							<div
-								className="w-fit max-w-3xl bg-white/90 shadow rounded-2xl px-8 py-2 flex items-center justify-center mx-auto"
-								style={{ height: "90%", minHeight: 0 }}
+								className="w-fit max-w-3xl bg-white/90 shadow rounded-2xl px-4 md:px-8 py-2 flex items-center h-4/5 min-h-0 justify-center mx-auto"
 							>
 								<span
-									className="text-9xl font-normal leading-normal text-gray-800 bg-clip-text "
+									className="md:text-9xl text-8xl font-normal leading-normal text-gray-800 bg-clip-text "
 									style={{
 										textShadow: "0 2px 6px rgba(0,0,0,0.18)",
 									}}

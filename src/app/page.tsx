@@ -26,7 +26,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4"> {/* Arrière-plan plus sobre */}
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-1 md:p-4"> {/* Arrière-plan plus sobre */}
       {/* Conteneur principal reprenant le style des cartes de sourates */}
       <motion.div
         initial="hidden"

@@ -113,7 +113,7 @@ const AudioVerseHighlighter = ({
 			barWidth: 2,
 			barRadius: 3,
 			cursorWidth: 1,
-			height: 60,
+			height: 50,
 			barGap: 2,
 			// responsive: true,
 		});
@@ -293,33 +293,33 @@ const AudioVerseHighlighter = ({
 		return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 	};
 
-	useEffect(() => {
-		console.log("AudioVerseHighlighter mounted");
-		return () => {
-			console.log("AudioVerseHighlighter unmounted");
-		};
-	}, []);
+	// useEffect(() => {
+	// 	console.log("AudioVerseHighlighter mounted");
+	// 	return () => {
+	// 		console.log("AudioVerseHighlighter unmounted");
+	// 	};
+	// }, []);
 
 	return (
 		<div
-			className="flex flex-col w-full max-w-4xl mx-auto p-2 sm:p-4 bg-white rounded-lg shadow relative overflow-visible"
+			className="flex flex-col w-full max-w-4xl mx-auto p-1 sm:p-4 bg-white rounded-lg shadow relative overflow-visible"
 			style={{ height: "100vh", maxHeight: "100dvh" }}
 		>
 			{/* Overlay pour verset long en cours de lecture */}
 			{(() => {
 				const currentVerse = verses.find((v) => v.id === currentVerseId);
-				if (currentVerse && currentVerse.text.length > 175 && audioUrl) {
+				if (currentVerse && currentVerse.text.length > 290 && audioUrl) {
 					return (
 						<>
 							{/* BACKDROP FLUO */}
-							<div className="fixed inset-0 z-[90] bg-black/10 backdrop-blur-[3px] pointer-events-none" />
+							<div className="fixed inset-0 z-[90] bg-black/10  pointer-events-none" />
 							{/* OVERLAY */}
 							<motion.div
 								initial={{ opacity: 0, y: -30 }}
 								animate={{ opacity: 1, y: 0 }}
 								exit={{ opacity: 0, y: -30 }}
 								transition={{ type: "spring", stiffness: 100, damping: 10 }}
-								className="fixed top-[50px] md:top-[265px] left-0 w-full z-[100] flex justify-center pointer-events-none overflow-y-auto"
+								className="fixed bottom-[20px] md:top-[265px] left-0 w-full z-[100] flex justify-center pointer-events-none overflow-y-auto"
 								style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
 							>
 								<div
@@ -327,10 +327,7 @@ const AudioVerseHighlighter = ({
 									style={{ direction: "rtl" }}
 								>
 									<div className="text-gray-800 text-[22px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1">
-										<span>{currentVerse.text}</span>
-										<span className="text-3xl">
-											{toArabicNumerals(currentVerse.id)}
-										</span>
+										<span>{currentVerse.text} {toArabicNumerals(currentVerse.id)}</span>
 									</div>
 									{currentVerse.transliteration.length < 350 && (
 										<p
@@ -354,19 +351,19 @@ const AudioVerseHighlighter = ({
 				return null;
 			})()}
 			{/* Waveform et contrôles ou message d'audio non disponible */}
-			<div className="relative flex flex-col flex-shrink-0 mt-6">
+			<div className="relative flex flex-col flex-shrink-0 mt-4 md:mt-6">
 				{/* Le conteneur du waveform */}
 				{audioUrl && (
 					<div
 						ref={waveformRef}
 						className="relative w-full transition-opacity duration-300"
-						style={{ minHeight: 80 }} // Hauteur fixe pour le loader
+						style={{ minHeight: 60 }} // Hauteur fixe pour le loader
 					/>
 				)}
 
 				{/* Loader superposé */}
 				{isLoading && audioUrl && (
-					<div className="absolute left-0 top-0 w-full h-[80px] z-10 flex flex-col items-center justify-center bg-white/80 rounded">
+					<div className="absolute left-0 top-0 w-full h-[60px] md:h-[80px] z-10 flex flex-col items-center justify-center bg-transparent rounded">
 						<p className="text-blue-500 text-sm mb-2">
 							Chargement de l’audio...
 						</p>
@@ -488,18 +485,17 @@ const AudioVerseHighlighter = ({
 					>
 						<div className="flex flex-col gap-2 justify-end items-end">
 							<div
-								className="text-gray-800 text-2xl md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1"
+								className="text-gray-800 mt-2 text-[23px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center md:gap-1"
 								style={{ direction: "rtl" }}
 							>
-								<span style={{ direction: "rtl" }}>{verse.text}</span>
-								<span className="text-3xl " style={{ direction: "rtl" }}>
-									{toArabicNumerals(verse.id)}
-								</span>
+								<span style={{ direction: "rtl" }}>{verse.text} {toArabicNumerals(verse.id)}</span>
 							</div>
-							<p className="text-gray-500 text-md mt-[-8px] self-end font-medium">
+							<p className="text-gray-500 text-right text-md mt-[-8px] font-medium"
+							// style={{ textAlign: "right", direction: "ltr" }}
+							>
 								{verse.transliteration}
 							</p>
-							<p className="text-gray-700 self-start">
+							<p className="text-gray-700 -mt-2 self-start">
 								{verse.id}. {verse.translation}
 							</p>
 						</div>

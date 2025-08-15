@@ -1418,7 +1418,7 @@ export const audiosTafsir = [
 				title: "At-Taghabun - Partie 1",
 				url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Taghabun-part1.ogg",
 				timings: [
-					{ id: 13, startTime: 41.24, endTime: 193.4 },
+					{ id: 1, startTime: 41.24, endTime: 193.4 },
 					{ id: 2, startTime: 194.15, endTime: 272.84 },
 					{ id: 3, startTime: 272.93, endTime: 448.9 },
 					{ id: 4, startTime: 449.47, endTime: 544.03 },
