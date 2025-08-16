@@ -1062,6 +1062,80 @@ export const audiosTafsir = [
 		],
 	},
 	{
+	id: 9,
+	name_simple: "At-Tawba",
+	parts: [
+		{
+			id: "at-tawba-1",
+			title: "At-Tawba - Partie 1",
+			url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tawbah-part1.ogg",
+			timings: [
+				{ id: 1, startTime: 196.30, endTime: 235.89 },
+				{ id: 2, startTime: 235.89, endTime: 372.95 },
+				{ id: 3, startTime: 372.95, endTime: 561.57 },
+				{ id: 4, startTime: 561.57, endTime: 755.55 },
+				{ id: 5, startTime: 755.55, endTime: 1031.02 },
+				{ id: 6, startTime: 1031.02, endTime: 1237.16 },
+			],
+		},
+		// {
+		// 	id: "at-tawba-2",
+		// 	title: "At-Tawba - Partie 2",
+		// 	url: "",
+		// 	timings: [],
+		// },
+		// {
+		// 	id: "at-tawba-3",
+		// 	title: "At-Tawba - Partie 3",
+		// 	url: "",
+		// 	timings: [],
+		// },
+		// {
+		// 	id: "at-tawba-4",
+		// 	title: "At-Tawba - Partie 4",
+		// 	url: "",
+		// 	timings: [],
+		// },
+		// {
+		// 	id: "at-tawba-5",
+		// 	title: "At-Tawba - Partie 5",
+		// 	url: "",
+		// 	timings: [],
+		// },
+		// {
+		// 	id: "at-tawba-6",
+		// 	title: "At-Tawba - Partie 6",
+		// 	url: "",
+		// 	timings: [],
+		// },
+		// {
+		// 	id: "at-tawba-7",
+		// 	title: "At-Tawba - Partie 7",
+		// 	url: "",
+		// 	timings: [],
+		// },
+		// {
+		// 	id: "at-tawba-8",
+		// 	title: "At-Tawba - Partie 8",
+		// 	url: "",
+		// 	timings: [],
+		// },
+		// {
+		// 	id: "at-tawba-9",
+		// 	title: "At-Tawba - Partie 9",
+		// 	url: "",
+		// 	timings: [],
+		// },
+		// {
+		// 	id: "at-tawba-10",
+		// 	title: "At-Tawba - Partie 10",
+		// 	url: "",
+		// 	timings: [],
+		// },
+	],
+},
+
+	{
 		id: 32,
 		name_simple: "As-Sajda",
 		parts: [

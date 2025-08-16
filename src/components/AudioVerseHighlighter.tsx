@@ -329,10 +329,10 @@ const AudioVerseHighlighter = ({
 								style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
 							>
 								<div
-									className="bg-yellow-50 rounded-lg shadow-lg border border-yellow-400 px-4 py-3 max-w-2xl w-full mx-2 flex flex-col items-end animate-fade-in"
+									className="bg-yellow-50 rounded-lg shadow-lg border border-yellow-400 px-4 py-3 max-w-2xl w-full mx-2 flex flex-col items-end animate-fade-in max-h-fit"
 									style={{ direction: "rtl" }}
 								>
-									<div className="text-gray-800 text-[22px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1">
+									<div className="text-gray-800 text-[24px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1">
 										<span>{currentVerse.text} {toArabicNumerals(currentVerse.id)}</span>
 									</div>
 									{currentVerse.transliteration.length < 350 && (
@@ -497,7 +497,7 @@ const AudioVerseHighlighter = ({
 									Verset sans audio
 								</span>
 							)}
-							<div className="text-gray-800 mt-2 text-[23px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center md:gap-1"
+							<div className="text-gray-800 mt-2 text-[23.5px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center md:gap-1"
 								style={{ direction: "rtl" }}>
 								<span style={{ direction: "rtl" }}>
 									{verse.text} {toArabicNumerals(verse.id)}
