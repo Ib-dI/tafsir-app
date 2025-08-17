@@ -32,17 +32,19 @@ export default function RootLayout({
         <link rel="icon" href="/fingerprint.webp" type="image/webp" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-200`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-zinc-200 antialiased`}
       >
-        <div className="flex flex-col min-h-screen max-w-[900px] mx-auto bg-white text-sm font-sans">
+        <div className="mx-auto flex min-h-screen max-w-[900px] flex-col bg-white font-sans text-sm">
           <Header />
           {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
-          <Suspense fallback={
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-blue-600">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
-              <p className="text-lg">Chargement du contenu...</p>
-            </div>
-          }>
+          <Suspense
+            fallback={
+              <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 text-blue-600">
+                <div className="mb-4 h-16 w-16 animate-spin rounded-full border-t-4 border-b-4 border-blue-500"></div>
+                <p className="text-lg">Chargement du contenu...</p>
+              </div>
+            }
+          >
             {children}
           </Suspense>
         </div>
