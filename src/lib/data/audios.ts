@@ -1356,12 +1356,19 @@ export const audiosTafsir = [
 					{ id: 104, startTime: 1309.57, endTime: 1383.65 },
 				],
       },
-      // {
-      //   id: "at-tawba-13",
-      //   title: "At-Tawba - Partie 13",
-      //   url: "",
-      //   timings: [],
-      // },
+      {
+        id: "at-tawba-13",
+        title: "At-Tawba - Partie 13",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tawba-part13.ogg",
+        timings: [
+					{ id: 105, startTime: 62.66, endTime: 195.30 },
+					{ id: 106, startTime: 195.30, endTime: 371.29 },
+					{ id: 107, startTime: 371.29, endTime: 714.97 },
+					{ id: 108, startTime: 714.97, endTime: 865.13 },
+					{ id: 109, startTime: 865.13, endTime: 1057.79 },
+					{ id: 110, startTime: 1057.79, endTime: 1271.22 },
+				],
+      },
       // {
       //   id: "at-tawba-14",
       //   title: "At-Tawba - Partie 14",

@@ -77,10 +77,9 @@ const VerseItem = React.memo(
             verse.noAudio || (currentVerseId === verse.id && audioUrl)
               ? "4px"
               : "0px",
-          boxShadow:
-            currentVerseId === verse.id && audioUrl
-              ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
-              : "none",
+          boxShadow: currentVerseId === verse.id && audioUrl 
+					? "0 0 10px 5px rgba(255, 193, 7, 0.5)" // Lueur jaune douce
+					: "none",
           scale: currentVerseId === verse.id && audioUrl ? 1.02 : 1,
         }}
         transition={{
@@ -96,6 +95,10 @@ const VerseItem = React.memo(
             mass: 1.2,
           },
         }}
+			// 	whileHover={{
+			// 		boxShadow: "0 0 10px 3px rgba(255, 193, 7, 0.3)",
+			// 		scale: 1.015,
+			// }}
       >
         <div className="flex flex-col items-end justify-end gap-2">
           {verse.noAudio && (
