@@ -53,25 +53,26 @@ const VerseItem = React.memo(
         key={verse.id}
         id={`verse-${verse.id}`}
         onClick={() => !verse.noAudio && seekToVerse(verse)}
-        className={`p-3 my-1 rounded-lg cursor-pointer ${
+        className={`my-1 cursor-pointer rounded-lg p-3 ${
           !verse.noAudio ? "hover:bg-gray-50" : ""
         } ${
           verse.noAudio
-            ? "bg-gray-50/50 border-l-4 border-[0.7px] border-blue-200"
+            ? "border-[0.7px] border-l-4 border-blue-200 bg-gray-50/50"
             : ""
         }`}
         animate={{
           backgroundColor: verse.noAudio
             ? "rgba(249, 250, 251, 0.5)"
             : currentVerseId === verse.id && audioUrl
-            ? "rgba(255, 255, 204, 0.4)"
-            : "rgba(255, 255, 255, 0)",
+              ? "rgba(255, 255, 204, 0.4)"
+              : "rgba(255, 255, 255, 0)",
           borderColor: verse.noAudio
             ? "rgba(186, 230, 253, 1)"
             : currentVerseId === verse.id && audioUrl
-            ? "#F59E0B"
-            : "rgba(0, 0, 0, 0)",
-          borderWidth: currentVerseId === verse.id && audioUrl ? "0.7px" : "0px",
+              ? "#F59E0B"
+              : "rgba(0, 0, 0, 0)",
+          borderWidth:
+            currentVerseId === verse.id && audioUrl ? "0.7px" : "0px",
           borderLeftWidth:
             verse.noAudio || (currentVerseId === verse.id && audioUrl)
               ? "4px"
@@ -80,8 +81,7 @@ const VerseItem = React.memo(
             currentVerseId === verse.id && audioUrl
               ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
               : "none",
-          scale: currentVerseId === verse.id && audioUrl ? 1.020 : 1,
-          
+          scale: currentVerseId === verse.id && audioUrl ? 1.02 : 1,
         }}
         transition={{
           default: {
@@ -97,33 +97,32 @@ const VerseItem = React.memo(
           },
         }}
       >
-        <div className="flex flex-col gap-2 justify-end items-end">
+        <div className="flex flex-col items-end justify-end gap-2">
           {verse.noAudio && (
-            <span className="self-start text-xs text-blue-500 font-medium mb-1">
+            <span className="mb-1 self-start text-xs font-medium text-blue-500">
               Verset sans audio
             </span>
           )}
           <div
-            className="text-gray-800 mt-2 text-[23.5px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center md:gap-1"
+            className="font-uthmanic mt-2 flex items-center text-right text-[23.5px] leading-relaxed text-gray-800 md:gap-1 md:text-3xl"
             style={{ direction: "rtl" }}
           >
             <span style={{ direction: "rtl" }}>
               {verse.text} {toArabicNumerals(verse.id)}
             </span>
           </div>
-          <p className="text-gray-500 text-right text-md mt-[-8px] font-medium">
+          <p className="text-md mt-[-8px] text-right font-medium text-gray-500">
             {verse.transliteration}
           </p>
-          <p className="text-gray-700 -mt-2 self-start">
+          <p className="-mt-2 self-start text-gray-700">
             {verse.id}. {verse.translation}
           </p>
         </div>
       </motion.div>
     );
-  }
+  },
 );
-VerseItem.displayName = 'VerseItem';
-
+VerseItem.displayName = "VerseItem";
 
 const AudioVerseHighlighter = ({
   audioUrl,
@@ -212,7 +211,7 @@ const AudioVerseHighlighter = ({
       setCurrentTime(time);
 
       const currentVerse = verses.find(
-        (v) => time >= v.startTime && time <= v.endTime
+        (v) => time >= v.startTime && time <= v.endTime,
       );
       // Met à jour l'état du verset actif, ce qui déclenchera l'animation et le défilement
       setCurrentVerseId(currentVerse?.id || null);
@@ -248,25 +247,24 @@ const AudioVerseHighlighter = ({
 
   // --- NOUVEAU: GESTION DU DÉFILEMENT SÉPARÉMENT ---
 
-useEffect(() => {
-  // Ne rien faire si aucun verset n'est actif ou si la référence n'est pas prête
-  if (currentVerseId === null || !versesRef.current) {
-    return;
-  }
+  useEffect(() => {
+    // Ne rien faire si aucun verset n'est actif ou si la référence n'est pas prête
+    if (currentVerseId === null || !versesRef.current) {
+      return;
+    }
 
-  // Trouver l'élément du verset actif
-  const verseElement = document.getElementById(`verse-${currentVerseId}`);
+    // Trouver l'élément du verset actif
+    const verseElement = document.getElementById(`verse-${currentVerseId}`);
 
-  if (verseElement) {
-    // La logique de défilement est simplifiée pour toujours centrer le verset actif
-    // Cela garantit qu'il n'est jamais coupé ou partiellement visible
-    verseElement.scrollIntoView({ 
-      behavior: "smooth", 
-      block: "center" 
-    });
-  }
-}, [currentVerseId]); // Ce hook s'exécute uniquement lorsque l'ID du verset change
-
+    if (verseElement) {
+      // La logique de défilement est simplifiée pour toujours centrer le verset actif
+      // Cela garantit qu'il n'est jamais coupé ou partiellement visible
+      verseElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [currentVerseId]); // Ce hook s'exécute uniquement lorsque l'ID du verset change
 
   // NOUVEAU HOOK POUR GÉRER LE WAKE LOCK
   useEffect(() => {
@@ -328,10 +326,10 @@ useEffect(() => {
       wavesurferRef.current.playPause();
     }
   };
-	const isIOS = () => {
-  if (typeof window === 'undefined') return false;
-  return /iPad|iPhone|iPod/.test(navigator.userAgent);
-};
+  const isIOS = () => {
+    if (typeof window === "undefined") return false;
+    return /iPad|iPhone|iPod/.test(navigator.userAgent);
+  };
 
   const seekToVerse = (verse: Verse) => {
     if (verse.noAudio) {
@@ -339,22 +337,22 @@ useEffect(() => {
     }
 
     if (wavesurferRef.current) {
-    // Applique un décalage de -0.2 seconde pour les appareils iOS
-    const offset = isIOS() ?  1.05 : 0;
-    
-    // Calcul de la position de départ avec le décalage
-    const seekTime = Math.max(0, verse.startTime + offset);
-    
-    // Convertir le temps en pourcentage de la durée totale
-    const seekPosition = duration > 0 ? seekTime / duration : 0;
+      // Applique un décalage de -0.2 seconde pour les appareils iOS
+      const offset = isIOS() ? 1.05 : 0;
 
-    wavesurferRef.current.seekTo(seekPosition);
-    setCurrentVerseId(verse.id);
-  } else {
-    console.warn(
-      `Verset ${verse.id} n'a pas de timing audio ou audio non chargé.`
-    );
-  }
+      // Calcul de la position de départ avec le décalage
+      const seekTime = Math.max(0, verse.startTime + offset);
+
+      // Convertir le temps en pourcentage de la durée totale
+      const seekPosition = duration > 0 ? seekTime / duration : 0;
+
+      wavesurferRef.current.seekTo(seekPosition);
+      setCurrentVerseId(verse.id);
+    } else {
+      console.warn(
+        `Verset ${verse.id} n'a pas de timing audio ou audio non chargé.`,
+      );
+    }
   };
 
   const formatTime = (time: number) => {
@@ -362,79 +360,83 @@ useEffect(() => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
-	const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
     <div
-      className="flex flex-col w-full max-w-4xl mx-auto p-1 sm:p-4 bg-white rounded-lg shadow relative overflow-visible"
+      className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible rounded-lg bg-white p-1 shadow sm:p-4"
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
       {(() => {
-    
-    const currentVerse = verses.find((v) => v.id === currentVerseId);
-    
-    // Définir le seuil en fonction de l'appareil
-    const overlayThreshold = isMobile ? 290 : 350; // Seuil plus bas pour les PC
-    
-    if (currentVerse && currentVerse.text.length > overlayThreshold && audioUrl) {
-        // Définir les animations en fonction de l'appareil
-        const overlayVariants = {
+        const currentVerse = verses.find((v) => v.id === currentVerseId);
+
+        // Définir le seuil en fonction de l'appareil
+        const overlayThreshold = isMobile ? 290 : 350; // Seuil plus bas pour les PC
+
+        if (
+          currentVerse &&
+          currentVerse.text.length > overlayThreshold &&
+          audioUrl
+        ) {
+          // Définir les animations en fonction de l'appareil
+          const overlayVariants = {
             hidden: {
-                opacity: 0,
-                y: isMobile ? 35 : -30,
+              opacity: 0,
+              y: isMobile ? 35 : -30,
             },
             visible: {
-                opacity: 1,
-                y: 0,
+              opacity: 1,
+              y: 0,
             },
-        };
+          };
 
-        return (
+          return (
             <>
-                <div className="fixed inset-0 z-[90] bg-black/10 pointer-events-none" />
-                <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    variants={overlayVariants}
-                    transition={{ type: "spring", stiffness: 100, damping: 10 }}
-                    className={`fixed w-full z-[100] flex justify-center pointer-events-none overflow-y-auto ${
-                        isMobile ? 'bottom-[20px] left-0' : 'top-[265px] left-1/2 -translate-x-1/2'
-                    }`}
-                    style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+              <div className="pointer-events-none fixed inset-0 z-[90] bg-black/10" />
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={overlayVariants}
+                transition={{ type: "spring", stiffness: 100, damping: 10 }}
+                className={`pointer-events-none fixed z-[100] flex w-full justify-center overflow-y-auto ${
+                  isMobile
+                    ? "bottom-[20px] left-0"
+                    : "top-[265px] left-1/2 -translate-x-1/2"
+                }`}
+                style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+              >
+                <div
+                  className="animate-fade-in mx-2 flex max-h-fit w-full max-w-2xl flex-col items-end rounded-lg border border-yellow-400 bg-yellow-50 px-4 py-3 shadow-lg"
+                  style={{ direction: "rtl" }}
                 >
-                    <div
-                        className="bg-yellow-50 rounded-lg shadow-lg border border-yellow-400 px-4 py-3 max-w-2xl w-full mx-2 flex flex-col items-end animate-fade-in max-h-fit"
-                        style={{ direction: "rtl" }}
-                    >
-                        <div className="text-gray-800 text-[24px] md:text-3xl font-uthmanic leading-relaxed text-right flex items-center gap-1">
+                  <div className="font-uthmanic flex items-center gap-1 text-right text-[24px] leading-relaxed text-gray-800 md:text-3xl">
                     <span>
                       {currentVerse.text} {toArabicNumerals(currentVerse.id)}
                     </span>
                   </div>
                   {currentVerse.transliteration.length < 350 && (
                     <p
-                      className="text-gray-500 text-md mt-[-5px] self-end font-medium"
+                      className="text-md mt-[-5px] self-end font-medium text-gray-500"
                       style={{ direction: "ltr" }}
                     >
                       {currentVerse.transliteration}
                     </p>
                   )}
                   <p
-                    className="text-gray-700 self-start"
+                    className="self-start text-gray-700"
                     style={{ direction: "ltr" }}
                   >
                     {currentVerse.id}. {currentVerse.translation}
                   </p>
-                
-                    </div>
-                </motion.div>
+                </div>
+              </motion.div>
             </>
-        );
-    }
-    return null;
-})()}
-      <div className="relative flex flex-col flex-shrink-0 mt-4 md:mt-6">
+          );
+        }
+        return null;
+      })()}
+      <div className="relative mt-4 flex flex-shrink-0 flex-col md:mt-6">
         {audioUrl && (
           <div
             ref={waveformRef}
@@ -443,52 +445,53 @@ useEffect(() => {
           />
         )}
         {isLoading && audioUrl && (
-          <div className="absolute left-0 top-0 w-full h-[60px] md:h-[80px] z-10 flex flex-col items-center justify-center bg-transparent rounded">
-            <p className="text-blue-500 text-sm mb-2">
+          <div className="absolute top-0 left-0 z-10 flex h-[60px] w-full flex-col items-center justify-center rounded bg-transparent md:h-[80px]">
+            <p className="mb-2 text-sm text-blue-500">
               Chargement de l’audio...
             </p>
-            <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="h-6 w-6 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
           </div>
         )}
-        {audioError &&
-          !isLoading && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 100,
-                damping: 10,
-                delay: 0.1,
-              }}
-              className="absolute left-0 top-0 w-full h-[80px] z-10 flex flex-col items-center justify-center bg-red-50/80 border border-red-200 rounded"
-            >
-              <p className="text-red-700 font-semibold">
-                Erreur de chargement audio.
-              </p>
-              <p className="text-red-600 text-sm">Veuillez réessayer plus tard.</p>
-            </motion.div>
-          )}
+        {audioError && !isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 100,
+              damping: 10,
+              delay: 0.1,
+            }}
+            className="absolute top-0 left-0 z-10 flex h-[80px] w-full flex-col items-center justify-center rounded border border-red-200 bg-red-50/80"
+          >
+            <p className="font-semibold text-red-700">
+              Erreur de chargement audio.
+            </p>
+            <p className="text-sm text-red-600">
+              Veuillez réessayer plus tard.
+            </p>
+          </motion.div>
+        )}
 
         {audioUrl && (
           <div
-            className={`flex items-center justify-between w-full ${
-              isLoading || audioError ? "opacity-50 pointer-events-none" : ""
+            className={`flex w-full items-center justify-between ${
+              isLoading || audioError ? "pointer-events-none opacity-50" : ""
             }`}
           >
             <button
               onClick={togglePlayPause}
-              className="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700"
             >
               {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </button>
 
-            <div className="font-mono spacing-[0.86px] text-xs md:text-sm whitespace-nowrap text-gray-600">
+            <div className="spacing-[0.86px] font-mono text-xs whitespace-nowrap text-gray-600 md:text-sm">
               {infoSourate[0]} {infoSourate[1]}
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="font-mono text-xs md:text-sm text-gray-600 whitespace-nowrap">
+              <div className="font-mono text-xs whitespace-nowrap text-gray-600 md:text-sm">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </div>
               <SpeedControl
@@ -508,11 +511,11 @@ useEffect(() => {
               damping: 10,
               delay: 0.1,
             }}
-            className="flex -mt-3 items-center justify-center w-full h-[60px]"
+            className="-mt-3 flex h-[60px] w-full items-center justify-center"
           >
-            <div className="relative mx-auto w-fit inline-flex max-w-full items-center gap-2 rounded-lg bg-blue-50/80 border border-[#2563eb]/30 px-3 py-1 font-medium text-gray-900 ring-1 shadow-lg shadow-blue-400/20 ring-black/10 filter backdrop-blur-[1px] transition-colors hover:bg-blue-100/80 focus:outline-hidden sm:text-sm">
-              <Info className="text-[#2563eb] w-5 h-5 mr-2 flex-shrink-0 drop-shadow" />
-              <p className="text-center w-full text-[#2563eb] truncate inline-block">
+            <div className="relative mx-auto inline-flex w-fit max-w-full items-center gap-2 rounded-lg border border-[#2563eb]/30 bg-blue-50/80 px-3 py-1 font-medium text-gray-900 shadow-lg ring-1 shadow-blue-400/20 ring-black/10 filter backdrop-blur-[1px] transition-colors hover:bg-blue-100/80 focus:outline-hidden sm:text-sm">
+              <Info className="mr-2 h-5 w-5 flex-shrink-0 text-[#2563eb] drop-shadow" />
+              <p className="inline-block w-full truncate text-center text-[#2563eb]">
                 Tafsir audio non disponible !
               </p>
             </div>
@@ -527,21 +530,23 @@ useEffect(() => {
             damping: 10,
             delay: 0.4,
           }}
-          className="absolute w-fit text-red-800 text-nowrap -bottom-7 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 rounded-sm shadow uppercase bg-yellow-50/40 z-10 text-sm font-medium pointer-events-none"
+          className="pointer-events-none absolute -bottom-7 left-1/2 z-10 w-fit -translate-x-1/2 -translate-y-1/2 rounded-sm bg-yellow-50/40 px-4 text-sm font-medium text-nowrap text-red-800 uppercase shadow"
         >
           {infoSourate[2]}
         </motion.div>
       </div>
       <div
         ref={versesRef}
-        className="overflow-y-auto z-20 relative p-2 border border-gray-200 rounded-lg mt-5 flex-1"
+        className="relative z-20 mt-5 flex-1 overflow-y-auto rounded-lg border border-gray-200 p-2"
         style={{ minHeight: 0 }}
       >
         {children}
         {Number(infoSourate[0]) !== 1 &&
           Number(infoSourate[0]) !== 9 &&
           verses[0]?.id === 1 && (
-            <p className="text-gray-800 text-center text-5xl font-bismillah">5</p>
+            <p className="font-bismillah text-center text-5xl text-gray-800">
+              5
+            </p>
           )}
 
         {verses.map((verse: Verse) => (
@@ -564,7 +569,7 @@ const PlayIcon = () => (
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    className="w-6 h-6"
+    className="h-6 w-6"
   >
     <path
       fillRule="evenodd"
@@ -579,7 +584,7 @@ const PauseIcon = () => (
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="currentColor"
-    className="w-6 h-6"
+    className="h-6 w-6"
   >
     <path
       fillRule="evenodd"
@@ -608,17 +613,17 @@ const SpeedControl = ({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded-md"
+        className="rounded-md bg-gray-200 px-2 py-1 text-xs hover:bg-gray-300"
       >
         x{playbackRate}
       </button>
       {isOpen && (
-        <div className="absolute right-0 mb-2 bg-white shadow-lg rounded-md p-1 z-50">
+        <div className="absolute right-0 z-50 mb-2 rounded-md bg-white p-1 shadow-lg">
           {speeds.map((speed) => (
             <button
               key={speed}
               onClick={() => handleSelectSpeed(speed)}
-              className={`block w-full px-2 py-1 text-left text-sm rounded-md ${
+              className={`block w-full rounded-md px-2 py-1 text-left text-sm ${
                 speed === playbackRate
                   ? "bg-blue-100 text-blue-600"
                   : "hover:bg-gray-100"
