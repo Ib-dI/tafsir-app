@@ -362,6 +362,7 @@ useEffect(() => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
+	const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (
     <div
@@ -369,7 +370,7 @@ useEffect(() => {
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
       {(() => {
-    const isMobile = useMediaQuery('(max-width: 768px)');
+    
     const currentVerse = verses.find((v) => v.id === currentVerseId);
     
     // Définir le seuil en fonction de l'appareil
