@@ -374,7 +374,7 @@ const AudioVerseHighlighter = ({
         const currentVerse = verses.find((v) => v.id === currentVerseId);
 
         // Définir le seuil en fonction de l'appareil
-        const overlayThreshold = isMobile ? 290 : 350; // Seuil plus bas pour les PC
+        const overlayThreshold = isMobile ? 290 : 400; // Seuil plus bas pour les PC
 
         if (
           currentVerse &&
@@ -439,7 +439,7 @@ const AudioVerseHighlighter = ({
         }
         return null;
       })()}
-      <div className="relative mt-4 flex flex-shrink-0 flex-col md:mt-6">
+      <div className="relative mt-3 flex flex-shrink-0 flex-col md:mt-6">
         {audioUrl && (
           <div
             ref={waveformRef}

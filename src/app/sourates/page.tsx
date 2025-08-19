@@ -6,7 +6,7 @@ import { getSimpleChapters } from "@/lib/quranSimpleApi";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { collection, onSnapshot } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
-import { AudioLines } from "lucide-react";
+import { AudioLines, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"; // Ajout de useCallback
 
@@ -180,7 +180,7 @@ export default function SouratePage() {
     // Utilisez useCallback pour cette fonction
     if (searchInputRef.current) {
       const inputRect = searchInputRef.current.getBoundingClientRect();
-      const offset = 10;
+      const offset = 20;
       const scrollPosition = window.scrollY + inputRect.top - offset;
 
       window.scrollTo({
@@ -190,9 +190,6 @@ export default function SouratePage() {
     }
   }, []); // Aucune dépendance car searchInputRef.current est constant sur le cycle de vie du composant
 
-  const handleBlur = () => {
-    // Laisser vide pour le moment, ou ajouter une logique si nécessaire
-  };
 
   // Nouvelle fonction pour gérer le changement du filtre et mettre à jour l'URL
   const toggleShowOnlyWithAudio = () => {
@@ -231,48 +228,78 @@ export default function SouratePage() {
 
   return (
     <div className="container mx-auto mt-8 w-full rounded-lg bg-white p-4 shadow-lg">
-      <h1 className="mb-6 text-center text-4xl font-bold text-balance text-gray-800 md:text-5xl">
-        Chapitres du Coran
+      <h1 className="text-600 text-balance mx-auto mb-8 max-w-[600px] text-center text-4xl font-bold !leading-[1.0] tracking-tighter text-gray-900 lg:max-w-[800px] lg:text-6xl">
+        📑Chapitres du Coran 📖
       </h1>
 
-      <motion.div
-        className="mb-4"
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }}
-      >
-        <input
-          ref={searchInputRef}
-          type="text"
-          placeholder="Rechercher une sourate (nom, traduction, numéro...)"
-          className="w-full rounded-lg border border-gray-300 p-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+      <div className="flex flex-col gap-4 mb-6">
+        {/* Barre de recherche améliorée */}
+        <motion.div
+          className="w-full relative"
           onFocus={handleFocus}
-          onBlur={handleBlur}
-        />
-      </motion.div>
-
-      {/* Bouton pour filtrer par audio */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.3 }}
-        className="mb-6 text-center"
-      >
-        <button
-          onClick={toggleShowOnlyWithAudio} // Utilise la nouvelle fonction
-          className={`rounded-full px-5 py-2 font-semibold text-white transition-colors duration-300 ${
-            showOnlyWithAudio
-              ? "bg-green-600 hover:bg-green-700"
-              : "bg-blue-600 hover:bg-blue-700"
-          }`}
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }}
         >
-          {showOnlyWithAudio
-            ? "Afficher toutes les sourates"
-            : "Afficher les sourates avec audio"}
-        </button>
-      </motion.div>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={20} className="text-gray-400" />
+            </div>
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Rechercher une sourate (nom, traduction, numéro...)"
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </motion.div>
+
+        {/* Filtre Audio avec statistiques */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 p-4 rounded-xl"
+        >
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleShowOnlyWithAudio}
+              className={`relative overflow-hidden rounded-full px-5 py-2.5 font-semibold text-white transition-all duration-300 ${
+                showOnlyWithAudio
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                <AudioLines size={18} />
+                {showOnlyWithAudio
+                  ? "Afficher toutes les sourates"
+                  : "Afficher les sourates avec audio"}
+              </span>
+              <div
+                className={`absolute inset-0 transition-transform duration-300 ${
+                  showOnlyWithAudio ? "translate-x-0" : "-translate-x-full"
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Statistiques */}
+          <div className="flex items-center gap-4 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-blue-500" />
+              <span>{`${sourateIdsWithAudio.size} sourates avec audio`}</span>
+            </div>
+            <div className="h-4 w-px bg-gray-300" />
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-gray-400" />
+              <span>{`${chapters.length - sourateIdsWithAudio.size} sans audio`}</span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
 
       <motion.ul
         className="flex w-full flex-col flex-wrap items-center justify-center gap-2 md:flex-row md:gap-4"
@@ -306,7 +333,7 @@ export default function SouratePage() {
                   key={chapter.id}
                   variants={itemVariants}
                   layout
-                  className={`group relative w-full cursor-pointer rounded-lg px-2 py-4 transition-colors duration-200 md:w-80 ${isFullyCompleted ? "bg-emerald-50 hover:bg-emerald-100" : "bg-gray-50 hover:bg-gray-100"} `}
+                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 transition-colors duration-200 md:w-80 ${isFullyCompleted ? "bg-emerald-100 hover:bg-emerald-200" : "bg-gray-100 hover:bg-gray-200"} `}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() =>
@@ -351,9 +378,9 @@ export default function SouratePage() {
                   )} */}
                   <div className="flex flex-grow items-center justify-between gap-2">
                     <div
-                      className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${isFullyCompleted ? "bg-white text-emerald-700 shadow group-hover:bg-white group-hover:text-emerald-700" : "bg-slate-200 text-blue-500"} `}
+                      className={`flex h-8 w-8 -mb-4 flex-shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${isFullyCompleted ? "bg-white text-emerald-700 shadow group-hover:bg-white group-hover:text-emerald-700" : "bg-slate-200 text-blue-500"} `}
                     >
-                      {chapter.id}
+                      {`${chapter.id < 10 ? "0" : ""}${chapter.id}`}
                     </div>
                     <div className="flex min-w-0 flex-grow flex-col">
                       <div className="flex items-center gap-2">
