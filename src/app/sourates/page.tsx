@@ -333,7 +333,7 @@ export default function SouratePage() {
                   key={chapter.id}
                   variants={itemVariants}
                   layout
-                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 transition-colors duration-200 md:w-80 ${isFullyCompleted ? "bg-emerald-100 hover:bg-emerald-200" : "bg-gray-100 hover:bg-gray-200"} `}
+                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 transition-colors duration-200 md:w-80 ${isFullyCompleted ? "bg-emerald-100 hover:bg-emerald-200" : "bg-gray-100 hover:bg-gray-200/90"} `}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() =>

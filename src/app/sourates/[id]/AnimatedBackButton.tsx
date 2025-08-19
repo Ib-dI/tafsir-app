@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation"; // Importe useSearchParams
 
 export default function AnimatedBackButton() {
@@ -40,7 +40,7 @@ export default function AnimatedBackButton() {
               d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
             />
           </svg>
-          <span className="font-semibold">Retour aux chapitres</span>
+          <span className="font-semibold hidden sm:inline">Retour aux chapitres</span>
         </motion.button>
       </Link>
     </motion.div>
