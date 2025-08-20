@@ -1584,6 +1584,52 @@ export const audiosTafsir = [
     ],
   },
   {
+	id: "49",
+	title: "Al-Hujurat",
+	parts: [
+		{
+			id: "al-hujurat-1",
+			title: "Al-Hujurat - Partie 1",
+			url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Hujurat-part1.ogg",
+			timings: [
+        { id: 1, startTime: 51.87, endTime: 264.42 },
+        { id: 2, startTime: 264.42, endTime: 493.83 },
+        { id: 3, startTime: 493.83, endTime: 612.22 },
+        { id: 4, startTime: 612.22, endTime: 710.03 },
+        { id: 5, startTime: 729.36, endTime: 813.29 },
+        { id: 6, startTime: 813.29, endTime: 1082.56 },
+        { id: 7, startTime: 1082.56, endTime: 1294.98 },
+        { id: 8, startTime: 1294.98, endTime: 1370.19 },
+      ],
+		},
+		{
+			id: "al-hujurat-2",
+			title: "Al-Hujurat - Partie 2",
+			url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Hujurat-part2.ogg",
+			timings: [
+        { id: 9, startTime: 172.10, endTime: 374.93 },
+        { id: 10, startTime: 374.93, endTime: 482.72 },
+        { id: 11, startTime: 482.72, endTime: 765.78 },
+        { id: 12, startTime: 765.78, endTime: 979.25 },
+        { id: 13, startTime: 979.25, endTime: 1191.30 },
+      ],
+		},
+		{
+			id: "al-hujurat-3",
+			title: "Al-Hujurat - Partie 3",
+			url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Hujurat-part3.ogg",
+			timings: [
+        { id: 14, startTime: 88.96, endTime: 212.99 },
+        { id: 15, startTime: 212.99, endTime: 309.81 },
+        { id: 16, startTime: 309.81, endTime: 342.75 },
+        { id: 17, startTime: 342.75, endTime: 405.84 },
+        { id: 18, startTime: 405.84, endTime: 484.49 },
+      ],
+		},
+	],
+},
+
+  {
     id: 59,
     name_simple: "Al-Hashr",
     parts: [
