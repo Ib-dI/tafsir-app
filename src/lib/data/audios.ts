@@ -1585,8 +1585,8 @@ export const audiosTafsir = [
     ],
   },
   {
-    id: "49",
-    title: "Al-Hujurat",
+    id: 49,
+    name_simple: "Al-Hujurat",
     parts: [
       {
         id: "al-hujurat-1",
