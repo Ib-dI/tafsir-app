@@ -1,10 +1,10 @@
 // src/app/layout.tsx
-
 import Header from "@/components/header";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Suspense } from "react"; // <--- AJOUTEZ CETTE LIGNE
+import { Suspense } from "react";
+import NotificationsSetup from "@/components/NotificationsSetup"; // Ajoutez cette ligne
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,6 +47,8 @@ export default function RootLayout({
           >
             {children}
           </Suspense>
+          {/* AJOUTEZ CE COMPOSANT ICI */}
+          <NotificationsSetup />
         </div>
       </body>
     </html>

@@ -50,19 +50,6 @@ interface SourateInteractiveContentProps {
   chapterId: number; // Réintroduit la prop chapterId
 }
 
-// Dans SourateInteractiveContent.tsx, ajoutez cette fonction helper juste avant le composant principal
-// const getRemainingVerses = (verses: Verse[], audioParts: TafsirAudioPart[]): Verse[] | null => {
-//   // Crée un Set de tous les IDs de versets couverts par les parties audio
-//   const coveredVerseIds = new Set(
-//     audioParts.flatMap(part => part.timings.map(timing => timing.id))
-//   );
-
-//   // Trouve les versets qui ne sont pas couverts
-//   const remainingVerses = verses.filter(verse => !coveredVerseIds.has(verse.id));
-
-//   // Retourne null si aucun verset restant, sinon retourne les versets
-//   return remainingVerses.length > 0 ? remainingVerses : null;
-// };
 
 export default function SourateInteractiveContent({
   verses: initialVerses,
