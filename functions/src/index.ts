@@ -1,53 +1,47 @@
-import * as admin from "firebase-admin";
-import { setGlobalOptions } from "firebase-functions";
-import { HttpsOptions, onCall } from "firebase-functions/v2/https";
+// functions/src/index.ts
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
+import cors from 'cors';
 
-setGlobalOptions({ maxInstances: 10 });
-
+// Initialiser le SDK Admin
 admin.initializeApp();
 
-const corsOptions = {
-  maxInstances: 10,
-  region: 'us-central1',
-  cors: true
-} satisfies HttpsOptions;
+const corsHandler = cors({ origin: true });
 
-export const sendNewAudioNotification = onCall(corsOptions, async (request) => {
-  const { audioTitle } = request.data;
+// Fonction déclenchée par HTTP pour envoyer une notification
+exports.sendNewAudioNotification = functions.https.onRequest((request, response) => {
+    // Permet à la fonction de gérer les requêtes CORS
+    corsHandler(request, response, async () => {
+        // Gérer les requêtes preflight (OPTIONS)
+        if (request.method === 'OPTIONS') {
+            response.status(204).send('');
+            return;
+        }
 
-  if (!audioTitle) {
-    throw new Error("Le titre de l'audio est requis");
-  }
-
-  try {
-    const tokensSnapshot = await admin.firestore().collection('fcmTokens').get();
-    
-    if (tokensSnapshot.empty) {
-      console.log('Aucun token FCM trouvé');
-      return { success: false, error: 'Aucun destinataire trouvé' };
-    }
-
-    const tokens = tokensSnapshot.docs.map(doc => doc.data().token);
-    
-    const message = {
-      notification: {
-        title: 'Nouveau contenu disponible !',
-        body: `Un nouvel audio "${audioTitle}" est maintenant disponible.`,
-      },
-      webpush: {
-        notification: {
-          icon: '/fingerprint.webp',
-        },
-      },
-      tokens: tokens, // The tokens array is included here
-    };
-
-    const response = await admin.messaging().sendEachForMulticast(message);
-
-    console.log('Résultat de l\'envoi:', response);
-    return { success: true, results: response.responses };
-  } catch (error) {
-    console.error('Erreur lors de l\'envoi des notifications:', error);
-    throw new Error('Échec de l\'envoi des notifications');
-  }
+        const audioTitle = request.body.audioTitle || 'Nouvel audio disponible';
+        
+        try {
+            // Obtenir tous les jetons enregistrés depuis Firestore
+            const tokensSnapshot = await admin.firestore().collection('fcmTokens').get();
+            const tokens = tokensSnapshot.docs.map(doc => doc.data().token);
+            
+            // Créer le message de notification
+            const message = {
+                notification: {
+                    title: 'Nouveau Tafsir Audio !',
+                    body: `Un nouvel audio de tafsir sur "${audioTitle}" vient d'être ajouté.`,
+                },
+                tokens: tokens, // Envoyer à tous les jetons
+            };
+            
+            // Envoyer le message
+            const messagingResponse = await admin.messaging().sendEachForMulticast(message);
+            console.log('Message envoyé avec succès :', messagingResponse);
+            
+            response.status(200).send({ success: true, response: messagingResponse });
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi du message :', error);
+            response.status(500).send({ success: false, error: 'Échec de l\'envoi de la notification' });
+        }
+    });
 });
