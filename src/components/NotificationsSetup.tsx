@@ -2,15 +2,17 @@
 'use client';
 
 import { saveMessagingToken, testFirebaseConfig } from '@/lib/notifications';
-import { getAuth, signInAnonymously } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 export default function NotificationsSetup() {
   const [status, setStatus] = useState<string>('idle');
 
   useEffect(() => {
-    const setupNotifications = async () => {
+    const setupNotifications = async (user: User) => {
       console.log('🔔 Configuration notifications...');
+      console.log('Utilisateur authentifié:', user.uid);
 
       // Vérifications basiques
       if (!('serviceWorker' in navigator) || !('Notification' in window)) {
@@ -29,46 +31,36 @@ export default function NotificationsSetup() {
       }
 
       try {
-        setStatus('authenticating');
-
-        // Authentification anonyme
-        const auth = getAuth();
-        console.log('🔑 Tentative d\'authentification anonyme...');
-        
-        const userCredential = await signInAnonymously(auth);
-        const anonymousUserId = userCredential.user.uid;
-
-        console.log('✅ Authentifié anonymement:', anonymousUserId);
-
         setStatus('registering');
 
-        // Petit délai pour stabilisation
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
         // Enregistrement des notifications
-        await saveMessagingToken(anonymousUserId);
+        await saveMessagingToken(user.uid);
         
         setStatus('success');
         console.log('🎉 Notifications configurées avec succès!');
 
-      } catch (error: any) {
+      } catch (error) {
         console.error('💥 Erreur configuration:', error);
         setStatus('error');
         
-        // Gestion spécifique des erreurs d'authentification
-        if (error.code) {
-          console.error('Code erreur:', error.code);
+        // Gestion spécifique des erreurs
+        if (error instanceof Error) {
           console.error('Message erreur:', error.message);
-          
-          if (error.code === 'auth/api-key-not-valid') {
-            console.error('❌ Clé API Firebase invalide');
-            console.error('Vérifiez vos variables d\'environnement');
-          }
         }
       }
     };
 
-    setupNotifications();
+    // Observer l'état de l'authentification de l'utilisateur
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setupNotifications(user);
+      } else {
+        console.log('L\'utilisateur n\'est pas connecté, pas de configuration des notifications.');
+        setStatus('not-authenticated');
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (

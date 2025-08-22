@@ -51,7 +51,7 @@ export default function LoginPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="p-8 bg-white rounded-lg shadow-md">
-          <p className="text-center">Vérification de l'authentification...</p>
+          <p className="text-center">Vérification de l&apos;authentification...</p>
         </div>
       </div>
     );
@@ -63,7 +63,7 @@ export default function LoginPage() {
         <h1 className="text-2xl font-bold mb-6 text-center">Connexion Administrateur</h1>
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-2">
-            Connectez-vous avec l'email administrateur autorisé :
+            Connectez-vous avec l&apos;email administrateur autorisé :
           </p>
           <p className="text-xs text-gray-500 mb-4">
             {process.env.NEXT_PUBLIC_ADMIN_EMAIL || "Email admin non configuré"}

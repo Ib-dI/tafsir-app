@@ -19,6 +19,7 @@ export default function ManualTrigger() {
       setAudioTitle('');
     } catch (error) {
       alert("Échec de l'envoi de la notification.");
+      console.error(error);
     } finally {
       setLoading(false);
     }
