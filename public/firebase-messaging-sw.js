@@ -3,12 +3,12 @@ importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-comp
 
 // Configuration Firebase
 const firebaseConfig = self.firebaseConfig || {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+  apiKey: "AIzaSyAL-GlEdsrJqHnGIT0tyL7FoIKQMqllexU",
+  authDomain: "tafsir-app-3b154.firebaseapp.com",
+  projectId: "tafsir-app-3b154",
+  storageBucket: "tafsir-app-3b154.firebasestorage.app",
+  messagingSenderId: "452609641286",
+  appId: "1:452609641286:web:7554de9163bb7a47d83347"
 };
 
 console.log('[SW] Initialisation Firebase Messaging...');
