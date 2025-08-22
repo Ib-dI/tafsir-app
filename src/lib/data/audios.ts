@@ -1876,21 +1876,24 @@ export const audiosTafsir = [
           { id: 13, startTime: 1195.78, endTime: 1389.17 },
         ],
       },
-      // {
-      //   id: "al-mujadila-3",
-      //   title: "Al-Mujadila - Partie 3",
-      //   url: "",
-      //   timings: [],
-      // },
-      // {
-      //   id: "al-mujadila-4",
-      //   title: "Al-Mujadila - Partie 4",
-      //   url: "",
-      //   timings: [],
-      // },
+      {
+        id: "al-mujadila-3",
+        title: "Al-Mujadila - Partie 3",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Mujadila-part3.ogg",
+        timings: [
+          { id: 14, startTime: 58.17, endTime: 154.62 },
+        { id: 15, startTime: 154.62, endTime: 213.35 },
+        { id: 16, startTime: 213.35, endTime: 298.89 },
+        { id: 17, startTime: 298.89, endTime: 355.37 },
+        { id: 18, startTime: 355.37, endTime: 474.22 },
+        { id: 19, startTime: 474.22, endTime: 569.66 },
+        { id: 20, startTime: 569.66, endTime: 600.34 },
+        { id: 21, startTime: 600.34, endTime: 774.91 },
+        { id: 22, startTime: 774.91, endTime: 1186.03 },
+        ],
+      },
     ],
   },
-
   {
     id: 59,
     name_simple: "Al-Hashr",
