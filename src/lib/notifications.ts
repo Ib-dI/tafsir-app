@@ -43,40 +43,13 @@ export const saveMessagingToken = async (anonymousUserId: string): Promise<void>
     }
 
     console.log('✅ VAPID key OK');
-
-    // Enregistrement du Service Worker avec configuration
-    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-      scope: '/'
-    });
     
-    // Attendre que le Service Worker soit actif
-    await registration.update();
-    if (registration.active) {
-      registration.active.postMessage({ 
-        type: 'FIREBASE_CONFIG',
-        config: firebaseConfig 
-      });
-    }
-
-    console.log('✅ Service Worker enregistré');
-
-    // Attendre que le SW soit prêt
-    if (registration.installing) {
-      await new Promise<void>((resolve) => {
-        registration.installing?.addEventListener('statechange', (e) => {
-          if ((e.target as ServiceWorker)?.state === 'activated') {
-            resolve();
-          }
-        });
-      });
-    }
-
+    // Le SDK gère l'enregistrement du Service Worker
     const messaging = getMessaging();
     
     // Obtenir le token
     const token = await getToken(messaging, {
       vapidKey: vapidKey,
-      serviceWorkerRegistration: registration
     });
 
     if (token) {
@@ -109,16 +82,14 @@ export const sendManualNotification = async (audioTitle: string): Promise<void> 
     console.error('❌ Erreur envoi notification:', error);
   }
 };
-// Ajoutez cette fonction dans notifications.ts
+
 export const debugServiceWorker = async (): Promise<void> => {
   console.log('=== DEBUG SERVICE WORKER ===');
   
   try {
-    // Essayer de récupérer le SW existant
     const registration = await navigator.serviceWorker.ready;
     console.log('SW ready:', registration);
     
-    // Essayer sans spécifier le serviceWorkerRegistration
     const messaging = getMessaging();
     const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
     

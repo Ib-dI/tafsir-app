@@ -1,10 +1,11 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { handleRedirectResult, signInWithGoogle } from "@/lib/auth";
+import { signInWithGoogle } from "@/lib/auth"; // Importez la nouvelle fonction
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth"; // Importez directement onAuthStateChanged
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,51 +13,32 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
+  // Utilisez onAuthStateChanged pour gérer l'état de connexion de manière réactive
   useEffect(() => {
-    let unsubscribe: () => void;
-
-    const checkAuthAndRedirect = async () => {
-      try {
-        setIsCheckingAuth(true);
-        console.log("Vérification de l'authentification...");
-        
-        // Vérifier si l'utilisateur est déjà connecté
-        unsubscribe = auth.onAuthStateChanged(async (user) => {
-          if (user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-            console.log("Utilisateur déjà connecté, redirection...");
-            router.push('/admin');
-            return;
-          }
-        });
-
-        // Vérifier le résultat de la redirection
-        const user = await handleRedirectResult();
-        if (user) {
-          console.log("Redirection après connexion réussie...");
-          router.push('/admin');
-        }
-      } catch (error: any) {
-        console.error("Erreur lors de la vérification:", error);
-        setError(error.message || "Une erreur s'est produite lors de la connexion");
-      } finally {
-        setIsCheckingAuth(false);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+        console.log("Utilisateur déjà connecté, redirection...");
+        router.push('/admin');
       }
-    };
+      setIsCheckingAuth(false);
+    });
 
-    checkAuthAndRedirect();
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    return () => unsubscribe();
   }, [router]);
 
   const handleLogin = async () => {
     try {
       setIsLoading(true);
       setError("");
-      await signInWithGoogle();
+      const user = await signInWithGoogle();
+      
+      // Vérifiez l'utilisateur après la connexion pop-up
+      if (user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+        console.log("Connexion via pop-up réussie, redirection...");
+        router.push('/admin');
+      } else {
+        setError("Accès refusé. Veuillez utiliser l'email administrateur.");
+      }
     } catch (error) {
       setError("Erreur lors de la connexion. Veuillez réessayer.");
       console.error(error);
