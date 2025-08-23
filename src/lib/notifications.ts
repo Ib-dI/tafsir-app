@@ -1,6 +1,6 @@
 // src/lib/notifications.ts
 import { doc, setDoc } from 'firebase/firestore';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+// import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getMessaging, getToken, isSupported } from 'firebase/messaging';
 import { db } from './firebase';
 
