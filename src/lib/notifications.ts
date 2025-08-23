@@ -74,12 +74,25 @@ export const saveMessagingToken = async (anonymousUserId: string): Promise<void>
 
 export const sendManualNotification = async (audioTitle: string): Promise<void> => {
   try {
-    const functions = getFunctions(undefined, 'us-central1');
-    const sendNotification = httpsCallable(functions, 'sendNewAudioNotification');
-    await sendNotification({ audioTitle });
-    console.log('📨 Notification envoyée');
+    const url = 'https://us-central1-tafsir-app-3b154.cloudfunctions.net/sendNewAudioNotification';
+    const body = { audioTitle };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (response.ok) {
+      console.log(`Notification manuelle envoyée avec succès pour le titre : "${audioTitle}"`);
+    } else {
+      console.error("Échec de l'envoi de la notification. Statut :", response.status);
+    }
+
   } catch (error) {
-    console.error('❌ Erreur envoi notification:', error);
+    console.error("Erreur lors de l'envoi de la notification :", error);
   }
 };
 

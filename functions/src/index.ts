@@ -6,7 +6,12 @@ import cors from 'cors';
 // Initialiser le SDK Admin
 admin.initializeApp();
 
-const corsHandler = cors({ origin: true });
+const corsHandler = cors({ 
+    origin: [
+        'https://tafsir-app.vercel.app', 
+        'http://localhost:3000' 
+    ] 
+});
 
 // Fonction déclenchée par HTTP pour envoyer une notification
 exports.sendNewAudioNotification = functions.https.onRequest((request, response) => {
@@ -18,8 +23,9 @@ exports.sendNewAudioNotification = functions.https.onRequest((request, response)
             return;
         }
 
-        const audioTitle = request.body.audioTitle || 'Nouvel audio disponible';
-        
+        // Accédez aux données envoyées par httpsCallable via request.body.data
+        const audioTitle = request.body.data.audioTitle || 'Nouvel audio disponible';
+
         try {
             // Obtenir tous les jetons enregistrés depuis Firestore
             const tokensSnapshot = await admin.firestore().collection('fcmTokens').get();
@@ -31,7 +37,7 @@ exports.sendNewAudioNotification = functions.https.onRequest((request, response)
                     title: 'Nouveau Tafsir Audio !',
                     body: `Un nouvel audio de tafsir sur "${audioTitle}" vient d'être ajouté.`,
                 },
-                tokens: tokens, // Envoyer à tous les jetons
+                tokens: tokens,
             };
             
             // Envoyer le message
