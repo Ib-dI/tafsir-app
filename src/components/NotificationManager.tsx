@@ -1,12 +1,11 @@
 // components/NotificationManager.tsx
 "use client";
 
-// Importez les modules nécessaires
 import { useState, useEffect } from 'react';
-// Import getMessaging here, NOT in the firebase.ts file
-import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, isSupported, Messaging, MessagePayload } from 'firebase/messaging';
 import { doc, setDoc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
+
 // Importez les icônes Lucide React
 import { Bell, CheckCircle, XCircle, Loader2, MessageCircle } from 'lucide-react';
 
@@ -14,6 +13,11 @@ import { Bell, CheckCircle, XCircle, Loader2, MessageCircle } from 'lucide-react
 import { db, auth, serverTimestamp } from '../lib/firebase';
 
 const FIREBASE_PROJECT_ID = "tafsir-app-3b154";
+
+interface IncomingMessage {
+  title: string | null;
+  body: string | null;
+}
 
 function NotificationManager() {
   const [permissionStatus, setPermissionStatus] = useState<NotificationPermission>('default');
@@ -24,23 +28,20 @@ function NotificationManager() {
   const [user, authLoading, authError] = useAuthState(auth);
 
   useEffect(() => {
-    // Only run this code on the client
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      isSupported().then(supported => {
+    // Exécuter uniquement si nous sommes côté client
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && Notification) {
+      isSupported().then((supported: boolean) => {
         if (!supported) {
           setError("Votre navigateur ne supporte pas les notifications.");
           return;
         }
 
-        const messagingInstance = getMessaging(); // Initialize messaging instance here
+        const messagingInstance: Messaging = getMessaging();
 
-        if (typeof Notification !== 'undefined') {
-          setPermissionStatus(Notification.permission);
-        }
+        setPermissionStatus(Notification.permission);
 
-        // Écouter les messages lorsque l'application est au premier plan
         if (messagingInstance && Notification.permission === 'granted') {
-          const unsubscribe = onMessage(messagingInstance, (payload) => {
+          const unsubscribe = onMessage(messagingInstance, (payload: MessagePayload) => {
             console.log('Message reçu en premier plan :', payload);
             setIncomingMessage({
               title: payload.notification?.title || null,
@@ -49,12 +50,12 @@ function NotificationManager() {
           });
           return () => unsubscribe();
         }
-      }).catch(err => {
+      }).catch((err: Error) => {
         console.error("Erreur lors de la vérification de la compatibilité de Firebase Messaging", err);
         setError("Erreur de compatibilité.");
       });
     }
-  }, []); // Exécuté une seule fois au montage
+  }, []);
 
   const handleActivateNotifications = async () => {
     setLoading(true);
@@ -67,20 +68,21 @@ function NotificationManager() {
     }
 
     try {
-      const permission = await Notification.requestPermission();
+      const permission: NotificationPermission = await Notification.requestPermission();
       setPermissionStatus(permission);
 
       if (permission === 'granted') {
         console.log('Permission de notification accordée.');
 
-        const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+        const vapidKey: string | undefined = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
         if (!vapidKey) {
-            setError("Clé VAPID manquante. Vérifiez vos variables d'environnement.");
-            setLoading(false);
-            return;
+          setError("Clé VAPID manquante. Vérifiez vos variables d'environnement.");
+          setLoading(false);
+          return;
         }
 
-        const currentToken = await getToken(messaging, {
+        const messagingInstance: Messaging = getMessaging();
+        const currentToken: string = await getToken(messagingInstance, {
           vapidKey,
         });
 
@@ -91,7 +93,7 @@ function NotificationManager() {
           const userTokenDocRef = doc(db, 'artifacts', FIREBASE_PROJECT_ID, 'users', user.uid, 'progress', 'fcmToken');
           await setDoc(userTokenDocRef, {
             token: currentToken,
-            timestamp: serverTimestamp(),
+            timestamp: serverTimestamp(), // Utilisation de la fonction importée
           }, { merge: true });
 
           console.log('Token FCM stocké avec succès dans Firestore pour l\'utilisateur :', user.uid);
@@ -101,7 +103,7 @@ function NotificationManager() {
       } else {
         setError('Permission de notification refusée par l\'utilisateur.');
       }
-    } catch (err: any) {
+    } catch (err: any) { // Le catch peut renvoyer différents types d'erreurs, `any` est acceptable ici.
       console.error('Erreur lors de l\'activation des notifications :', err);
       setError(`Une erreur est survenue : ${err.message || 'Vérifiez la console pour plus de détails.'}`);
     } finally {
@@ -151,19 +153,19 @@ function NotificationManager() {
       {authLoading && (
         <p className="text-blue-600 text-sm flex items-center gap-2">
           <Loader2 className="w-4 h-4 animate-spin" />
-          Chargement de l'état d'authentification...
+          Chargement de l&apos;état d&apos;authentification...
         </p>
       )}
       {authError && (
         <p className="text-red-600 text-sm flex items-center gap-2">
           <XCircle className="w-4 h-4" />
-          Erreur d'authentification : {authError.message}
+          Erreur d&apos;authentification : {authError.message}
         </p>
       )}
       {!user && !authLoading && (
         <p className="text-yellow-600 text-sm flex items-center gap-2">
           <XCircle className="w-4 h-4" />
-          Veuillez patienter pendant la connexion de l'utilisateur pour activer les notifications.
+          Veuillez patienter pendant la connexion de l&apos;utilisateur pour activer les notifications.
         </p>
       )}
 
