@@ -5,7 +5,6 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 // Initialisez le SDK Firebase Admin.
-// admin.initializeApp() utilise automatiquement les identifiants du projet déployé.
 admin.initializeApp();
 
 // Obtenez une référence à Firestore pour l'accès aux données.
@@ -31,8 +30,6 @@ interface MultipleUsersNotificationData extends NotificationData {
 }
 
 // --- Optimisation : Mise en cache pour le chargement des paramètres ---
-// Ces variables sont en portée globale, mais la logique de chargement
-// est déclenchée de manière paresseuse et avec cache.
 let cachedAppSettings: admin.firestore.DocumentData | undefined;
 let lastFetchTime: number = 0;
 const CACHE_LIFETIME = 5 * 60 * 1000; // 5 minutes en millisecondes
@@ -73,14 +70,14 @@ async function getAppSettings(): Promise<admin.firestore.DocumentData> {
  * Cette fonction est conçue pour être appelée depuis votre application client.
  */
 export const sendNotificationToSpecificToken = functions.https.onCall(
-  async (data: SpecificTokenNotificationData, context: functions.https.CallableContext) => {
+  async (request: functions.https.CallableRequest<SpecificTokenNotificationData>, context: functions.https.CallableContext) => {
     // 1. Vérification de l'authentification (TRÈS RECOMMANDÉ)
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Seuls les utilisateurs authentifiés peuvent appeler cette fonction.');
     }
 
     // 2. Récupération et validation des données d'entrée
-    const { fcmToken, title, body, payloadData } = data;
+    const { fcmToken, title, body, payloadData } = request.data;
 
     if (!fcmToken || !title || !body) {
       throw new functions.https.HttpsError('invalid-argument', 'Les arguments "fcmToken", "title" et "body" sont requis.');
@@ -108,14 +105,6 @@ export const sendNotificationToSpecificToken = functions.https.onCall(
           error.code === 'messaging/registration-token-not-registered' ||
           error.code === 'messaging/not-found') {
         console.warn(`Le token '${fcmToken}' n'est plus valide ou n'est pas enregistré. Il devrait être supprimé de Firestore.`);
-        // TODO: Implémentez la logique pour supprimer ce token de votre base de données.
-        // Vous devrez peut-être passer l'UID de l'utilisateur qui possède ce token si ce n'est pas l'appelant.
-        // Exemple de pseudo-code pour la suppression (nécessiterait plus de contexte pour être exact) :
-        // if (context.auth.uid) {
-        //   const tokenRef = db.collection('artifacts').doc(FIREBASE_PROJECT_ID).collection('users').doc(context.auth.uid).collection('progress').doc('fcmToken');
-        //   await tokenRef.delete();
-        //   console.log(`Token supprimé de Firestore pour l'utilisateur ${context.auth.uid}.`);
-        // }
       }
       throw new functions.https.HttpsError('internal', 'Échec de l\'envoi de la notification.', error.message);
     }
@@ -129,18 +118,14 @@ export const sendNotificationToSpecificToken = functions.https.onCall(
  * Elle récupère les tokens des utilisateurs ciblés depuis Cloud Firestore.
  */
 export const sendNotificationToMultipleUsers = functions.https.onCall(
-  async (data: MultipleUsersNotificationData, context: functions.https.CallableContext) => {
+  async (request: functions.https.CallableRequest<MultipleUsersNotificationData>, context: functions.https.CallableContext) => {
     // 1. Vérification de l'authentification (TRÈS RECOMMANDÉ)
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Seuls les utilisateurs authentifiés peuvent appeler cette fonction.');
     }
-    // Exemple de vérification de rôle si vous avez des rôles admin
-    // if (!context.auth.token?.admin) {
-    //   throw new functions.https.HttpsError('permission-denied', 'Cette opération nécessite des privilèges d\'administrateur.');
-    // }
 
     // 2. Récupération et validation des données d'entrée
-    const { title, body, targetUserIds, payloadData } = data;
+    const { title, body, targetUserIds, payloadData } = request.data;
 
     if (!title || !body) {
       throw new functions.https.HttpsError('invalid-argument', 'Les arguments "title" et "body" sont requis.');
@@ -150,19 +135,13 @@ export const sendNotificationToMultipleUsers = functions.https.onCall(
     let querySnapshot: admin.firestore.QuerySnapshot;
 
     if (targetUserIds && targetUserIds.length > 0) {
-      // Pour cibler des UIDs spécifiques :
-      // On construit une liste de promesses pour récupérer chaque document 'fcmToken'
-      // correspondant aux UIDs ciblés.
       const fcmTokenDocsPromises = targetUserIds.map(uid =>
         db.collection('artifacts').doc(FIREBASE_PROJECT_ID)
           .collection('users').doc(uid).collection('progress').doc('fcmToken').get()
       );
       const docs = await Promise.all(fcmTokenDocsPromises);
-      // Simule un QuerySnapshot pour une manipulation uniforme des documents existants
       querySnapshot = { docs: docs.filter(doc => doc.exists) } as admin.firestore.QuerySnapshot;
     } else {
-      // Si aucun UID spécifique n'est fourni, récupérer tous les documents 'fcmToken' via une collection group.
-      // Cela nécessite un index de collection group pour 'progress' dans votre configuration Firestore.
       querySnapshot = await db.collectionGroup('progress')
                             .where(admin.firestore.FieldPath.documentId(), '==', 'fcmToken')
                             .get();
@@ -188,7 +167,7 @@ export const sendNotificationToMultipleUsers = functions.https.onCall(
         body: body,
       },
       data: payloadData,
-      tokens: registrationTokens, // Les tokens sont passés ici pour le multicast
+      tokens: registrationTokens,
     };
 
     // 5. Envoi du message en mode multicast (jusqu'à 500 tokens par appel)
@@ -198,9 +177,9 @@ export const sendNotificationToMultipleUsers = functions.https.onCall(
 
       // 6. Nettoyage des tokens invalides (TRÈS IMPORTANT)
       const tokensToDelete: string[] = [];
-      response.responses.forEach((resp, idx) => {
-        if (!resp.success && resp.exception) {
-          const errorCode = (resp.exception as admin.messaging.MessagingError).code;
+      response.responses.forEach((resp, idx) => { // <-- CORRECTION ICI : 'resp.exception' devient 'resp.error'
+        if (!resp.success && resp.error) {
+          const errorCode = resp.error.code; // Accède directement à 'code' sur l'objet 'FirebaseError'
           if (errorCode === 'messaging/invalid-argument' ||
               errorCode === 'messaging/invalid-registration-token' ||
               errorCode === 'messaging/registration-token-not-registered' ||
@@ -213,12 +192,10 @@ export const sendNotificationToMultipleUsers = functions.https.onCall(
       if (tokensToDelete.length > 0) {
         console.warn(`Tentative de suppression de ${tokensToDelete.length} tokens invalides.`);
         const deletePromises = tokensToDelete.map(async (token) => {
-          // Trouver le document Firestore correspondant à ce token pour le supprimer.
-          // Requête de collection group pour trouver le document 'fcmToken' qui contient le token spécifique.
           const tokenDocs = await db.collectionGroup('progress')
                                     .where(admin.firestore.FieldPath.documentId(), '==', 'fcmToken')
                                     .where('token', '==', token)
-                                    .limit(1) // On suppose que chaque token est unique
+                                    .limit(1)
                                     .get();
           if (!tokenDocs.empty) {
             const docRef = tokenDocs.docs[0].ref;
