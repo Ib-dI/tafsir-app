@@ -6,10 +6,10 @@ import { getMessaging } from 'firebase-admin/messaging';
 import { getFirestore } from 'firebase-admin/firestore';
 
 // Interface pour stocker les documents de token valides
-interface ValidTokenDoc {
-  id: string;
-  token: string;
-}
+// interface ValidTokenDoc {
+//   id: string;
+//   token: string;
+// }
 
 // Initialisation du SDK Firebase Admin (une seule fois)
 if (getApps().length === 0) {
