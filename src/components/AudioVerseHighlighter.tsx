@@ -5,6 +5,7 @@ import { Info } from "lucide-react";
 import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { useMediaQuery } from "./UseMediaQuery";
+import Image from "next/image"
 
 type Verse = {
   id: number;
@@ -114,10 +115,10 @@ const VerseItem = React.memo(
               {verse.text} {toArabicNumerals(verse.id)}
             </span>
           </div>
-          <p className="text-md mt-[-8px] text-right font-medium text-gray-500">
+          <p className="text-md mt-[-8px] text-right font-medium text-gray-600">
             {verse.transliteration}
           </p>
-          <p className="-mt-2 self-start text-gray-700">
+          <p className="-mt-2 self-start text-gray-800">
             {verse.id}. {verse.translation}
           </p>
         </div>
@@ -535,7 +536,7 @@ const AudioVerseHighlighter = ({
           }}
           className="pointer-events-none absolute -bottom-7 left-1/2 z-10 w-fit -translate-x-1/2 -translate-y-1/2 rounded-sm bg-yellow-50/40 px-4 text-sm font-medium text-nowrap text-red-800 uppercase shadow"
         >
-          {infoSourate[2]}
+          {infoSourate[0]}. {infoSourate[2]}
         </motion.div>
       </div>
       <div
@@ -547,9 +548,12 @@ const AudioVerseHighlighter = ({
         {Number(infoSourate[0]) !== 1 &&
           Number(infoSourate[0]) !== 9 &&
           verses[0]?.id === 1 && (
-            <p className="font-bismillah text-center text-5xl text-gray-800">
-              5
-            </p>
+            
+            <div className="flex w-full mt-2 justify-center">
+              <p className="font-quran-common text-center py-2 text-3xl md:text-5xl text-gray-800">
+                ﷽
+              </p>
+            </div>
           )}
 
         {verses.map((verse: Verse) => (
