@@ -103,7 +103,7 @@ function NotificationManager() {
       } else {
         setError('Permission de notification refusée par l\'utilisateur.');
       }
-    } catch (err: any) { // Le catch peut renvoyer différents types d'erreurs, `any` est acceptable ici.
+    } catch (err: InstanceType <typeof Error> | any) { 
       console.error('Erreur lors de l\'activation des notifications :', err);
       setError(`Une erreur est survenue : ${err.message || 'Vérifiez la console pour plus de détails.'}`);
     } finally {

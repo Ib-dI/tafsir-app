@@ -1,7 +1,7 @@
 // lib/firebase.ts
 
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, getFirestore as getClientFirestore, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, serverTimestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {

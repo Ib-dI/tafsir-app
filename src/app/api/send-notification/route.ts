@@ -3,9 +3,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, DocumentData, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 
-// Initialize Firebase Admin SDK (once)
+// Interface pour stocker les documents de token valides
+interface ValidTokenDoc {
+  id: string;
+  token: string;
+}
+
+// Initialisation du SDK Firebase Admin (une seule fois)
 if (getApps().length === 0) {
   try {
     const serviceAccount = {
@@ -58,13 +64,13 @@ export async function POST(request: NextRequest) {
     }
 
     const tokens: string[] = [];
-    const validTokenDocs: any[] = [];
+    const tokenDocMap = new Map<string, string>(); // Utilisation d'une Map pour un meilleur suivi
 
     tokensSnapshot.forEach((doc) => {
       const data = doc.data();
       if (data.token && typeof data.token === 'string') {
         tokens.push(data.token);
-        validTokenDocs.push({ id: doc.id, data });
+        tokenDocMap.set(data.token, doc.id); // Stocke le token et l'ID du document
       }
     });
 
@@ -147,9 +153,13 @@ export async function POST(request: NextRequest) {
     if (results.invalidTokens.length > 0) {
       console.log(`🧹 Nettoyage de ${results.invalidTokens.length} tokens invalides...`);
       
-      const deletePromises = validTokenDocs
-        .filter(doc => results.invalidTokens.includes(doc.data.token))
-        .map(doc => db.collection('fcmTokens').doc(doc.id).delete());
+      const deletePromises = results.invalidTokens.map(invalidToken => {
+        const docId = tokenDocMap.get(invalidToken);
+        if (docId) {
+          return db.collection('fcmTokens').doc(docId).delete();
+        }
+        return Promise.resolve();
+      });
       
       try {
         await Promise.all(deletePromises);
