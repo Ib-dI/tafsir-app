@@ -73,9 +73,9 @@ async function getAppSettings(): Promise<admin.firestore.DocumentData> {
  * Cette fonction est conçue pour être appelée depuis votre application client.
  */
 export const sendNotificationToSpecificToken = functions.https.onCall(
-  async (request: functions.https.CallableRequest<SpecificTokenNotificationData>, context: functions.https.CallableContext) => {
+  async (request: functions.https.CallableRequest<SpecificTokenNotificationData>) => {
     // 1. Vérification de l'authentification (TRÈS RECOMMANDÉ)
-    if (!context.auth) {
+    if (!request.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Seuls les utilisateurs authentifiés peuvent appeler cette fonction.');
     }
 
@@ -121,9 +121,9 @@ export const sendNotificationToSpecificToken = functions.https.onCall(
  * Elle récupère les tokens des utilisateurs ciblés depuis Cloud Firestore.
  */
 export const sendNotificationToMultipleUsers = functions.https.onCall(
-  async (request: functions.https.CallableRequest<MultipleUsersNotificationData>, context: functions.https.CallableContext) => {
+  async (request: functions.https.CallableRequest<MultipleUsersNotificationData>) => {
     // 1. Vérification de l'authentification (TRÈS RECOMMANDÉ)
-    if (!context.auth) {
+    if (!request.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'Seuls les utilisateurs authentifiés peuvent appeler cette fonction.');
     }
 
