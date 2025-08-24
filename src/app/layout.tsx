@@ -48,7 +48,7 @@ export default function RootLayout({
             {children}
           </Suspense>
           {/* AJOUTEZ CE COMPOSANT ICI */}
-          <NotificationsSetup />
+          {/* <NotificationsSetup /> */}
         </div>
       </body>
     </html>
