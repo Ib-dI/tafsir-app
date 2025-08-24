@@ -103,9 +103,18 @@ function NotificationManager() {
       } else {
         setError('Permission de notification refusée par l\'utilisateur.');
       }
-    } catch (err: unknown ) { 
+    } catch (err: unknown) { 
       console.error('Erreur lors de l\'activation des notifications :', err);
-      setError(`Une erreur est survenue : ${err.message || 'Vérifiez la console pour plus de détails.'}`);
+      
+      // Gestion sécurisée du type unknown
+      let errorMessage = 'Vérifiez la console pour plus de détails.';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      }
+      
+      setError(`Une erreur est survenue : ${errorMessage}`);
     } finally {
       setLoading(false);
     }
