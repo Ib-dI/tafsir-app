@@ -1,7 +1,7 @@
 // app/api/send-notification/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { initializeApp, cert, getApps, ServiceAccount } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
 import { getFirestore } from 'firebase-admin/firestore';
 
@@ -14,17 +14,26 @@ import { getFirestore } from 'firebase-admin/firestore';
 // Initialisation du SDK Firebase Admin (une seule fois)
 if (getApps().length === 0) {
   try {
-    const serviceAccount = {
-      type: "service_account",
+    // Vérification des variables d'environnement requises
+    const requiredEnvVars = {
       project_id: process.env.FIREBASE_PROJECT_ID,
       private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      private_key: process.env.FIREBASE_PRIVATE_KEY,
       client_email: process.env.FIREBASE_CLIENT_EMAIL,
       client_id: process.env.FIREBASE_CLIENT_ID,
-      auth_uri: "https://accounts.google.com/o/oauth2/auth",
-      token_uri: "https://oauth2.googleapis.com/token",
-      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+    };
+
+    // Vérifier que toutes les variables d'environnement sont définies
+    for (const [key, value] of Object.entries(requiredEnvVars)) {
+      if (!value) {
+        throw new Error(`Variable d'environnement manquante: FIREBASE_${key.toUpperCase()}`);
+      }
+    }
+
+    const serviceAccount: ServiceAccount = {
+      projectId: requiredEnvVars.project_id,
+      privateKey: requiredEnvVars?.private_key?.replace(/\\n/g, '\n'),
+      clientEmail: requiredEnvVars.client_email,
     };
 
     initializeApp({
@@ -35,6 +44,7 @@ if (getApps().length === 0) {
     console.log('✅ Firebase Admin initialisé');
   } catch (error) {
     console.error('❌ Erreur initialisation Firebase Admin:', error);
+    throw error; // Re-throw pour éviter une initialisation partielle
   }
 }
 
