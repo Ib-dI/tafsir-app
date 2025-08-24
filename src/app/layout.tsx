@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
-import NotificationsSetup from "@/components/NotificationsSetup"; // Ajoutez cette ligne
+// import NotificationsSetup from "@/components/NotificationsSetup"; // Ajoutez cette ligne
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

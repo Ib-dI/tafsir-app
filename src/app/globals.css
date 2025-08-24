@@ -22,6 +22,11 @@
   src: url('/fonts/Quran_karim_114.ttf') format('truetype');
   font-display: swap;
 }
+@font-face {
+  font-family: 'QuranCommon';
+  src: url('/fonts/quran-common.ttf') format('truetype');
+  font-display: swap;
+}
 
 @import "tailwindcss";
 
@@ -34,6 +39,7 @@
   --font-sura: Surah;
   --font-quran: QuranKarim114;
   --font-bismillah: Bismillah;
+  --font-quran-common: QuranCommon;
 }
 
 @theme inline {
