@@ -1,6 +1,6 @@
 'use client';
 
-import ManualTrigger from "@/components/ManualTrigger";
+// import ManualTrigger from "@/components/ManualTrigger";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth";
 import { auth } from "@/lib/firebase";
@@ -40,7 +40,7 @@ export default function AdminPage() {
           Se déconnecter
         </Button>
       </div>
-      <ManualTrigger />
+      {/* <ManualTrigger /> */}
     </div>
   );
 }

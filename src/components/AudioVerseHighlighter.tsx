@@ -115,10 +115,10 @@ const VerseItem = React.memo(
               {verse.text} {toArabicNumerals(verse.id)}
             </span>
           </div>
-          <p className="text-md mt-[-8px] text-right font-medium text-gray-600">
+          <p className="text-md mt-[-8px] text-right font-medium text-gray-500">
             {verse.transliteration}
           </p>
-          <p className="-mt-2 self-start text-gray-800">
+          <p className="-mt-2 self-start text-gray-700">
             {verse.id}. {verse.translation}
           </p>
         </div>

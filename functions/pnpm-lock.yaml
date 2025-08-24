@@ -3596,7 +3596,7 @@ snapshots:
   '@types/jsonwebtoken@9.0.10':
     dependencies:
       '@types/ms': 2.1.0
-      '@types/node': 24.3.0
+      '@types/node': 22.17.2
 
   '@types/lodash@4.17.20': {}
 
@@ -3624,7 +3624,7 @@ snapshots:
   '@types/request@2.48.13':
     dependencies:
       '@types/caseless': 0.12.5
-      '@types/node': 24.3.0
+      '@types/node': 22.17.2
       '@types/tough-cookie': 4.0.5
       form-data: 2.5.5
     optional: true

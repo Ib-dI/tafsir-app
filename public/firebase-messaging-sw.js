@@ -13,7 +13,7 @@ importScripts('https://www.gstatic.com/firebasejs/9.1.0/firebase-messaging-compa
 // Elle doit être "en dur" ici car les variables d'environnement Next.js (process.env.NEXT_PUBLIC_...)
 // ne sont PAS accessibles dans ce contexte de Service Worker.
 const firebaseConfig = {
-  apiKey: "AIzaSyAL-GlEdsrJqHnGIT0tyL7FoIKQMqllexU",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "tafsir-app-3b154.firebaseapp.com",
   projectId: "tafsir-app-3b154",
   storageBucket: "tafsir-app-3b154.firebasestorage.app",

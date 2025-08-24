@@ -1,6 +1,8 @@
+// lib/firebase.ts
+
 import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getFirestore, getFirestore as getClientFirestore, serverTimestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,9 +13,14 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// Initialize Firebase App
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
+// Export Firebase services that are safe for both client and server
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { app, auth, db };
+// Export serverTimestamp for consistency
+export { app, db, auth, serverTimestamp };
+
+// You must handle getMessaging() in a client-side component like NotificationManager.tsx

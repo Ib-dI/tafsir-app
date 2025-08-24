@@ -81,6 +81,15 @@ export default function Header() {
               >
                 Sourates
               </Link>
+              
+            </motion.li>
+            <motion.li variants={linkVariants}>
+            <Link
+                href="/settings"
+                className="hover:text-blue-500 transition-colors" // blue-500 pour l'homogénéité
+              >
+                Paramètres
+              </Link>
             </motion.li>
           </motion.ul>
         </nav>
