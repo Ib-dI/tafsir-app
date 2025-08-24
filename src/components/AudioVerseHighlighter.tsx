@@ -5,7 +5,7 @@ import { Info } from "lucide-react";
 import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { useMediaQuery } from "./UseMediaQuery";
-import Image from "next/image"
+
 
 type Verse = {
   id: number;
