@@ -5,6 +5,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 // Initialisez le SDK Firebase Admin.
+// admin.initializeApp() utilise automatiquement les identifiants du projet déployé.
 admin.initializeApp();
 
 // Obtenez une référence à Firestore pour l'accès aux données.
@@ -30,6 +31,8 @@ interface MultipleUsersNotificationData extends NotificationData {
 }
 
 // --- Optimisation : Mise en cache pour le chargement des paramètres ---
+// Ces variables sont en portée globale, mais la logique de chargement
+// est déclenchée de manière paresseuse et avec cache.
 let cachedAppSettings: admin.firestore.DocumentData | undefined;
 let lastFetchTime: number = 0;
 const CACHE_LIFETIME = 5 * 60 * 1000; // 5 minutes en millisecondes
@@ -177,9 +180,9 @@ export const sendNotificationToMultipleUsers = functions.https.onCall(
 
       // 6. Nettoyage des tokens invalides (TRÈS IMPORTANT)
       const tokensToDelete: string[] = [];
-      response.responses.forEach((resp, idx) => { // <-- CORRECTION ICI : 'resp.exception' devient 'resp.error'
+      response.responses.forEach((resp, idx) => {
         if (!resp.success && resp.error) {
-          const errorCode = resp.error.code; // Accède directement à 'code' sur l'objet 'FirebaseError'
+          const errorCode = resp.error.code;
           if (errorCode === 'messaging/invalid-argument' ||
               errorCode === 'messaging/invalid-registration-token' ||
               errorCode === 'messaging/registration-token-not-registered' ||
