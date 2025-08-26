@@ -20,49 +20,9 @@ interface NotificationData {
   payloadData?: { [key: string]: string };
 }
 
-interface SpecificTokenNotificationData extends NotificationData {
-  fcmToken: string;
-}
-
 interface MultipleUsersNotificationData extends NotificationData {
   targetUserIds?: string[];
 }
-
-// Function 1: Envoyer une notification à un token spécifique
-export const sendNotificationToSpecificToken = onCall(
-  { timeoutSeconds: 60, memory: '256MiB' },
-  async (request) => {
-    // Vérification de l'authentification
-    if (!request.auth) {
-      throw new HttpsError('unauthenticated', 'Authentication required');
-    }
-
-    const data = request.data as SpecificTokenNotificationData;
-    const { fcmToken, title, body, payloadData } = data;
-
-    // Validation des données
-    if (!fcmToken || !title || !body) {
-      throw new HttpsError('invalid-argument', 'fcmToken, title, and body are required');
-    }
-
-    // Construction et envoi du message
-    try {
-      const message = {
-        notification: { title, body },
-        data: payloadData || {},
-        token: fcmToken,
-      };
-
-      const response = await messaging.send(message);
-      console.log('Notification sent successfully:', response);
-      
-      return { success: true, messageId: response };
-    } catch (error: any) {
-      console.error('Error sending notification:', error);
-      throw new HttpsError('internal', 'Failed to send notification', error.message);
-    }
-  }
-);
 
 // Function 2: Envoyer une notification à plusieurs utilisateurs
 export const sendNotificationToMultipleUsers = onCall(
