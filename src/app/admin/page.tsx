@@ -6,6 +6,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/lib/firebase"; // Assurez-vous que ce chemin est correct
 import { useRouter } from "next/navigation"; // Pour la redirection côté client
+import { signOut } from "firebase/auth";
 
 import {
   BellRing,
@@ -18,6 +19,7 @@ import {
   MessageSquare,
   Code,
   ShieldAlert,
+  LogOut,
 } from "lucide-react";
 
 // Type pour les données envoyées à la Cloud Function
@@ -70,6 +72,16 @@ const NotificationAdminPage = () => {
       return () => clearTimeout(timer);
     }
   }, [authLoading, user, successMessage, errorMessage, router]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push("/login");
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+      setErrorMessage("Erreur lors de la déconnexion");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,8 +136,12 @@ const NotificationAdminPage = () => {
         }
       }
     } catch (parseError) {
+      const errorMessage = parseError instanceof Error 
+        ? parseError.message 
+        : "Erreur de format JSON inconnue";
+      
       setErrorMessage(
-        `Erreur de format pour les données personnalisées : ${parseError.message}`,
+        `Erreur de format pour les données personnalisées : ${errorMessage}`,
       );
       setLoading(false);
       return;
@@ -156,9 +172,11 @@ const NotificationAdminPage = () => {
     } catch (error) {
       console.error("Erreur lors de l'envoi de la notification:", error);
       // Les erreurs HttpsError de la fonction Cloud seront dans error.details ou error.message
-      setErrorMessage(
-        `Échec de l'envoi : ${error.message || "Une erreur inconnue est survenue."}`,
-      );
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Une erreur inconnue est survenue.";
+        
+      setErrorMessage(`Échec de l'envoi : ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -204,10 +222,20 @@ const NotificationAdminPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-3xl rounded-lg border border-gray-200 bg-white p-6 shadow-xl sm:p-8">
-        <h1 className="mb-6 flex items-center gap-3 text-3xl font-extrabold text-gray-900">
-          <BellRing className="h-8 w-8 text-indigo-600" />
-          Envoyer des Notifications (Admin)
-        </h1>
+        {/* Header avec bouton de déconnexion */}
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="flex items-center gap-3 text-3xl font-extrabold text-gray-900">
+            <BellRing className="h-8 w-8 text-indigo-600" />
+            Envoyer des Notifications (Admin)
+          </h1>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+          >
+            <LogOut className="h-4 w-4" />
+            Se déconnecter
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Titre */}
