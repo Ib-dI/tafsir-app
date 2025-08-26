@@ -30,6 +30,13 @@ interface MultipleUsersNotificationPayload {
   payloadData?: { [key: string]: string };
 }
 
+// Type pour la réponse de la Cloud Function
+interface NotificationResponse {
+  successCount: number;
+  failureCount: number;
+  totalTokens: number;
+}
+
 // Composant pour la page d'administration
 const NotificationAdminPage = () => {
   const [title, setTitle] = useState<string>("");
@@ -49,7 +56,7 @@ const NotificationAdminPage = () => {
   // Même si 'use client' est là, cette vérification est robuste.
   const sendNotificationCallable =
     typeof getFunctions !== "undefined"
-      ? httpsCallable<MultipleUsersNotificationPayload>(
+      ? httpsCallable<MultipleUsersNotificationPayload, NotificationResponse>(
           getFunctions(),
           "sendNotificationToMultipleUsers",
         )
