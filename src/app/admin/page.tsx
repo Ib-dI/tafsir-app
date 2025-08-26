@@ -47,7 +47,7 @@ const NotificationAdminPage = () => {
   // Même si 'use client' est là, cette vérification est robuste.
   const sendNotificationCallable =
     typeof getFunctions !== "undefined"
-      ? httpsCallable<MultipleUsersNotificationPayload, any>(
+      ? httpsCallable<MultipleUsersNotificationPayload>(
           getFunctions(),
           "sendNotificationToMultipleUsers",
         )
@@ -123,7 +123,7 @@ const NotificationAdminPage = () => {
           );
         }
       }
-    } catch (parseError: any) {
+    } catch (parseError) {
       setErrorMessage(
         `Erreur de format pour les données personnalisées : ${parseError.message}`,
       );
@@ -153,7 +153,7 @@ const NotificationAdminPage = () => {
       setBody("");
       setTargetUsersInput("");
       setPayloadDataInput("{}");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erreur lors de l'envoi de la notification:", error);
       // Les erreurs HttpsError de la fonction Cloud seront dans error.details ou error.message
       setErrorMessage(
@@ -170,7 +170,7 @@ const NotificationAdminPage = () => {
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
         <Loader2 className="mb-4 h-12 w-12 animate-spin text-indigo-600" />
         <p className="text-lg text-gray-700">
-          Chargement de l'état d'authentification...
+          Chargement de l&apos;état d&apos;authentification...
         </p>
       </div>
     );
