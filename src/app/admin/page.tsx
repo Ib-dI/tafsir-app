@@ -1,11 +1,9 @@
-// app/admin/page.tsx
-"use client"; // <-- IMPÉRATIF : Indique que ce composant est un Client Component
+"use client";
 
 import { useState, useEffect } from "react";
-import { getFunctions, httpsCallable } from "firebase/functions";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/lib/firebase"; // Assurez-vous que ce chemin est correct
-import { useRouter } from "next/navigation"; // Pour la redirection côté client
+import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 
 import {
@@ -22,7 +20,7 @@ import {
   LogOut,
 } from "lucide-react";
 
-// Type pour les données envoyées à la Cloud Function
+// Types
 interface MultipleUsersNotificationPayload {
   title: string;
   body: string;
@@ -30,46 +28,35 @@ interface MultipleUsersNotificationPayload {
   payloadData?: { [key: string]: string };
 }
 
-// Type pour la réponse de la Cloud Function
 interface NotificationResponse {
+  success: boolean;
+  message: string;
   successCount: number;
   failureCount: number;
   totalTokens: number;
 }
 
-// Composant pour la page d'administration
 const NotificationAdminPage = () => {
-  const [title, setTitle] = useState<string>("");
-  const [body, setBody] = useState<string>("");
-  const [targetUsersInput, setTargetUsersInput] = useState<string>("");
-  const [payloadDataInput, setPayloadDataInput] = useState<string>("{}");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [targetUsersInput, setTargetUsersInput] = useState("");
+  const [payloadDataInput, setPayloadDataInput] = useState("{}");
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const [user, authLoading] = useAuthState(auth); // authError n'est pas utilisé directement ici, middleware gère l'accès
+  const [user, authLoading] = useAuthState(auth);
   const router = useRouter();
 
-  // Initialisation de la fonction Cloud
-  // On s'assure que getFunctions est disponible (peut être undefined lors de certains rendus côté serveur si non dynamique)
-  // Même si 'use client' est là, cette vérification est robuste.
-  const sendNotificationCallable =
-    typeof getFunctions !== "undefined"
-      ? httpsCallable<MultipleUsersNotificationPayload, NotificationResponse>(
-          getFunctions(),
-          "sendNotificationToMultipleUsers",
-        )
-      : null;
+  // URL de ta fonction HTTP déployée
+  const FUNCTION_URL =
+    "https://us-central1-tafsir-app-3b154.cloudfunctions.net/sendNotificationToMultipleUsers";
 
   useEffect(() => {
-    // Redirection si l'utilisateur n'est pas authentifié APRÈS le chargement initial
-    // Le middleware devrait déjà avoir géré cela, mais c'est une sécurité supplémentaire côté client.
     if (!authLoading && !user) {
-      router.push("/login"); // Redirige vers votre page de connexion
+      router.push("/login");
     }
-
-    // Réinitialiser les messages de succès/erreur après un certain temps
     if (successMessage) {
       const timer = setTimeout(() => setSuccessMessage(null), 5000);
       return () => clearTimeout(timer);
@@ -96,19 +83,14 @@ const NotificationAdminPage = () => {
     setSuccessMessage(null);
     setErrorMessage(null);
 
-    // Vérification côté client, même si middleware est là
     if (!user) {
-      setErrorMessage(
-        "Erreur: Vous devez être connecté pour envoyer des notifications.",
-      );
+      setErrorMessage("Vous devez être connecté pour envoyer des notifications.");
       setLoading(false);
       return;
     }
 
     if (!title || !body) {
-      setErrorMessage(
-        "Le titre et le corps de la notification sont obligatoires.",
-      );
+      setErrorMessage("Le titre et le corps sont obligatoires.");
       setLoading(false);
       return;
     }
@@ -118,112 +100,64 @@ const NotificationAdminPage = () => {
       parsedTargetUserIds = targetUsersInput
         .split(",")
         .map((id) => id.trim())
-        .filter((id) => id.length > 0);
-      if (parsedTargetUserIds.length === 0) {
-        parsedTargetUserIds = undefined;
-      }
+        .filter(Boolean);
     }
 
     let parsedPayloadData: { [key: string]: string } | undefined;
     try {
       if (payloadDataInput.trim() && payloadDataInput.trim() !== "{}") {
         const parsed = JSON.parse(payloadDataInput);
-        if (typeof parsed === "object" && parsed !== null) {
-          parsedPayloadData = Object.entries(parsed).reduce(
-            (acc, [key, value]) => {
-              acc[key] = String(value);
-              return acc;
-            },
-            {} as { [key: string]: string },
-          );
-        } else {
-          throw new Error(
-            "Les données personnalisées doivent être un objet JSON valide.",
-          );
-        }
+        parsedPayloadData = Object.fromEntries(
+          Object.entries(parsed).map(([k, v]) => [k, String(v)])
+        );
       }
-    } catch (parseError) {
-      const errorMessage = parseError instanceof Error 
-        ? parseError.message 
-        : "Erreur de format JSON inconnue";
-      
-      setErrorMessage(
-        `Erreur de format pour les données personnalisées : ${errorMessage}`,
-      );
+    } catch (err) {
+      setErrorMessage("Format JSON invalide pour les données personnalisées.");
       setLoading(false);
       return;
     }
 
     try {
-      if (!sendNotificationCallable) {
-        throw new Error(
-          "La fonction d'envoi de notification n'est pas disponible. Veuillez vérifier la connexion Firebase.",
-        );
-      }
+      // On peut ajouter le token Firebase Auth dans l’Authorization si tu veux sécuriser
+      const idToken = await user.getIdToken();
 
-      // Appel de la Cloud Function
-      const result = await sendNotificationCallable({
-        title,
-        body,
-        targetUserIds: parsedTargetUserIds,
-        payloadData: parsedPayloadData,
+      const response = await fetch(FUNCTION_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          title,
+          body,
+          targetUserIds: parsedTargetUserIds,
+          payloadData: parsedPayloadData,
+        } as MultipleUsersNotificationPayload),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Erreur réseau");
+      }
+
+      const result: NotificationResponse = await response.json();
       setSuccessMessage(
-        `Notifications envoyées : Succès: ${result.data.successCount || 0}, Échecs: ${result.data.failureCount || 0}, Total: ${result.data.totalTokens || 0}.`,
+        `Notifications envoyées. Succès: ${result.successCount}, Échecs: ${result.failureCount}, Total: ${result.totalTokens}.`
       );
+
       setTitle("");
       setBody("");
       setTargetUsersInput("");
       setPayloadDataInput("{}");
     } catch (error) {
-      console.error("Erreur lors de l'envoi de la notification:", error);
-      // Les erreurs HttpsError de la fonction Cloud seront dans error.details ou error.message
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "Une erreur inconnue est survenue.";
-        
-      setErrorMessage(`Échec de l'envoi : ${errorMessage}`);
+      console.error("Erreur lors de l'envoi:", error);
+      setErrorMessage(
+        error instanceof Error ? error.message : "Erreur inconnue."
+      );
     } finally {
       setLoading(false);
     }
   };
-
-  // Affichage des états de chargement/authentification
-  if (authLoading) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
-        <Loader2 className="mb-4 h-12 w-12 animate-spin text-indigo-600" />
-        <p className="text-lg text-gray-700">
-          Chargement de l&apos;état d&apos;authentification...
-        </p>
-      </div>
-    );
-  }
-
-  // Si l'utilisateur n'est pas là APRÈS le chargement et que le middleware n'a pas redirigé
-  // (Cela ne devrait pas arriver souvent avec le middleware, mais c'est une sécurité)
-  if (!user) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
-        <div className="w-full max-w-sm rounded-lg border border-red-200 bg-white p-8 text-center shadow-md">
-          <ShieldAlert className="mx-auto mb-4 h-16 w-16 text-red-500" />
-          <h2 className="mb-2 text-2xl font-bold text-gray-800">
-            Accès non autorisé
-          </h2>
-          <p className="mb-4 text-gray-600">
-            Vous devez être connecté et autorisé pour accéder à cette page.
-          </p>
-          <button
-            onClick={() => router.push("/login")} // Assurez-vous que /login est votre page de connexion
-            className="rounded-md bg-indigo-600 px-6 py-2 text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
-          >
-            Se connecter
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   // Si l'utilisateur est connecté, affiche le formulaire
   return (
