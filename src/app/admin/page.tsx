@@ -16,7 +16,6 @@ import {
   Info,
   MessageSquare,
   Code,
-  ShieldAlert,
   LogOut,
 } from "lucide-react";
 
@@ -113,6 +112,7 @@ const NotificationAdminPage = () => {
       }
     } catch (err) {
       setErrorMessage("Format JSON invalide pour les données personnalisées.");
+      console.error("Erreur de parsing JSON:", err);
       setLoading(false);
       return;
     }
