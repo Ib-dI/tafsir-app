@@ -105,11 +105,17 @@ export async function POST(request: Request) {
       });
     }
 
-
     return NextResponse.json({ success: true, results: response.responses });
 
   } catch (error) {
     console.error('Error sending notification:', error);
-    return NextResponse.json({ message: 'Failed to send notification', error: error.message }, { status: 500 });
+    
+    // Correction du typage de l'erreur
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    
+    return NextResponse.json({ 
+      message: 'Failed to send notification', 
+      error: errorMessage 
+    }, { status: 500 });
   }
 }
