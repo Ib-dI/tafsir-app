@@ -46,7 +46,7 @@ export const useFcmToken = () => {
               // Générer le token FCM
               const currentToken = await getToken(messagingInstance, { 
                 serviceWorkerRegistration: registration, 
-                vapidKey: 'BH2te-ejWB5LY5RROTxBy1rZecLcM2n7nxyv6yrTBq9JOEwUJBUlItA1p4m3udQpzGvyb5xWAOM-fmD1u0QqAps' // Remplacez par votre clé VAPID
+                vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY // Remplacez par votre clé VAPID
               });
               
               if (currentToken) {
