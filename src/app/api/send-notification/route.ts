@@ -2,19 +2,28 @@
 import { NextResponse } from 'next/server';
 import * as admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore'; // Pour récupérer les tokens
+// Importez le module 'fs' de Node.js
+import * as fs from 'fs';
+// Importez le module 'path' de Node.js pour la résolution des chemins
+import * as path from 'path';
 
 // Initialisation du SDK Admin Firebase
-// Ceci est un exemple simple, en production, utilisez des variables d'environnement
-// pour le chemin de votre clé de compte de service et assurez-vous qu'elle est sécurisée.
-// La variable d'environnement `GOOGLE_APPLICATION_CREDENTIALS` est la méthode préférée pour Vercel.
 let adminApp: admin.app.App | null = null;
 try {
   if (!admin.apps.length) {
     const serviceAccountPath = process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH;
     if (!serviceAccountPath) {
-      throw new Error('FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH not set in environment variables.');
+      // Utilisez une erreur plus explicite pour le débogage si besoin
+      throw new Error('FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH not set in environment variables or path is invalid.');
     }
-    const serviceAccount = require(serviceAccountPath);
+
+    // Résoudre le chemin absolu du fichier de clé de compte de service
+    // __dirname pointe vers le répertoire du fichier en cours
+    const absolutePath = path.resolve(process.cwd(), serviceAccountPath);
+
+    // Lire le fichier JSON de manière synchrone
+    const serviceAccountContent = fs.readFileSync(absolutePath, 'utf8');
+    const serviceAccount = JSON.parse(serviceAccountContent);
 
     adminApp = admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
@@ -105,11 +114,17 @@ export async function POST(request: Request) {
       });
     }
 
-
     return NextResponse.json({ success: true, results: response.responses });
 
   } catch (error) {
     console.error('Error sending notification:', error);
-    return NextResponse.json({ message: 'Failed to send notification', error: error.message }, { status: 500 });
+    
+    // Correction du typage de l'erreur
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    
+    return NextResponse.json({ 
+      message: 'Failed to send notification', 
+      error: errorMessage 
+    }, { status: 500 });
   }
 }

@@ -2,7 +2,7 @@
 'use client'; 
 
 import { useEffect, useState } from 'react';
-import { getToken, onMessage, Messaging } from 'firebase/messaging';
+import { getToken, onMessage } from 'firebase/messaging';
 import { doc, setDoc } from 'firebase/firestore';
 import { messaging, db } from '@/lib/firebase'; // Assurez-vous que le chemin est correct
 

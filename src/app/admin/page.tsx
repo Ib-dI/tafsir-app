@@ -60,7 +60,7 @@ export default function SendAudioNotificationPage() {
       {token ? (
         <p style={{ color: 'green' }}>Notifications activées. Votre token FCM est: {token.substring(0, 10)}...</p>
       ) : (
-        <p style={{ color: 'orange' }}>Les notifications ne sont pas encore activées ou le token n'est pas généré.</p>
+        <p style={{ color: 'orange' }}>Les notifications ne sont pas encore activées ou le token n&apos;est pas généré.</p>
       )}
 
       {/* Afficher la notification reçue au premier plan */}
@@ -74,7 +74,7 @@ export default function SendAudioNotificationPage() {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div>
-          <label htmlFor="audioTitle" style={{ display: 'block', marginBottom: '5px' }}>Titre de l'Audio:</label>
+          <label htmlFor="audioTitle" style={{ display: 'block', marginBottom: '5px' }}>Titre de l&apos;Audio:</label>
           <input
             type="text"
             id="audioTitle"
