@@ -550,7 +550,7 @@ const AudioVerseHighlighter = ({
           verses[0]?.id === 1 && (
             
             <div className="flex w-full mt-2 justify-center">
-              <p className="font-quran-common text-center py-2 text-3xl md:text-5xl text-gray-800">
+              <p className="font-quran-common font-[300] text-center py-2 text-3xl md:text-5xl text-gray-700">
                 ﷽
               </p>
             </div>
