@@ -333,7 +333,7 @@ export default function SouratePage() {
                   key={chapter.id}
                   variants={itemVariants}
                   layout
-                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 transition-colors duration-200 md:w-80 ${isFullyCompleted ? "bg-emerald-100 hover:bg-emerald-200" : "bg-gray-100 hover:bg-gray-200/90"} `}
+                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-sm transition-colors transition-bg duration-200 md:w-80 ${isFullyCompleted ? "bg-emerald-100 hover:bg-emerald-200 border-green-200" : "bg-white border-gray-200 hover:bg-slate-50/50"} `}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() =>
@@ -378,7 +378,7 @@ export default function SouratePage() {
                   )} */}
                   <div className="flex flex-grow items-center justify-between gap-2">
                     <div
-                      className={`flex h-8 w-8 -mb-4 flex-shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${isFullyCompleted ? "bg-white text-emerald-700 shadow group-hover:bg-white group-hover:text-emerald-700" : "bg-slate-200 text-blue-500"} `}
+                      className={`flex h-8 w-8 -mb-4 flex-shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${isFullyCompleted ? "bg-white text-emerald-700 shadow group-hover:bg-white group-hover:text-emerald-700" : "bg-blue-100 text-blue-500"} `}
                     >
                       {`${chapter.id < 10 ? "0" : ""}${chapter.id}`}
                     </div>
