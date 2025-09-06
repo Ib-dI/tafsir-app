@@ -4,30 +4,25 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { NextResponse } from 'next/server';
 import { ServiceAccount } from 'firebase-admin';
 
-// Load service account configuration
+// Load service account configuration from environment variables
 function getServiceAccount(): ServiceAccount {
-  try {
-    // Try to load from file first
-    return require('@/service_key.json') as ServiceAccount;
-  } catch (fileError) {
-    console.log('Service account file not found, trying environment variables...');
-    
-    // Fallback to environment variables
-    if (!process.env.FIREBASE_PRIVATE_KEY) {
-      throw new Error('No Firebase service account configuration found. Please provide either service_key.json file or environment variables.');
-    }
-    
-    return {
-      type: "service_account",
-      project_id: process.env.FIREBASE_PROJECT_ID!,
-      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID!,
-      private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-      client_email: process.env.FIREBASE_CLIENT_EMAIL!,
-      client_id: process.env.FIREBASE_CLIENT_ID!,
-      auth_uri: "https://accounts.google.com/o/oauth2/auth",
-      token_uri: "https://oauth2.googleapis.com/token",
-    } as ServiceAccount;
+  // Check if all required environment variables are present
+  if (!process.env.FIREBASE_PRIVATE_KEY || 
+      !process.env.FIREBASE_CLIENT_EMAIL || 
+      !process.env.FIREBASE_PROJECT_ID) {
+    throw new Error('Missing Firebase environment variables. Please check your .env.local file.');
   }
+
+  return {
+    type: "service_account",
+    project_id: process.env.FIREBASE_PROJECT_ID,
+    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID!,
+    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    client_email: process.env.FIREBASE_CLIENT_EMAIL,
+    client_id: process.env.FIREBASE_CLIENT_ID!,
+    auth_uri: "https://accounts.google.com/o/oauth2/auth",
+    token_uri: "https://oauth2.googleapis.com/token",
+  } as ServiceAccount;
 }
 
 // Initialize Firebase Admin
@@ -47,7 +42,7 @@ export async function POST(request: Request) {
   
   try {
     // Initialize Firebase Admin
-    const app = await initializeFirebaseAdmin();
+    const app = initializeFirebaseAdmin();
     console.log('✅ Firebase Admin initialized');
 
     // Parse and validate request
