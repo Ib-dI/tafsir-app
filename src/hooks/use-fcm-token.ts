@@ -1,10 +1,11 @@
 // hooks/use-fcm-token.ts
 'use client'; 
 
+import { db } from '@/lib/firebase';
+import { collection, doc, setDoc, getDocs, deleteDoc } from 'firebase/firestore';
+import { getToken, onMessage, getMessaging } from 'firebase/messaging';
 import { useEffect, useState } from 'react';
-import { getToken, onMessage } from 'firebase/messaging';
-import { doc, setDoc } from 'firebase/firestore';
-import { messaging, db } from '@/lib/firebase'; // Assurez-vous que le chemin est correct
+import { getApp } from 'firebase/app';
 
 interface NotificationPayload {
   notification?: {
@@ -19,92 +20,88 @@ interface NotificationPayload {
 export const useFcmToken = () => {
   const [token, setToken] = useState<string | null>(null);
   const [notification, setNotification] = useState<NotificationPayload | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+
     const initializeFCM = async () => {
-      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-        try {
-          // Attendre que messaging soit disponible
-          const messagingInstance = typeof messaging === 'function' ? await messaging() : messaging;
-          
-          if (!messagingInstance) {
-            console.warn('Firebase Messaging non disponible');
-            return;
-          }
+      try {
+        // 1. Vérifier le support du navigateur
+        if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+          throw new Error('Service Worker non supporté');
+        }
 
-          // Enregistrement du service worker pour FCM
-          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-          console.log('Service Worker enregistré avec succès:', registration);
-          
-          // Demander la permission de notification
-          const permission = await Notification.requestPermission();
-          
-          if (permission === 'granted') {
-            console.log('Permission de notification accordée.');
-            
-            try {
-              // Générer le token FCM
-              const currentToken = await getToken(messagingInstance, { 
-                serviceWorkerRegistration: registration, 
-                vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY // Remplacez par votre clé VAPID
-              });
-              
-              if (currentToken) {
-                console.log('FCM Token:', currentToken);
-                setToken(currentToken);
-                
-                // Stockez le token dans Firestore
-                const tokenDocRef = doc(db, 'fcmTokens', currentToken);
-                await setDoc(tokenDocRef, { 
-                  token: currentToken, 
-                  timestamp: Date.now() 
-                }, { merge: true });
-                
-                console.log('Token enregistré dans Firestore.');
-              } else {
-                console.warn('Aucun token d\'enregistrement disponible. Demandez la permission de notification.');
-              }
-            } catch (err) {
-              console.error('Erreur lors de l\'obtention du token FCM:', err);
-            }
-          } else {
-            console.warn('Permission de notification refusée.');
-          }
+        // 2. Vérifier/Demander la permission
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          throw new Error('Permission de notification refusée');
+        }
 
-          // Gérer les messages reçus lorsque l'application est au premier plan
-          const unsubscribe = onMessage(messagingInstance, (payload) => {
-            console.log('Message reçu au premier plan :', payload);
-            setNotification({
-              notification: {
-                title: payload.notification?.title || 'Nouveau message',
-                body: payload.notification?.body || '',
-              },
-              data: payload.data,
+        // 3. Enregistrer le service worker
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+        if (registration.installing) {
+          await new Promise<void>((resolve) => {
+            registration.installing?.addEventListener('statechange', () => {
+              if (registration.active) resolve();
             });
           });
-
-          // Retourner la fonction de nettoyage
-          return unsubscribe;
-          
-        } catch (error) {
-          console.error('Erreur lors de l\'initialisation FCM:', error);
         }
+
+        // 4. Initialiser l'instance de messaging
+        const messagingInstance = getMessaging(getApp());
+
+        // 5. Obtenir le token FCM
+        const vapidKey = "BJQfmDAJlKEZrsAV9PHDp0NXkCAjp8mY94OD2ZG_-Xvpo6sqvhyfusnXPu2TM4YVNoXIAnp7BjVu8nEyTC3JSFY";
+        const currentToken = await getToken(messagingInstance, {
+          vapidKey,
+          serviceWorkerRegistration: registration
+        });
+        if (!currentToken) throw new Error('Impossible d\'obtenir le token FCM');
+        setToken(currentToken);
+
+        // 6. Enregistrer le token dans Firestore
+        try {
+          const tokenDocRef = doc(db, 'fcmTokens', currentToken);
+          await setDoc(tokenDocRef, {
+            token: currentToken,
+            createdAt: Date.now(),
+            lastUsed: Date.now(),
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            active: true
+          });
+        } catch (firestoreError) {
+          setError('Erreur lors de l\'enregistrement du token dans Firestore');
+        }
+
+        // 7. Ecouter les messages entrants
+        unsubscribe = onMessage(messagingInstance, (payload) => {
+          if (currentToken) {
+            const tokenDocRef = doc(db, 'fcmTokens', currentToken);
+            setDoc(tokenDocRef, { lastUsed: Date.now() }, { merge: true });
+          }
+          setNotification({
+            notification: {
+              title: payload.notification?.title ?? '',
+              body: payload.notification?.body ?? ''
+            },
+            data: payload.data
+          });
+        });
+
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'Erreur inconnue lors de l\'initialisation FCM');
+        setTimeout(() => { initializeFCM(); }, 5000);
       }
     };
 
-    let unsubscribe: (() => void) | undefined;
-    
-    initializeFCM().then((cleanup) => {
-      unsubscribe = cleanup;
-    });
+    initializeFCM();
 
-    // Fonction de nettoyage
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      if (unsubscribe) unsubscribe();
     };
   }, []);
 
-  return { token, notification };
-};
+  return { token, notification, error };
+}

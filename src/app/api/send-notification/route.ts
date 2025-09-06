@@ -1,7 +1,7 @@
 // app/api/send-notification/route.ts
-import { NextResponse } from 'next/server';
 import * as admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore'; // Pour récupérer les tokens
+import { NextResponse } from 'next/server';
 // Importez le module 'fs' de Node.js
 import * as fs from 'fs';
 // Importez le module 'path' de Node.js pour la résolution des chemins
@@ -57,37 +57,71 @@ export async function POST(request: Request) {
   try {
     const firestore = getFirestore(adminApp);
 
-    // Récupérer tous les tokens FCM des utilisateurs (ou une sélection)
-    // Assurez-vous que votre collection 'fcmTokens' et vos règles Firestore le permettent.
-    const tokensSnapshot = await firestore.collection('fcmTokens').get();
+    // Récupérer les tokens FCM actifs des utilisateurs
+    const tokensSnapshot = await firestore.collection('fcmTokens')
+      .where('active', '==', true)
+      .where('lastUsed', '>', Date.now() - (30 * 24 * 60 * 60 * 1000)) // Tokens utilisés dans les 30 derniers jours
+      .get();
+
     const registrationTokens: string[] = [];
+    const invalidTokens: string[] = [];
+
     tokensSnapshot.forEach((doc) => {
       const tokenData = doc.data();
-      if (tokenData.token) {
+      if (tokenData.token && typeof tokenData.token === 'string') {
         registrationTokens.push(tokenData.token);
+      } else {
+        invalidTokens.push(doc.id);
       }
     });
 
+    // Nettoyer les tokens invalides
+    if (invalidTokens.length > 0) {
+      const batch = firestore.batch();
+      invalidTokens.forEach((tokenId) => {
+        batch.delete(firestore.collection('fcmTokens').doc(tokenId));
+      });
+      await batch.commit();
+    }
+
     if (registrationTokens.length === 0) {
-      return NextResponse.json({ message: 'No FCM tokens registered' }, { status: 200 });
+      return NextResponse.json({ 
+        message: 'Aucun token FCM actif trouvé',
+        invalidTokensRemoved: invalidTokens.length 
+      }, { status: 200 });
     }
 
     const message = {
       notification: {
         title: `Nouvel Audio : ${audioTitle}`,
-        body: 'Écoutez le dernier ajout à notre collection d\'audios !',
+        body: 'Un nouveau tafsir est disponible ! Cliquez pour l\'écouter.',
       },
       webpush: {
+        notification: {
+          title: `Nouvel Audio : ${audioTitle}`,
+          body: 'Un nouveau tafsir est disponible ! Cliquez pour l\'écouter.',
+          icon: '/bismillah.png', // Icône de la notification
+          badge: '/fingerprint.webp', // Badge pour les notifications Android
+          vibrate: [100, 50, 100], // Pattern de vibration
+          actions: [
+            {
+              action: 'listen',
+              title: 'Écouter maintenant'
+            }
+          ]
+        },
         fcm_options: {
-          link: audioUrl, // L'URL de la page dédiée à ouvrir au clic
+          link: audioUrl,
         },
         headers: {
-          Urgency: 'high', // Pour une livraison plus rapide
+          Urgency: 'high',
         },
       },
       data: {
-        audioId: 'some-unique-audio-id', // ID de l'audio si nécessaire côté client
-        type: 'new_audio_alert',
+        type: 'new_audio',
+        audioTitle,
+        audioUrl,
+        timestamp: Date.now().toString(),
       },
     };
 
@@ -97,7 +131,36 @@ export async function POST(request: Request) {
       ...message,
     });
 
-    console.log('Messages envoyés avec succès :', response);
+    // Gérer les tokens invalides ou expirés
+    const failedTokens = response.responses.map((res, idx) => {
+      if (!res.success) {
+        return {
+          token: registrationTokens[idx],
+          error: res.error?.message
+        };
+      }
+      return null;
+    }).filter(Boolean);
+
+    // Supprimer les tokens invalides
+    if (failedTokens.length > 0) {
+      const batch = firestore.batch();
+      failedTokens.forEach((failedToken: any) => {
+        const tokenDoc = firestore.collection('fcmTokens').doc(failedToken.token);
+        batch.delete(tokenDoc);
+      });
+      await batch.commit();
+    }
+
+    const result = {
+      success: response.successCount > 0,
+      successCount: response.successCount,
+      failureCount: response.failureCount,
+      failedTokens: failedTokens,
+      totalTokens: registrationTokens.length
+    };
+
+    console.log('Résultat de l\'envoi des notifications:', result);
 
     // Gérer les tokens invalides ou expirés (optionnel mais recommandé)
     if (response.responses) {

@@ -1,55 +1,56 @@
 // lib/firebase.ts
+'use client';
 
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, serverTimestamp } from 'firebase/firestore';
-import { getMessaging, getToken, isSupported } from "firebase/messaging";
+import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getMessaging, getToken } from "firebase/messaging";
+import { FCM_VAPID_KEY, initializeFCM } from './fcm-config';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyAL-GlEdsrJqHnGIT0tyL7FoIKQMqllexU",
+  authDomain: "tafsir-app-3b154.firebaseapp.com",
+  projectId: "tafsir-app-3b154",
+  storageBucket: "tafsir-app-3b154.appspot.com",
+  messagingSenderId: "452609641286",
+  appId: "1:452609641286:web:7554de9163bb7a47d83347"
 };
 
-// Initialize Firebase App
+// Initialisation de Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
-// Export Firebase services that are safe for both client and server
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const messaging = async () => {
-  const supported = await isSupported();
-  return supported ? getMessaging(app) : null;
-};
-
-export const fetchToken = async () => {
+// Configuration de la messagerie Firebase
+const initializeMessaging = async () => {
   try {
-    const fcmMessaging = await messaging();
-    if (fcmMessaging) {
-      // Étape cruciale : enregistrer le service worker avant d'obtenir le token.
-      // Le chemin d'accès doit être celui où se trouve votre fichier service worker.
-      const serviceWorkerRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-
-      const token = await getToken(fcmMessaging, {
-        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-        // Passer l'enregistrement du service worker à la fonction getToken.
-        serviceWorkerRegistration: serviceWorkerRegistration,
-      });
-      return token;
+    // 1. Initialiser le service worker
+    const registration = await initializeFCM();
+    if (!registration) {
+      throw new Error('Service Worker non initialisé');
     }
-    return null;
-  } catch (err) {
-    console.error("An error occurred while fetching the token:", err);
+
+    // 2. Obtenir l'instance de messaging
+    const messagingInstance = getMessaging(app);
+
+    // 3. Demander la permission
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      throw new Error('Permission refusée');
+    }
+
+    // 4. Obtenir le token
+    const currentToken = await getToken(messagingInstance, {
+      vapidKey: FCM_VAPID_KEY,
+      serviceWorkerRegistration: registration,
+    });
+
+    return currentToken;
+  } catch (error) {
+    console.error('Erreur d\'initialisation FCM:', error);
     return null;
   }
 };
 
-// Export serverTimestamp for consistency
-export { app, db, auth, serverTimestamp, messaging };
+export { app, auth, db, initializeMessaging };
 
-// You must handle getMessaging() in a client-side component like NotificationManager.tsx
