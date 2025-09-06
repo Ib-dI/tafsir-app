@@ -2250,18 +2250,21 @@ export const audiosTafsir = [
           { id: 22, startTime: 1066.73, endTime: 1229.32 },
         ],
       },
-      // {
-      //   id: "al-hadid-4",
-      //   title: "Al-Hadid - Partie 4",
-      //   url: "",
-      //   timings: [],
-      // },
-      // {
-      //   id: "al-hadid-5",
-      //   title: "Al-Hadid - Partie 5",
-      //   url: "",
-      //   timings: [],
-      // },
+      {
+        id: "al-hadid-4",
+        title: "Al-Hadid - Partie 4",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Hadid-part4.ogg",
+        timings: [
+          { id: 22, startTime: 50.69, endTime: 221.19 },
+          { id: 23, startTime: 221.19, endTime: 318.52 },
+          { id: 24, startTime: 319.53, endTime: 455.71 },
+          { id: 25, startTime: 455.71, endTime: 783.08 },
+          { id: 26, startTime: 783.08, endTime: 881.14 },
+          { id: 27, startTime: 881.14, endTime: 1209.47 },
+          { id: 28, startTime: 1209.47, endTime: 1315.55 },
+          { id: 29, startTime: 1315.55, endTime: 1493.16 },
+        ],
+      },
     ],
   },
   {
