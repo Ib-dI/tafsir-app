@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   
   try {
     // Initialize Firebase Admin
-    const app = initializeFirebaseAdmin();
+    const app = await initializeFirebaseAdmin();
     console.log('✅ Firebase Admin initialized');
 
     // Parse and validate request

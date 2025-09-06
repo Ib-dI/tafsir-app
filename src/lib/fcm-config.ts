@@ -22,7 +22,7 @@ export const initializeFCM = async () => {
     // 3. Attendre l'activation
     if (registration.installing) {
       await new Promise<void>((resolve) => {
-        registration.installing?.addEventListener('statechange', (e) => {
+        registration.installing?.addEventListener('statechange', () => {
           if (registration.active) {
             resolve();
           }

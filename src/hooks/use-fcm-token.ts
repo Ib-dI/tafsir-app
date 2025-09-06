@@ -73,6 +73,7 @@ export const useFcmToken = () => {
           });
         } catch (firestoreError) {
           setError('Erreur lors de l\'enregistrement du token dans Firestore');
+          console.log(firestoreError)
         }
 
         // 7. Ecouter les messages entrants

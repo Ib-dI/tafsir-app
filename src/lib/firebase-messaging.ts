@@ -1,9 +1,10 @@
 // lib/firebase-messaging.ts
 import { getApp } from 'firebase/app';
 import { getMessaging, getToken } from 'firebase/messaging';
+import type { Messaging } from 'firebase/messaging';
 
-let messagingInstance: any = null;
 
+let messagingInstance: Messaging | null = null;
 export const initializeMessaging = async () => {
   try {
     if (!messagingInstance) {
