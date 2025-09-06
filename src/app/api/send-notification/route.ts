@@ -8,7 +8,7 @@ import { ServiceAccount } from 'firebase-admin';
 function getServiceAccount(): ServiceAccount {
   try {
     // Try to load from file first
-    return require('../../../../service_key.json') as ServiceAccount;
+    return require('@/service_key.json') as ServiceAccount;
   } catch (fileError) {
     console.log('Service account file not found, trying environment variables...');
     
