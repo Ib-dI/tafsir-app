@@ -1,67 +1,83 @@
 // app/api/send-notification/route.ts
 import * as admin from 'firebase-admin';
-import { getFirestore } from 'firebase-admin/firestore'; // Pour récupérer les tokens
+import { getFirestore } from 'firebase-admin/firestore';
 import { NextResponse } from 'next/server';
-// Importez le module 'fs' de Node.js
-import * as fs from 'fs';
-// Importez le module 'path' de Node.js pour la résolution des chemins
-import * as path from 'path';
+import { ServiceAccount } from 'firebase-admin';
 
-// Initialisation du SDK Admin Firebase
-let adminApp: admin.app.App | null = null;
-try {
-  if (!admin.apps.length) {
-    const serviceAccountPath = process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH;
-    if (!serviceAccountPath) {
-      // Utilisez une erreur plus explicite pour le débogage si besoin
-      throw new Error('FIREBASE_ADMIN_SERVICE_ACCOUNT_PATH not set in environment variables or path is invalid.');
+// Load service account configuration
+function getServiceAccount(): ServiceAccount {
+  try {
+    // Try to load from file first
+    return require('../../../../service_key.json') as ServiceAccount;
+  } catch (fileError) {
+    console.log('Service account file not found, trying environment variables...');
+    
+    // Fallback to environment variables
+    if (!process.env.FIREBASE_PRIVATE_KEY) {
+      throw new Error('No Firebase service account configuration found. Please provide either service_key.json file or environment variables.');
     }
-
-    // Résoudre le chemin absolu du fichier de clé de compte de service
-    // __dirname pointe vers le répertoire du fichier en cours
-    const absolutePath = path.resolve(process.cwd(), serviceAccountPath);
-
-    // Lire le fichier JSON de manière synchrone
-    const serviceAccountContent = fs.readFileSync(absolutePath, 'utf8');
-    const serviceAccount = JSON.parse(serviceAccountContent);
-
-    adminApp = admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      projectId: 'tafsir-app-3b154', // Votre ID de projet
-    });
-  } else {
-    adminApp = admin.app();
+    
+    return {
+      type: "service_account",
+      project_id: process.env.FIREBASE_PROJECT_ID!,
+      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID!,
+      private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      client_email: process.env.FIREBASE_CLIENT_EMAIL!,
+      client_id: process.env.FIREBASE_CLIENT_ID!,
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+    } as ServiceAccount;
   }
-} catch (error) {
-  console.error("Erreur lors de l'initialisation de Firebase Admin:", error);
-  // Gérez l'erreur d'initialisation de manière appropriée
+}
+
+// Initialize Firebase Admin
+function initializeFirebaseAdmin() {
+  if (!admin.apps.length) {
+    const serviceAccount = getServiceAccount();
+    return admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      projectId: serviceAccount.projectId || 'tafsir-app-3b154',
+    });
+  }
+  return admin.app();
 }
 
 export async function POST(request: Request) {
-  if (!adminApp) {
-    return NextResponse.json({ message: 'Firebase Admin not initialized' }, { status: 500 });
-  }
-
-  // **** IMPORTANT : Implémentez ici votre logique d'authentification/autorisation ****
-  // Seuls les utilisateurs ou systèmes autorisés devraient pouvoir envoyer des notifications.
-  // Par exemple, vérifier un token d'authentification d'admin, ou restreindre l'accès IP.
-  // Sans cela, n'importe qui pourrait appeler cette route.
-  // ***********************************************************************************
-
-  const { audioTitle, audioUrl } = await request.json();
-
-  if (!audioTitle || !audioUrl) {
-    return NextResponse.json({ message: 'Missing audioTitle or audioUrl' }, { status: 400 });
-  }
-
+  console.log('🔔 Notification request received');
+  
   try {
-    const firestore = getFirestore(adminApp);
+    // Initialize Firebase Admin
+    const app = initializeFirebaseAdmin();
+    console.log('✅ Firebase Admin initialized');
 
-    // Récupérer les tokens FCM actifs des utilisateurs
+    // Parse and validate request
+    const body = await request.json();
+    const { audioTitle, audioUrl } = body;
+
+    if (!audioTitle || !audioUrl) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Missing required fields: audioTitle and audioUrl are required' 
+        }, 
+        { status: 400 }
+      );
+    }
+
+    console.log('📝 Processing notification for:', { audioTitle, audioUrl });
+
+    const firestore = getFirestore(app);
+
+    // Get active FCM tokens
+    console.log('🔍 Fetching active FCM tokens...');
+    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    
     const tokensSnapshot = await firestore.collection('fcmTokens')
       .where('active', '==', true)
-      .where('lastUsed', '>', Date.now() - (30 * 24 * 60 * 60 * 1000)) // Tokens utilisés dans les 30 derniers jours
+      .where('lastUsed', '>', thirtyDaysAgo)
       .get();
+
+    console.log(`📊 Found ${tokensSnapshot.size} potential tokens`);
 
     const registrationTokens: string[] = [];
     const invalidTokens: string[] = [];
@@ -75,8 +91,9 @@ export async function POST(request: Request) {
       }
     });
 
-    // Nettoyer les tokens invalides
+    // Clean up invalid tokens
     if (invalidTokens.length > 0) {
+      console.log(`🧹 Cleaning up ${invalidTokens.length} invalid tokens`);
       const batch = firestore.batch();
       invalidTokens.forEach((tokenId) => {
         batch.delete(firestore.collection('fcmTokens').doc(tokenId));
@@ -85,12 +102,22 @@ export async function POST(request: Request) {
     }
 
     if (registrationTokens.length === 0) {
+      console.log('⚠️ No active FCM tokens found');
       return NextResponse.json({ 
-        message: 'Aucun token FCM actif trouvé',
-        invalidTokensRemoved: invalidTokens.length 
-      }, { status: 200 });
+        success: true,
+        message: 'No active FCM tokens found. No notifications sent.',
+        data: {
+          successCount: 0,
+          failureCount: 0,
+          totalTokens: 0,
+          invalidTokensRemoved: invalidTokens.length
+        }
+      });
     }
 
+    console.log(`🎯 Sending notifications to ${registrationTokens.length} devices`);
+
+    // Prepare notification message
     const message = {
       notification: {
         title: `Nouvel Audio : ${audioTitle}`,
@@ -100,9 +127,9 @@ export async function POST(request: Request) {
         notification: {
           title: `Nouvel Audio : ${audioTitle}`,
           body: 'Un nouveau tafsir est disponible ! Cliquez pour l\'écouter.',
-          icon: '/bismillah.png', // Icône de la notification
-          badge: '/fingerprint.webp', // Badge pour les notifications Android
-          vibrate: [100, 50, 100], // Pattern de vibration
+          icon: '/bismillah.png',
+          badge: '/fingerprint.webp',
+          vibrate: [100, 50, 100],
           actions: [
             {
               action: 'listen',
@@ -125,69 +152,114 @@ export async function POST(request: Request) {
       },
     };
 
-    // Envoyer le message à tous les tokens
+    // Send notifications
     const response = await admin.messaging().sendEachForMulticast({
       tokens: registrationTokens,
       ...message,
     });
 
-    // Gérer les tokens invalides ou expirés
-    const failedTokens = response.responses.map((res, idx) => {
-      if (!res.success) {
-        return {
-          token: registrationTokens[idx],
-          error: res.error?.message
-        };
-      }
-      return null;
-    }).filter(Boolean);
+    console.log(`📤 Sent notifications: ${response.successCount} successful, ${response.failureCount} failed`);
 
-    // Supprimer les tokens invalides
-    if (failedTokens.length > 0) {
-      const batch = firestore.batch();
-      failedTokens.forEach((failedToken: any) => {
-        const tokenDoc = firestore.collection('fcmTokens').doc(failedToken.token);
-        batch.delete(tokenDoc);
-      });
-      await batch.commit();
+    // Process failed tokens
+    const failedTokens: Array<{token: string, error: string}> = [];
+    const tokensToRemove: string[] = [];
+
+    response.responses.forEach((resp, idx) => {
+      if (!resp.success && resp.error) {
+        const token = registrationTokens[idx];
+        const errorCode = resp.error.code;
+        
+        failedTokens.push({
+          token,
+          error: resp.error.message || 'Unknown error'
+        });
+
+        // Mark tokens for removal if they're invalid/unregistered
+        if (errorCode === 'messaging/invalid-registration-token' || 
+            errorCode === 'messaging/registration-token-not-registered') {
+          tokensToRemove.push(token);
+        }
+      }
+    });
+
+    // Remove invalid tokens from database
+    if (tokensToRemove.length > 0) {
+      console.log(`🧹 Removing ${tokensToRemove.length} invalid/expired tokens`);
+      
+      // Get documents that match the invalid tokens
+      const invalidTokenDocs = await Promise.all(
+        tokensToRemove.map(async (token) => {
+          const snapshot = await firestore.collection('fcmTokens')
+            .where('token', '==', token)
+            .get();
+          return snapshot.docs;
+        })
+      );
+
+      // Flatten and remove duplicates
+      const docsToDelete = invalidTokenDocs.flat();
+      
+      if (docsToDelete.length > 0) {
+        const batch = firestore.batch();
+        docsToDelete.forEach((doc) => {
+          batch.delete(doc.ref);
+        });
+        
+        try {
+          await batch.commit();
+          console.log(`✅ Successfully removed ${docsToDelete.length} invalid tokens from database`);
+        } catch (batchError) {
+          console.error('❌ Error removing invalid tokens:', batchError);
+        }
+      }
     }
 
     const result = {
       success: response.successCount > 0,
-      successCount: response.successCount,
-      failureCount: response.failureCount,
-      failedTokens: failedTokens,
-      totalTokens: registrationTokens.length
+      message: response.successCount > 0 
+        ? `Notifications sent successfully to ${response.successCount} device${response.successCount > 1 ? 's' : ''}`
+        : 'No notifications were sent successfully',
+      data: {
+        successCount: response.successCount,
+        failureCount: response.failureCount,
+        totalTokens: registrationTokens.length,
+        invalidTokensRemoved: invalidTokens.length + tokensToRemove.length,
+        ...(failedTokens.length > 0 && { 
+          failedTokens: failedTokens.slice(0, 5) // Only show first 5 for debugging
+        })
+      }
     };
 
-    console.log('Résultat de l\'envoi des notifications:', result);
-
-    // Gérer les tokens invalides ou expirés (optionnel mais recommandé)
-    if (response.responses) {
-      const tokensToRemove: string[] = [];
-      response.responses.forEach((resp, idx) => {
-        if (resp.success === false && (resp.error?.code === 'messaging/invalid-registration-token' || resp.error?.code === 'messaging/registration-token-not-registered')) {
-          tokensToRemove.push(registrationTokens[idx]);
-          console.warn(`Invalid or expired token: ${registrationTokens[idx]}`);
-          // Supprimer le token de Firestore
-          firestore.collection('fcmTokens').doc(registrationTokens[idx]).delete()
-            .then(() => console.log(`Token ${registrationTokens[idx]} removed from Firestore.`))
-            .catch(err => console.error(`Error removing token ${registrationTokens[idx]}:`, err));
-        }
-      });
-    }
-
-    return NextResponse.json({ success: true, results: response.responses });
+    console.log('✅ Notification process completed:', result);
+    return NextResponse.json(result);
 
   } catch (error) {
-    console.error('Error sending notification:', error);
+    console.error('❌ Error in notification API:', error);
     
-    // Correction du typage de l'erreur
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     
     return NextResponse.json({ 
+      success: false,
       message: 'Failed to send notification', 
-      error: errorMessage 
+      error: errorMessage,
+      timestamp: new Date().toISOString()
     }, { status: 500 });
   }
+}
+
+export async function GET() {
+  return NextResponse.json(
+    { 
+      success: false, 
+      message: 'Method not allowed. Use POST to send notifications.',
+      endpoints: {
+        POST: 'Send notifications to FCM tokens',
+        body: {
+          audioTitle: 'string (required)',
+          audioUrl: 'string (required)'
+        }
+      }
+    }, 
+    { status: 405 }
+  );
 }

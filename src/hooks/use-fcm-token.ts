@@ -2,10 +2,10 @@
 'use client'; 
 
 import { db } from '@/lib/firebase';
-import { collection, doc, setDoc, getDocs, deleteDoc } from 'firebase/firestore';
-import { getToken, onMessage, getMessaging } from 'firebase/messaging';
-import { useEffect, useState } from 'react';
 import { getApp } from 'firebase/app';
+import { doc, setDoc } from 'firebase/firestore';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { useEffect, useState } from 'react';
 
 interface NotificationPayload {
   notification?: {

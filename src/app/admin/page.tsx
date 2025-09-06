@@ -52,6 +52,7 @@ export default function AdminPage() {
       setLoading(false);
     }
   };
+  
 
   const handleAddAudio = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,8 +63,10 @@ export default function AdminPage() {
       // Ensuite, envoie la notification à tous les utilisateurs
       await sendNewAudioNotification(audioTitle, audioUrl);
       setStatus('Notification envoyée à tous les utilisateurs !');
-    } catch (error: any) {
-      setStatus(error.message || 'Erreur lors de l\'envoi de la notification');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    
+      setStatus(errorMessage || 'Erreur lors de l\'envoi de la notification');
     }
   };
 

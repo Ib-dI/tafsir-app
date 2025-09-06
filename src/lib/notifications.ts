@@ -22,7 +22,7 @@ async function registerServiceWorker(): Promise<ServiceWorkerRegistration> {
     // Attendre l'activation
     if (registration.installing) {
       await new Promise<void>((resolve) => {
-        registration.installing?.addEventListener('statechange', (e) => {
+        registration.installing?.addEventListener('statechange', () => {
           if (registration.active) {
             console.log('🟢 Service worker activé avec succès');
             resolve();
