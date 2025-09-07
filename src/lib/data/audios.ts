@@ -1131,12 +1131,20 @@ export const audiosTafsir = [
           { id: 96, startTime: 1271.85, endTime: 1343.28 },
         ],
       },
-      // {
-      //   id: "an-nisa-16",
-      //   title: "An-Nisa - Partie 16",
-      //   url: "",
-      //   timings: [],
-      // },
+      {
+        id: "an-nisa-16",
+        title: "An-Nisa - Partie 16",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part16.ogg",
+        timings: [
+          { id: 97, startTime: 69.39, endTime: 285.02 },
+          { id: 98, startTime: 285.02, endTime: 341.28 },
+          { id: 99, startTime: 341.28, endTime: 410.92 },
+          { id: 100, startTime: 410.92, endTime: 706.44},
+          { id: 101, startTime: 706.44, endTime: 916.64 },
+          { id: 102, startTime: 916.64, endTime: 1324.38 },
+          { id: 103, startTime: 1324.38, endTime: 1444.92 },
+        ],
+      },
       // {
       //   id: "an-nisa-17",
       //   title: "An-Nisa - Partie 17",
