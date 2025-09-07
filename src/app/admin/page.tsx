@@ -26,7 +26,7 @@ export default function AdminPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title,
+          audioTitle: title,
           audioUrl,
         }),
       });
@@ -36,7 +36,7 @@ export default function AdminPage() {
       if (response.ok) {
         setFeedback({
           type: 'success',
-          message: 'Notification envoyée avec succès !',
+          message: `Notification envoyée: ${data.data?.successCount ?? 0} succès / ${data.data?.totalTokens ?? 0}`,
         });
         setTitle('');
         setAudioUrl('');

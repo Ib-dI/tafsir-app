@@ -1134,7 +1134,7 @@ export const audiosTafsir = [
       {
         id: "an-nisa-16",
         title: "An-Nisa - Partie 16",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part16.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part16-fixed.ogg",
         timings: [
           { id: 97, startTime: 69.39, endTime: 285.02 },
           { id: 98, startTime: 285.02, endTime: 341.28 },

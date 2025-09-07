@@ -44,9 +44,22 @@ export const useFcmToken = () => {
           throw new Error('VAPID key invalide (doit commencer par B)');
         }
 
-        const supported = await isSupported().catch(() => false);
+        const supported = await isSupported().catch((err) => {
+          console.error('[FCM] isSupported error:', err);
+          return false;
+        });
         if (!supported) {
           throw new Error('Firebase Messaging non supporté dans ce navigateur');
+        }
+
+        // Demander la permission si nécessaire avant le token
+        if (Notification.permission === 'default') {
+          const perm = await Notification.requestPermission();
+          if (perm !== 'granted') {
+            throw new Error('Permission de notification refusée');
+          }
+        } else if (Notification.permission !== 'granted') {
+          throw new Error('Permission de notification refusée');
         }
 
         // 1. Initialiser/obtenir l'enregistrement du service worker partagé
@@ -54,16 +67,59 @@ export const useFcmToken = () => {
         if (!registration) {
           throw new Error('Service Worker non initialisé');
         }
+        // S'assurer qu'il est prêt
+        try {
+          const readyReg = await navigator.serviceWorker.ready;
+          console.log('[FCM] SW ready scope:', readyReg.scope);
+        } catch (readyErr) {
+          console.warn('[FCM] SW not ready yet:', readyErr);
+        }
+
+        // Diagnostic PushManager
+        try {
+          const sub = await registration.pushManager.getSubscription();
+          if (sub) {
+            console.log('[FCM] Push subscription existante, endpoint preview:', (sub as any).endpoint?.slice(0, 40) + '...');
+          } else {
+            console.log('[FCM] Aucune push subscription existante');
+          }
+        } catch (pmErr) {
+          console.warn('[FCM] pushManager.getSubscription error:', pmErr);
+        }
 
         // 2. Initialiser l'instance de messaging
         const messagingInstance = getMessaging(getApp());
+        console.log('[FCM] Messaging instance obtenue');
 
-        // 3. Obtenir le token FCM avec VAPID de l'environnement
-        const currentToken = await getToken(messagingInstance, {
-          vapidKey: FCM_VAPID_KEY,
-          serviceWorkerRegistration: registration
-        });
+        // 3. Obtenir le token FCM avec VAPID de l'environnement (avec retries)
+        let currentToken: string | null = null;
+        const maxAttempts = 3;
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          try {
+            console.log(`[FCM] Appel getToken (tentative ${attempt} de ${maxAttempts})`, {
+              sw: !!registration,
+              vapidPrefix: FCM_VAPID_KEY.substring(0, 1),
+              permission: Notification.permission
+            });
+            currentToken = await getToken(messagingInstance, {
+              vapidKey: FCM_VAPID_KEY,
+              serviceWorkerRegistration: registration
+            });
+            if (currentToken) break;
+          } catch (e) {
+            console.error('[FCM] getToken error details (tentative', attempt, '):', e);
+            if (e instanceof Error && e.message.includes('push service error')) {
+              // backoff progressif
+              const delay = attempt * 1000;
+              console.warn('[FCM] push service error, retry dans', delay, 'ms');
+              await new Promise(r => setTimeout(r, delay));
+              continue;
+            }
+            throw e;
+          }
+        }
         if (!currentToken) throw new Error('Impossible d\'obtenir le token FCM');
+        console.log('[FCM] Token obtenu (preview):', currentToken.substring(0, 12) + '...');
         setToken(currentToken);
 
         // 6. Enregistrer le token dans Firestore
@@ -84,6 +140,7 @@ export const useFcmToken = () => {
 
         // 7. Ecouter les messages entrants
         unsubscribe = onMessage(messagingInstance, (payload) => {
+          console.log('[FCM] Message reçu au premier plan:', payload);
           if (currentToken) {
             const tokenDocRef = doc(db, 'fcmTokens', currentToken);
             setDoc(tokenDocRef, { lastUsed: Date.now() }, { merge: true });
