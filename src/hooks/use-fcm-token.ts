@@ -1,10 +1,11 @@
 // hooks/use-fcm-token.ts
 'use client'; 
 
+import { FCM_VAPID_KEY, initializeFCM } from '@/lib/fcm-config';
 import { db } from '@/lib/firebase';
 import { getApp } from 'firebase/app';
 import { doc, setDoc } from 'firebase/firestore';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getMessaging, getToken, isSupported, onMessage } from 'firebase/messaging';
 import { useEffect, useState } from 'react';
 
 interface NotificationPayload {
@@ -25,36 +26,41 @@ export const useFcmToken = () => {
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
 
-    const initializeFCM = async () => {
+    const boot = async () => {
       try {
-        // 1. Vérifier le support du navigateur
-        if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
-          throw new Error('Service Worker non supporté');
+        // Pré-vérifications environnement
+        if (typeof window === 'undefined') {
+          throw new Error('Environnement non navigateur');
+        }
+        const isSecureContext = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+        if (!isSecureContext) {
+          throw new Error('Le site doit être en HTTPS (ou localhost) pour FCM');
         }
 
-        // 2. Vérifier/Demander la permission
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-          throw new Error('Permission de notification refusée');
+        if (!FCM_VAPID_KEY) {
+          throw new Error('VAPID key manquante (NEXT_PUBLIC_FIREBASE_VAPID_KEY)');
+        }
+        if (!FCM_VAPID_KEY.startsWith('B')) {
+          throw new Error('VAPID key invalide (doit commencer par B)');
         }
 
-        // 3. Enregistrer le service worker
-        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
-        if (registration.installing) {
-          await new Promise<void>((resolve) => {
-            registration.installing?.addEventListener('statechange', () => {
-              if (registration.active) resolve();
-            });
-          });
+        const supported = await isSupported().catch(() => false);
+        if (!supported) {
+          throw new Error('Firebase Messaging non supporté dans ce navigateur');
         }
 
-        // 4. Initialiser l'instance de messaging
+        // 1. Initialiser/obtenir l'enregistrement du service worker partagé
+        const registration = await initializeFCM();
+        if (!registration) {
+          throw new Error('Service Worker non initialisé');
+        }
+
+        // 2. Initialiser l'instance de messaging
         const messagingInstance = getMessaging(getApp());
 
-        // 5. Obtenir le token FCM
-        const vapidKey = "BJQfmDAJlKEZrsAV9PHDp0NXkCAjp8mY94OD2ZG_-Xvpo6sqvhyfusnXPu2TM4YVNoXIAnp7BjVu8nEyTC3JSFY";
+        // 3. Obtenir le token FCM avec VAPID de l'environnement
         const currentToken = await getToken(messagingInstance, {
-          vapidKey,
+          vapidKey: FCM_VAPID_KEY,
           serviceWorkerRegistration: registration
         });
         if (!currentToken) throw new Error('Impossible d\'obtenir le token FCM');
@@ -93,11 +99,11 @@ export const useFcmToken = () => {
 
       } catch (error) {
         setError(error instanceof Error ? error.message : 'Erreur inconnue lors de l\'initialisation FCM');
-        setTimeout(() => { initializeFCM(); }, 5000);
+        setTimeout(() => { boot(); }, 5000);
       }
     };
 
-    initializeFCM();
+    boot();
 
     return () => {
       if (unsubscribe) unsubscribe();

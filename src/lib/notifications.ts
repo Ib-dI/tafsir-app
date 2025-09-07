@@ -1,6 +1,7 @@
 // src/lib/notifications.ts
 import { doc, setDoc } from "firebase/firestore";
 import { getMessaging, getToken, isSupported } from "firebase/messaging";
+import { initializeFCM } from "./fcm-config";
 import { db } from "./firebase";
 
 async function registerServiceWorker(): Promise<ServiceWorkerRegistration> {
@@ -9,11 +10,7 @@ async function registerServiceWorker(): Promise<ServiceWorkerRegistration> {
   }
 
   try {
-    // Désenregistrer les anciens service workers
-    const registrations = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(registrations.map(reg => reg.unregister()));
-
-    // Enregistrer le nouveau service worker
+    // Conserver les SW existants et enregistrer/obtenir celui de FCM
     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
       scope: '/',
       updateViaCache: 'none'
@@ -200,7 +197,10 @@ export const saveMessagingToken = async (
     }
 
     // Initialiser le service worker
-    await initializeServiceWorker();
+    const registration = await initializeFCM();
+    if (!registration) {
+      throw new Error('Service Worker FCM non initialisé');
+    }
 
     // Obtenir l'instance messaging
     const messaging = getMessaging();
@@ -223,6 +223,7 @@ export const saveMessagingToken = async (
         
         token = await getToken(messaging, {
           vapidKey: vapidKey,
+          serviceWorkerRegistration: registration
         });
         
         if (token) {
@@ -511,5 +512,6 @@ export const debugServiceWorker = async (): Promise<void> => {
 
 // Export des nouvelles fonctions utilitaires
 export {
-  ensureNotificationPermission, initializeServiceWorker, testTokenValidity
+    ensureNotificationPermission, initializeServiceWorker, testTokenValidity
 };
+

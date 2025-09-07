@@ -10,7 +10,7 @@ export default function AdminPage() {
   const [audioUrl, setAudioUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
-  const { token, notification } = useFcmToken();
+  const { token, notification, error } = useFcmToken();
   const [audioTitle, setAudioTitle] = useState('');
   const [status, setStatus] = useState<string | null>(null);
 
@@ -177,6 +177,26 @@ export default function AdminPage() {
               </div>
             </div>
           )}
+
+          {/* Diagnostic FCM */}
+          <div style={{ marginTop: 24 }}>
+            {error && (
+              <div style={{ color: 'red' }}>
+                <strong>Erreur FCM :</strong> {error}
+              </div>
+            )}
+            {!error && !token && (
+              <div style={{ color: 'orange' }}>
+                Les notifications ne sont pas encore activées.
+              </div>
+            )}
+            {token && (
+              <div style={{ color: 'green' }}>
+                Notifications activées !<br />
+                <small>Token FCM : {token}</small>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-6">

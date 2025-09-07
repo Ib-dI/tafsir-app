@@ -1,5 +1,5 @@
 // lib/fcm-config.ts
-export const FCM_VAPID_KEY = "BJQfmDAJlKEZrsAV9PHDp0NXkCAjp8mY94OD2ZG_-Xvpo6sqvhyfusnXPu2TM4YVNoXIAnp7BjVu8nEyTC3JSFY";
+export const FCM_VAPID_KEY = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY as string;
 
 export const initializeFCM = async () => {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
@@ -16,7 +16,8 @@ export const initializeFCM = async () => {
 
     // 2. Si non, enregistrer un nouveau service worker
     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-      scope: '/'
+      scope: '/',
+      updateViaCache: 'none'
     });
 
     // 3. Attendre l'activation
