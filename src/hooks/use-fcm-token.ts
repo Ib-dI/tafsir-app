@@ -79,7 +79,7 @@ export const useFcmToken = () => {
         try {
           const sub = await registration.pushManager.getSubscription();
           if (sub) {
-            console.log('[FCM] Push subscription existante, endpoint preview:', (sub as any).endpoint?.slice(0, 40) + '...');
+            console.log('[FCM] Push subscription existante, endpoint preview:', (sub as PushSubscription).endpoint?.slice(0, 40) + '...');
           } else {
             console.log('[FCM] Aucune push subscription existante');
           }

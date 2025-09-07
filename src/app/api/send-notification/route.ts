@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   
   try {
     // Initialize Firebase Admin
-    const app = getAdminApp();
+    // const app = getAdminApp();
     const firestore = getAdminFirestore();
     const messaging = getAdminMessaging();
     console.log('✅ Firebase Admin initialized');
