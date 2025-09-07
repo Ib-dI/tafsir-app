@@ -1,5 +1,5 @@
 // app/api/send-notification/route.ts
-import { getAdminApp, getAdminFirestore, getAdminMessaging } from '@/lib/firebase-admin';
+import { getAdminFirestore, getAdminMessaging } from '@/lib/firebase-admin';
 import { NextResponse } from 'next/server';
 // Uses centralized Admin initializer
 
