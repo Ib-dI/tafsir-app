@@ -27,7 +27,7 @@ import {
 } from "firebase/firestore";
 
 // Import pour suraGlyphMap
-import suraGlyphMap from "@/lib/data/surahGlyphMap.json";
+// import suraGlyphMap from "@/lib/data/surahGlyphMap.json";
 
 // Définitions des types
 type Verse = {
