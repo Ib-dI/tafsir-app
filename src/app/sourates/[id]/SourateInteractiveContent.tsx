@@ -596,19 +596,20 @@ export default function SourateInteractiveContent({
           onAudioFinished={handleAudioFinished}
         >
           <div className="sticky top-[-8px] md:top-[-10px] z-20 flex w-full items-center justify-center border-b border-gray-100 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-6 text-center text-gray-800 shadow backdrop-blur-lg md:min-h-[3.8rem] md:text-5xl">
-            <h1 className="font-quran absolute z-30 flex h-full w-full items-center justify-center">
+            <h1 className="font-sura absolute z-30 flex h-full w-full items-center justify-center">
               <div className="mx-auto flex h-[90%] min-h-0 w-fit max-w-3xl items-center justify-center rounded-lg md:rounded-2xl bg-white/90 px-3 py-3 shadow md:px-8">
                 <span
-                  className="bg-clip-text text-8xl leading-normal font-normal text-gray-800 md:text-9xl"
+                  className="bg-clip-text text-4xl leading-normal font-medium text-gray-800 md:text-5xl"
                   style={{
                     textShadow: "0 2px 6px rgba(0,0,0,0.18)",
                   }}
                 >
-                  {
+                  {/* {
                     suraGlyphMap[
                       String(infoSourate[0]) as keyof typeof suraGlyphMap
                     ]
-                  }
+                  } */}
+                  {`surah${Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}${Number(infoSourate[0])}`}surah-icon
                 </span>
               </div>
             </h1>

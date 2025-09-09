@@ -1421,12 +1421,22 @@ export const audiosTafsir = [
           { id: 137, startTime: 1278.66, endTime: 1412.09 },
         ],
       },
-      // {
-      //   id: "al-araf-12",
-      //   title: "Al-A‘raf - Partie 12",
-      //   url: "",
-      //   timings: [],
-      // },
+      {
+        id: "al-araf-12",
+        title: "Al-A‘raf - Partie 12",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part12.ogg",
+        timings: [
+          { id: 138, startTime: 51.44, endTime: 143.58 },
+          { id: 139, startTime: 143.58, endTime: 193.46 },
+          { id: 140, startTime: 194.37, endTime: 270.57 },
+          { id: 141, startTime: 270.57, endTime: 339.49 },
+          { id: 142, startTime: 339.49, endTime: 548.26 },
+          { id: 143, startTime: 548.26, endTime: 828.61 },
+          { id: 144, startTime: 828.61, endTime: 888.74 },
+          { id: 145, startTime: 888.74, endTime: 1192.52 },
+          { id: 146, startTime: 1192.52, endTime: 1310.51 },
+        ],
+      },
       // {
       //   id: "al-araf-13",
       //   title: "Al-A‘raf - Partie 13",
