@@ -6,16 +6,22 @@ import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { useMediaQuery } from "./UseMediaQuery";
 
+// Type modifié pour inclure l'occurrence
+type Timing = {
+  id: number;
+  startTime: number;
+  endTime: number;
+  occurrence?: number; // Nouvelle propriété pour gérer les multiples occurrences
+};
 
 type Verse = {
   id: number;
   text: string;
   verset: string;
-  startTime: number; // en secondes
-  endTime: number; // en secondes
   transliteration: string;
   translation: string;
-  noAudio?: boolean; // nouveau flag
+  noAudio?: boolean;
+  occurrences: { startTime: number; endTime: number }[]; // ✅ tableau
 };
 
 type AudioVerseHighlighterProps = {
@@ -36,22 +42,28 @@ const toArabicNumerals = (n: number): string => {
     .join("");
 };
 
-// --- NOUVEAU COMPOSANT MEMOÏSÉ POUR LES VERSETS ---
+// Composant VerseItem modifié pour afficher l'occurrence
 const VerseItem = React.memo(
   ({
     verse,
     currentVerseId,
+    currentOccurrence,
     audioUrl,
     seekToVerse,
   }: {
     verse: Verse;
     currentVerseId: number | null;
+    currentOccurrence: number | null;
     audioUrl: string;
     seekToVerse: (verse: Verse) => void;
   }) => {
+    // Détermine si ce verset est actuellement actif
+    const isActive = verse.id === currentVerseId;
+
+
     return (
       <motion.div
-        key={verse.id}
+        key={`verse-${verse.id}`}
         id={`verse-${verse.id}`}
         onClick={() => !verse.noAudio && seekToVerse(verse)}
         className={`my-1 cursor-pointer rounded-lg p-3 ${
@@ -64,24 +76,22 @@ const VerseItem = React.memo(
         animate={{
           backgroundColor: verse.noAudio
             ? "rgba(249, 250, 251, 0.5)"
-            : currentVerseId === verse.id && audioUrl
+            : isActive && audioUrl
               ? "rgba(255, 255, 204, 0.4)"
               : "rgba(255, 255, 255, 0)",
           borderColor: verse.noAudio
             ? "rgba(186, 230, 253, 1)"
-            : currentVerseId === verse.id && audioUrl
+            : isActive && audioUrl
               ? "#F59E0B"
               : "rgba(0, 0, 0, 0)",
-          borderWidth:
-            currentVerseId === verse.id && audioUrl ? "0.7px" : "0px",
+          borderWidth: isActive && audioUrl ? "0.7px" : "0px",
           borderLeftWidth:
-            verse.noAudio || (currentVerseId === verse.id && audioUrl)
-              ? "4px"
-              : "0px",
-          boxShadow: currentVerseId === verse.id && audioUrl 
-					? "0 0 10px 5px rgba(255, 193, 7, 0.5)" // Lueur jaune douce
-					: "none",
-          scale: currentVerseId === verse.id && audioUrl ? 1.02 : 1,
+            verse.noAudio || (isActive && audioUrl) ? "4px" : "0px",
+          boxShadow:
+            isActive && audioUrl
+              ? "0 0 10px 5px rgba(255, 193, 7, 0.5)"
+              : "none",
+          scale: isActive && audioUrl ? 1.02 : 1,
         }}
         transition={{
           default: {
@@ -96,10 +106,6 @@ const VerseItem = React.memo(
             mass: 1.2,
           },
         }}
-			// 	whileHover={{
-			// 		boxShadow: "0 0 10px 3px rgba(255, 193, 7, 0.3)",
-			// 		scale: 1.015,
-			// }}
       >
         <div className="flex flex-col items-end justify-end gap-2">
           {verse.noAudio && (
@@ -107,6 +113,12 @@ const VerseItem = React.memo(
               Verset sans audio
             </span>
           )}
+          {/* Indicateur d'occurrence pour les versets répétés */}
+          {/* {verse.occurrence && verse.occurrence > 1 && (
+            <span className="mb-1 self-start rounded bg-purple-100 px-2 py-1 text-xs font-medium text-purple-600">
+              {verse.occurrence}ème occurrence
+            </span>
+          )} */}
           <div
             className="font-uthmanic mt-2 flex items-center text-right text-[23.5px] leading-relaxed text-gray-800 md:gap-1 md:text-3xl"
             style={{ direction: "rtl" }}
@@ -143,6 +155,9 @@ const AudioVerseHighlighter = ({
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
+  const [currentOccurrence, setCurrentOccurrence] = useState<number | null>(
+    null,
+  );
   const [playbackRate, setPlaybackRate] = useState(1);
   const [audioError, setAudioError] = useState<boolean>(false);
   const [hasFinished, setHasFinished] = useState(false);
@@ -162,6 +177,7 @@ const AudioVerseHighlighter = ({
     setDuration(0);
     setAudioError(false);
     setCurrentVerseId(null);
+    setCurrentOccurrence(null);
 
     if (!audioUrl) {
       setIsLoading(false);
@@ -210,16 +226,33 @@ const AudioVerseHighlighter = ({
       }
     });
 
+    // Logique modifiée pour gérer les multiples occurrences
     wavesurfer.on("audioprocess", () => {
-      const time = wavesurfer.getCurrentTime();
-      setCurrentTime(time);
+  const time = wavesurfer.getCurrentTime();
+  setCurrentTime(time);
 
-      const currentVerse = verses.find(
-        (v) => time >= v.startTime && time <= v.endTime,
-      );
-      // Met à jour l'état du verset actif, ce qui déclenchera l'animation et le défilement
-      setCurrentVerseId(currentVerse?.id || null);
-    });
+  let foundVerse: Verse | null = null;
+
+  for (const verse of verses) {
+    if (verse.noAudio) continue;
+
+    const match = verse.occurrences.find(
+      (occ) => time >= occ.startTime && time <= occ.endTime
+    );
+
+    if (match) {
+      foundVerse = verse;
+      break;
+    }
+  }
+
+  if (foundVerse) {
+    setCurrentVerseId(foundVerse.id);
+  } else {
+    setCurrentVerseId(null);
+  }
+});
+
 
     wavesurfer.on("play", () => setIsPlaying(true));
     wavesurfer.on("pause", () => setIsPlaying(false));
@@ -228,6 +261,7 @@ const AudioVerseHighlighter = ({
         setHasFinished(true);
         setIsPlaying(false);
         setCurrentVerseId(null);
+        setCurrentOccurrence(null);
         onAudioFinished?.();
       }
     });
@@ -249,28 +283,17 @@ const AudioVerseHighlighter = ({
     };
   }, [audioUrl, verses]);
 
-  // --- NOUVEAU: GESTION DU DÉFILEMENT SÉPARÉMENT ---
-
+  // Gestion du défilement modifiée pour tenir compte de l'occurrence
   useEffect(() => {
-    // Ne rien faire si aucun verset n'est actif ou si la référence n'est pas prête
-    if (currentVerseId === null || !versesRef.current) {
-      return;
-    }
+  if (currentVerseId === null || !versesRef.current) return;
 
-    // Trouver l'élément du verset actif
-    const verseElement = document.getElementById(`verse-${currentVerseId}`);
+  const verseElement = document.getElementById(`verse-${currentVerseId}`);
+  if (verseElement) {
+    verseElement.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}, [currentVerseId]);
 
-    if (verseElement) {
-      // La logique de défilement est simplifiée pour toujours centrer le verset actif
-      // Cela garantit qu'il n'est jamais coupé ou partiellement visible
-      verseElement.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [currentVerseId]); // Ce hook s'exécute uniquement lorsque l'ID du verset change
-
-  // NOUVEAU HOOK POUR GÉRER LE WAKE LOCK
+  // Gestion du Wake Lock
   useEffect(() => {
     const requestWakeLock = async () => {
       if ("wakeLock" in navigator && navigator.wakeLock) {
@@ -330,40 +353,33 @@ const AudioVerseHighlighter = ({
       wavesurferRef.current.playPause();
     }
   };
+
   const isIOS = () => {
     if (typeof window === "undefined") return false;
     return /iPad|iPhone|iPod/.test(navigator.userAgent);
   };
 
-  const seekToVerse = (verse: Verse) => {
-    if (verse.noAudio) {
-      return;
-    }
+const seekToVerse = (verse: Verse) => {
+  if (verse.noAudio || verse.occurrences.length === 0) return;
 
-    if (wavesurferRef.current) {
-      // Applique un décalage de -0.2 seconde pour les appareils iOS
-      const offset = isIOS() ? 1.05 : 0;
+  if (wavesurferRef.current) {
+    const offset = isIOS() ? 1.05 : 0;
+    const firstOccurrence = verse.occurrences[0]; // 🔑 première occurrence
+    const seekTime = Math.max(0, firstOccurrence.startTime + offset);
+    const seekPosition = duration > 0 ? seekTime / duration : 0;
 
-      // Calcul de la position de départ avec le décalage
-      const seekTime = Math.max(0, verse.startTime + offset);
+    wavesurferRef.current.seekTo(seekPosition);
+    setCurrentVerseId(verse.id);
+  }
+};
 
-      // Convertir le temps en pourcentage de la durée totale
-      const seekPosition = duration > 0 ? seekTime / duration : 0;
-
-      wavesurferRef.current.seekTo(seekPosition);
-      setCurrentVerseId(verse.id);
-    } else {
-      console.warn(
-        `Verset ${verse.id} n'a pas de timing audio ou audio non chargé.`,
-      );
-    }
-  };
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
+
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
@@ -372,17 +388,19 @@ const AudioVerseHighlighter = ({
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
       {(() => {
-        const currentVerse = verses.find((v) => v.id === currentVerseId);
+        // Trouve le verset actuel en tenant compte de l'occurrence
+        const currentVerse = verses.find(
+          (v) =>
+            v.id === currentVerseId ,
+        );
 
-        // Définir le seuil en fonction de l'appareil
-        const overlayThreshold = isMobile ? 290 : 410; // Seuil plus bas pour les PC
+        const overlayThreshold = isMobile ? 290 : 410;
 
         if (
           currentVerse &&
           currentVerse.text.length > overlayThreshold &&
           audioUrl
         ) {
-          // Définir les animations en fonction de l'appareil
           const overlayVariants = {
             hidden: {
               opacity: 0,
@@ -414,12 +432,19 @@ const AudioVerseHighlighter = ({
                   className="animate-fade-in mx-2 flex max-h-fit w-full max-w-2xl flex-col items-end rounded-lg border border-yellow-400 bg-yellow-50 px-4 py-3 shadow-lg"
                   style={{ direction: "rtl" }}
                 >
+                  {/* Indicateur d'occurrence dans l'overlay */}
+                  {/* {currentVerse.occurrence && currentVerse.occurrence > 1 && (
+                    <span className="mb-2 self-end rounded bg-purple-100 px-2 py-1 text-xs font-medium text-purple-600">
+                      {currentVerse.occurrence}ème occurrence
+                    </span>
+                  )} */}
                   <div className="font-uthmanic flex items-center gap-1 text-right text-[24px] leading-relaxed text-gray-800 md:text-3xl">
                     <span>
                       {currentVerse.text} {toArabicNumerals(currentVerse.id)}
                     </span>
                   </div>
-                  {currentVerse.transliteration.length < (isMobile ? 350 : 400) && (
+                  {currentVerse.transliteration.length <
+                    (isMobile ? 350 : 400) && (
                     <p
                       className="text-md mt-[-5px] self-end font-medium text-gray-500"
                       style={{ direction: "ltr" }}
@@ -440,6 +465,7 @@ const AudioVerseHighlighter = ({
         }
         return null;
       })()}
+
       <div className="relative mt-3 flex flex-shrink-0 flex-col md:mt-6">
         {audioUrl && (
           <div
@@ -451,7 +477,7 @@ const AudioVerseHighlighter = ({
         {isLoading && audioUrl && (
           <div className="absolute top-0 left-0 z-10 flex h-[60px] w-full flex-col items-center justify-center rounded bg-transparent md:h-[80px]">
             <p className="mb-2 text-sm text-blue-500">
-              Chargement de l’audio...
+              Chargement de l'audio...
             </p>
             <div className="h-6 w-6 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
           </div>
@@ -548,9 +574,8 @@ const AudioVerseHighlighter = ({
         {Number(infoSourate[0]) !== 1 &&
           Number(infoSourate[0]) !== 9 &&
           verses[0]?.id === 1 && (
-            
-            <div className="flex w-full mt-2 justify-center">
-              <p className="font-quran-common font-[300] text-center py-2 text-3xl md:text-5xl text-gray-700">
+            <div className="mt-2 flex w-full justify-center">
+              <p className="font-quran-common py-2 text-center text-3xl font-[300] text-gray-700 md:text-5xl">
                 ﷽
               </p>
             </div>
@@ -558,9 +583,10 @@ const AudioVerseHighlighter = ({
 
         {verses.map((verse: Verse) => (
           <VerseItem
-            key={verse.id}
+            key={`verse-${verse.id}`}
             verse={verse}
             currentVerseId={currentVerseId}
+            currentOccurrence={currentOccurrence}
             audioUrl={audioUrl}
             seekToVerse={seekToVerse}
           />
@@ -570,7 +596,7 @@ const AudioVerseHighlighter = ({
   );
 };
 
-// Composants d'icônes et contrôles
+// Composants d'icônes et contrôles (inchangés)
 const PlayIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

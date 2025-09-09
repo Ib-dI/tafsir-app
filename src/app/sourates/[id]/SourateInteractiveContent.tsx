@@ -26,10 +26,7 @@ import {
   where,
 } from "firebase/firestore";
 
-// Import pour suraGlyphMap
-// import suraGlyphMap from "@/lib/data/surahGlyphMap.json";
-
-// Définitions des types
+// Définitions des types modifiées
 type Verse = {
   id: number;
   text: string;
@@ -37,19 +34,27 @@ type Verse = {
   transliteration: string;
 };
 
+// Type modifié pour inclure l'occurrence
+type TafsirAudioTiming = {
+  id: number;
+  startTime: number;
+  endTime: number;
+  occurrence?: number; // Nouvelle propriété pour gérer les multiples occurrences
+};
+
 type TafsirAudioPart = {
   id: string;
   title: string;
   url: string;
-  timings: { id: number; startTime: number; endTime: number }[];
+  timings: TafsirAudioTiming[];
 };
+
 interface SourateInteractiveContentProps {
   verses: Verse[];
   audioParts: TafsirAudioPart[];
   infoSourate: (number | string)[];
-  chapterId: number; // Réintroduit la prop chapterId
+  chapterId: number;
 }
-
 
 export default function SourateInteractiveContent({
   verses: initialVerses,
@@ -57,10 +62,19 @@ export default function SourateInteractiveContent({
   infoSourate,
   chapterId,
 }: SourateInteractiveContentProps) {
-  // Logs pour le débogage
-
   // Modification: Initialize audioParts state first
   const [audioParts] = useState(() => {
+    // Créer un Map pour suivre toutes les occurrences des versets
+    const verseOccurrencesMap = new Map<number, number>();
+    
+    // Parcourir toutes les parties audio pour compter les occurrences
+    initialAudioParts.forEach(part => {
+      part.timings.forEach(timing => {
+        const currentCount = verseOccurrencesMap.get(timing.id) || 0;
+        verseOccurrencesMap.set(timing.id, currentCount + 1);
+      });
+    });
+
     // Créer un Set avec tous les IDs de versets déjà couverts
     const coveredVerseIds = new Set(
       initialAudioParts.flatMap((part) =>
@@ -83,6 +97,7 @@ export default function SourateInteractiveContent({
           id: verse.id,
           startTime: 0,
           endTime: 0,
+          occurrence: 1,
         })),
       };
 
@@ -105,24 +120,19 @@ export default function SourateInteractiveContent({
 
   const buttonRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
 
-  // // Etats pour la gestion du swipe
-  // const touchStartX = useRef(0);
-  // const touchEndX = useRef(0);
-  // const swipeThreshold = 50; // Distance minimale pour considérer un swipe (en pixels)
-
   // Initialise selectedPart lorsque le composant est monté ou que les parties audio changent
   useEffect(() => {
     if (audioParts.length > 0 && !selectedPart) {
       setSelectedPart(audioParts[0]);
     }
-  }, [audioParts, selectedPart]); // Garde selectedPart pour éviter un loop infini si initialement null
+  }, [audioParts, selectedPart]);
 
-  // Défilement vers le haut de la page lorsque la partie sélectionné change
+  // Défilement vers le haut de la page lorsque la partie sélectionnée change
   useEffect(() => {
     if (selectedPart) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [selectedPart]); // Déclanché à chaque fois que selectedPart change
+  }, [selectedPart]);
 
   useEffect(() => {
     if (selectedPart) {
@@ -143,7 +153,7 @@ export default function SourateInteractiveContent({
       console.error(
         "SourateInteractiveContent: ERREUR - Firebase Auth n'est pas initialisé. Vérifiez src/lib/firebase.ts et .env.local.",
       );
-      setUserId(crypto.randomUUID()); // Fallback pour éviter de bloquer l'app si Firebase est mal configuré
+      setUserId(crypto.randomUUID());
       setIsAuthReady(true);
       return;
     }
@@ -156,7 +166,7 @@ export default function SourateInteractiveContent({
           "SourateInteractiveContent: Aucun utilisateur Firebase. Tentative de connexion anonyme...",
         );
         try {
-          await signInAnonymously(auth); // Utilise l'instance 'auth' importée
+          await signInAnonymously(auth);
           const newUid = auth.currentUser?.uid;
           setUserId(newUid || crypto.randomUUID());
         } catch (error) {
@@ -164,14 +174,14 @@ export default function SourateInteractiveContent({
             "SourateInteractiveContent: ERREUR - Erreur d'authentification anonyme Firebase:",
             error,
           );
-          setUserId(crypto.randomUUID()); // Fallback si l'authentification échoue
+          setUserId(crypto.randomUUID());
         }
       }
       setIsAuthReady(true);
     });
 
-    return () => unsubscribe(); // Nettoyage de l'écouteur
-  }, []); // S'exécute une seule fois au montage
+    return () => unsubscribe();
+  }, []);
 
   // useEffect: Écoute les changements de progression depuis Firestore
   useEffect(() => {
@@ -179,7 +189,6 @@ export default function SourateInteractiveContent({
       return;
     }
 
-    // Utilisez process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID comme projectId pour le chemin Firestore
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
     if (!projectId) {
       console.error(
@@ -214,7 +223,7 @@ export default function SourateInteractiveContent({
       },
     );
 
-    return () => unsubscribe(); // Nettoyage de l'écouteur de snapshot
+    return () => unsubscribe();
   }, [isAuthReady, db, userId, chapterId]);
 
   // Fonction pour marquer une partie comme complétée
@@ -255,48 +264,75 @@ export default function SourateInteractiveContent({
     [db, userId],
   );
 
-  // Modification du versesToDisplay pour gérer les versets restants
-  const versesToDisplay = selectedPart
-    ? initialVerses
-        .filter((verse) => {
-          if (selectedPart.id === "remaining-verses") {
-            const coveredVerseIds = new Set(
-              initialAudioParts.flatMap((part) =>
-                part.timings.map((timing) => timing.id),
-              ),
-            );
-            return !coveredVerseIds.has(verse.id);
-          }
-          return selectedPart.timings.some((timing) => timing.id === verse.id);
-        })
-        .map((verse) => {
-          if (selectedPart.id === "remaining-verses") {
-            return {
-              ...verse,
-              startTime: 0,
-              endTime: 0,
-              verset: verse.text,
-              noAudio: true,
-            };
-          }
-          // Récupérer le timing correspondant au verset pour les parties avec audio
-          const timing = selectedPart.timings.find((t) => t.id === verse.id);
-          return {
+  // Modification principale : versesToDisplay pour gérer les multiples occurrences
+// Modification principale : versesToDisplay pour gérer les multiples occurrences
+const versesToDisplay = selectedPart
+  ? (() => {
+      if (selectedPart.id === "remaining-verses") {
+        // Pour les versets restants sans audio
+        const coveredVerseIds = new Set(
+          initialAudioParts.flatMap((part) =>
+            part.timings.map((timing) => timing.id),
+          ),
+        );
+        return initialVerses
+          .filter((verse) => !coveredVerseIds.has(verse.id))
+          .map((verse) => ({
             ...verse,
-            startTime: timing?.startTime || 0,
-            endTime: timing?.endTime || 0,
+            startTime: 0,
+            endTime: 0,
             verset: verse.text,
-            noAudio: false,
-          };
-        })
-    : initialVerses.map((verse) => ({
-        ...verse,
-        startTime: 0,
-        endTime: 0,
-        verset: verse.text,
-      }));
+            noAudio: true,
+            occurrences: [], // pas d'audio donc pas d'occurrence
+          }));
+      } else {
+        // 🔑 Grouper par verse.id
+        const verseMap = new Map<number, {
+          id: number;
+          text: string;
+          translation: string;
+          transliteration: string;
+          noAudio: boolean;
+          verset: string;
+          occurrences: { startTime: number; endTime: number }[];
+        }>();
 
-  // Déterminer l'URL audio à passer. Si pas de partie sélectionnée, c'est vide.
+        selectedPart.timings.forEach((timing) => {
+          const originalVerse = initialVerses.find(v => v.id === timing.id);
+          if (!originalVerse) {
+            console.warn(`Verset ${timing.id} non trouvé dans initialVerses`);
+            return;
+          }
+
+          if (!verseMap.has(timing.id)) {
+            verseMap.set(timing.id, {
+              ...originalVerse,
+              noAudio: false,
+              verset: originalVerse.text,
+              occurrences: [],
+            });
+          }
+
+          // Ajouter toutes les occurrences au même verset
+          verseMap.get(timing.id)!.occurrences.push({
+            startTime: timing.startTime,
+            endTime: timing.endTime,
+          });
+        });
+
+        return Array.from(verseMap.values());
+      }
+    })()
+  : initialVerses.map((verse) => ({
+      ...verse,
+      startTime: 0,
+      endTime: 0,
+      verset: verse.text,
+      occurrences: [],
+    }));
+
+
+  // Déterminer l'URL audio à passer
   const currentAudioUrl = selectedPart?.url || "";
 
   // Logique de navigation entre les parties audio
@@ -319,35 +355,11 @@ export default function SourateInteractiveContent({
     }
   }, [canGoNext, currentPartIndex, audioParts]);
 
-  // // Fonctions de gestion des événements tactiles (swipe)
-  // const handleTouchStart = (e: React.TouchEvent) => {
-  // 	touchStartX.current = e.touches[0].clientX;
-  // 	touchEndX.current = e.touches[0].clientX; // Réinitialise touchEndX
-  // };
-
-  // const handleTouchMove = (e: React.TouchEvent) => {
-  // 	touchEndX.current = e.touches[0].clientX;
-  // };
-
-  // const handleTouchEnd = () => {
-  // 	const deltaX = touchEndX.current - touchStartX.current;
-
-  // 	if (Math.abs(deltaX) >= swipeThreshold) {
-  // 		if (deltaX > 0 && canGoPrevious) {
-  // 			// Swipe vers la droite
-  // 			goToPreviousPart();
-  // 		} else if (deltaX < 0 && canGoNext) {
-  // 			// Swipe vers la gauche
-  // 			goToNextPart();
-  // 		}
-  // 	}
-  // };
-
-  // MODIFICATION ICI: Appel goToNextPart si possible
+  // Callback de fin d'audio modifié
   const handleAudioFinished = useCallback(() => {
     if (!selectedPart) return;
 
-    // Marquer comme complété si ce n’est pas déjà fait
+    // Marquer comme complété si ce n'est pas déjà fait
     if (!completedPartIds.has(selectedPart.id)) {
       markPartAsCompleted(chapterId, selectedPart.id);
     }
@@ -367,18 +379,15 @@ export default function SourateInteractiveContent({
   ]);
 
   const memoizedVersesToDisplay = useMemo(
-    () => versesToDisplay,
+    () => versesToDisplay.filter(Boolean),
     [selectedPart, initialVerses],
   );
+  
   const memoizedInfoSourate = useMemo(
     () => infoSourate.map(String),
     [infoSourate],
   );
 
-  // console.log("SourateInteractiveContent render", {
-  // 	currentAudioUrl,
-  // 	memoizedVersesToDisplayLength: memoizedVersesToDisplay.length,
-  // });
   if (!isAuthReady || !db || !userId) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 text-blue-600">
@@ -386,10 +395,15 @@ export default function SourateInteractiveContent({
       </div>
     );
   }
+
+  // Fonction helper pour compter les occurrences dans une partie
+  const getVerseOccurrenceCount = (partTimings: TafsirAudioTiming[], verseId: number) => {
+    return partTimings.filter(timing => timing.id === verseId).length;
+  };
+
   return (
     <div className="container mx-auto">
-      {/* Barre de sélection des parties audio AVEC les flèches */}
-      {/* Cette section n'est rendue que s'il y a plus d'une partie audio disponible */}
+      {/* Barre de sélection des parties audio */}
       {audioParts.length > 1 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -430,7 +444,7 @@ export default function SourateInteractiveContent({
             </svg>
           </motion.button>
 
-          {/* Select universel (desktop et mobile) */}
+          {/* Select universel */}
           <div className="flex w-full flex-grow items-center justify-center gap-2">
             <Select
               value={selectedPart?.id || ""}
@@ -443,50 +457,62 @@ export default function SourateInteractiveContent({
                 <SelectValue placeholder="Sélectionner une partie" />
               </SelectTrigger>
               <SelectContent className="font-sans">
-                {audioParts.map((part, index) => (
-                  <SelectItem
-                    key={part.id}
-                    value={part.id}
-                    className={
-                      part.id === "remaining-verses"
-                        ? "font-medium text-blue-600"
-                        : ""
-                    }
-                  >
-                    <span className="flex items-center gap-2">
-                      {part.id === "remaining-verses" ? (
-                        <>
-                          {part.title} ({part.timings.length})
-                          <span className="text-xs text-blue-500">
-                            (sans audio)
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          {part.title || `Partie ${index + 1}`}
-                          {completedPartIds.has(part.id) && (
-                            <span className="z-10 inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-green-500 shadow">
-                              <svg
-                                width="5"
-                                height="85"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                              >
-                                <path
-                                  d="M5 10.5L8.5 14L15 7"
-                                  stroke="white"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
+                {audioParts.map((part, index) => {
+                  // Compter les versets uniques et les occurrences multiples
+                  const uniqueVerses = new Set(part.timings.map(t => t.id));
+                  const totalOccurrences = part.timings.length;
+                  const hasMultipleOccurrences = totalOccurrences > uniqueVerses.size;
+                  
+                  return (
+                    <SelectItem
+                      key={part.id}
+                      value={part.id}
+                      className={
+                        part.id === "remaining-verses"
+                          ? "font-medium text-blue-600"
+                          : ""
+                      }
+                    >
+                      <span className="flex items-center gap-2">
+                        {part.id === "remaining-verses" ? (
+                          <>
+                            {part.title} ({part.timings.length})
+                            <span className="text-xs text-blue-500">
+                              (sans audio)
                             </span>
-                          )}
-                        </>
-                      )}
-                    </span>
-                  </SelectItem>
-                ))}
+                          </>
+                        ) : (
+                          <>
+                            {part.title || `Partie ${index + 1}`}
+                            {hasMultipleOccurrences && (
+                              <span className="text-xs text-purple-600 bg-purple-100 px-1 rounded">
+                                +occurrences
+                              </span>
+                            )}
+                            {completedPartIds.has(part.id) && (
+                              <span className="z-10 inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-green-500 shadow">
+                                <svg
+                                  width="8"
+                                  height="8"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M5 10.5L8.5 14L15 7"
+                                    stroke="white"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </span>
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -521,7 +547,7 @@ export default function SourateInteractiveContent({
         </motion.div>
       )}
 
-      {/* Affichage de l'ID utilisateur (pour le débogage/vérification) */}
+      {/* Affichage de l'ID utilisateur pour débogage */}
       {isAuthReady && !userId && (
         <div className="mb-2 text-center text-xs text-red-500">
           Erreur : Impossible d&#39;obtenir l&#39;ID utilisateur. Progression
@@ -529,7 +555,8 @@ export default function SourateInteractiveContent({
           de sécurité.
         </div>
       )}
-      {/* Affichage de la pastille de complétion uniquement pour les parties avec audio */}
+
+      {/* Pastille de complétion */}
       {selectedPart && selectedPart.id !== "remaining-verses" && (
         <div className="mb-2 flex justify-center">
           <span
@@ -581,13 +608,8 @@ export default function SourateInteractiveContent({
         </div>
       )}
 
-      {/* Le composant AudioVerseHighlighter est TOUJOURS rendu */}
-      <div
-        className="container mx-auto"
-        // onTouchStart={handleTouchStart} // Ecoute les événements tactiles
-        // onTouchMove={handleTouchMove} // Met à jour la position du doigt
-        // onTouchEnd={handleTouchEnd} // Gère la fin du swipe
-      >
+      {/* Le composant AudioVerseHighlighter */}
+      <div className="container mx-auto">
         <AudioVerseHighlighter
           key={selectedPart?.id}
           audioUrl={currentAudioUrl}
@@ -604,11 +626,6 @@ export default function SourateInteractiveContent({
                     textShadow: "0 2px 6px rgba(0,0,0,0.18)",
                   }}
                 >
-                  {/* {
-                    suraGlyphMap[
-                      String(infoSourate[0]) as keyof typeof suraGlyphMap
-                    ]
-                  } */}
                   {`surah${Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}${Number(infoSourate[0])}`}surah-icon
                 </span>
               </div>
