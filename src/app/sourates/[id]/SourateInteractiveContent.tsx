@@ -396,10 +396,6 @@ const versesToDisplay = selectedPart
     );
   }
 
-  // Fonction helper pour compter les occurrences dans une partie
-  const getVerseOccurrenceCount = (partTimings: TafsirAudioTiming[], verseId: number) => {
-    return partTimings.filter(timing => timing.id === verseId).length;
-  };
 
   return (
     <div className="container mx-auto">

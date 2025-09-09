@@ -6,13 +6,6 @@ import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { useMediaQuery } from "./UseMediaQuery";
 
-// Type modifié pour inclure l'occurrence
-type Timing = {
-  id: number;
-  startTime: number;
-  endTime: number;
-  occurrence?: number; // Nouvelle propriété pour gérer les multiples occurrences
-};
 
 type Verse = {
   id: number;
@@ -47,7 +40,6 @@ const VerseItem = React.memo(
   ({
     verse,
     currentVerseId,
-    currentOccurrence,
     audioUrl,
     seekToVerse,
   }: {
@@ -477,7 +469,7 @@ const seekToVerse = (verse: Verse) => {
         {isLoading && audioUrl && (
           <div className="absolute top-0 left-0 z-10 flex h-[60px] w-full flex-col items-center justify-center rounded bg-transparent md:h-[80px]">
             <p className="mb-2 text-sm text-blue-500">
-              Chargement de l'audio...
+              Chargement de l&apos;audio...
             </p>
             <div className="h-6 w-6 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
           </div>
