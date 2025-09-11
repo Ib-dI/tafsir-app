@@ -333,7 +333,11 @@ export default function SouratePage() {
                   key={chapter.id}
                   variants={itemVariants}
                   layout
-                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-sm transition-colors transition-bg duration-200 md:w-80 ${isFullyCompleted ? "bg-emerald-100 hover:bg-emerald-200 border-green-200" : "bg-white border-gray-200 hover:bg-slate-50/50"} `}
+                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-md transition-colors duration-200 md:w-80 ${
+                    isFullyCompleted
+                      ? "bg-gradient-to-br from-emerald-50 via-emerald-100 to-amber-50 border border-emerald-200 ring-1 ring-emerald-100/60 backdrop-blur-md shadow-lg hover:from-emerald-100 hover:to-amber-100"
+                      : "bg-white border-gray-200 hover:bg-slate-50/50"
+                  }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() =>
@@ -351,15 +355,33 @@ export default function SouratePage() {
                       className={`absolute right-2 bottom-2 z-20 flex items-center`}
                     >
                       <div
-                        className={`h-2 w-16 overflow-hidden rounded-full shadow-sm ${isFullyCompleted ? "bg-emerald-100" : "bg-gray-200"}`}
+                        className={`h-1.5 w-20 overflow-hidden rounded-full border border-white shadow-inner ${
+                          isFullyCompleted
+                            ? "bg-gradient-to-r from-emerald-100 via-emerald-50 to-amber-100"
+                            : "bg-gray-200"
+                        }`}
                       >
                         <div
-                          className={`h-full rounded-full transition-all ${isFullyCompleted ? "bg-green-400" : "border-amber-50 bg-green-500 hover:border"}`}
-                          style={{ width: `${progressPercent}%` }}
+                          className={`h-full rounded-full transition-all ${
+                            isFullyCompleted
+                              ? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400"
+                              : "border-amber-50 bg-green-500 hover:border"
+                          }`}
+                          style={{
+                            width: `${progressPercent}%`,
+                            boxShadow: isFullyCompleted
+                              ? "0 0 8px 2px rgba(16,185,129,0.45), 0 0 2px 1px rgba(245,158,11,0.35)"
+                              : undefined,
+                            background: isFullyCompleted
+                              ? "linear-gradient(90deg, #10b981 0%, #34d399 55%, #f59e0b 100%)"
+                              : undefined,
+                          }}
                         />
                       </div>
                       <span
-                        className={`ml-2 text-xs font-semibold ${isFullyCompleted ? "text-emerald-800" : "text-gray-600"}`}
+                        className={`ml-2 text-xs font-semibold ${
+                          isFullyCompleted ? "text-emerald-900 drop-shadow" : "text-gray-600"
+                        }`}
                       >
                         {progressPercent}%
                       </span>
@@ -378,19 +400,23 @@ export default function SouratePage() {
                   )} */}
                   <div className="flex flex-grow items-center justify-between gap-2">
                     <div
-                      className={`flex h-8 w-8 -mb-4 flex-shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${isFullyCompleted ? "bg-white text-emerald-700 shadow group-hover:bg-white group-hover:text-emerald-700" : "bg-blue-100 text-blue-500"} `}
+                      className={`flex h-8 w-8 -mb-4 flex-shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${
+                        isFullyCompleted
+                          ? "bg-white text-emerald-700 border border-emerald-300 backdrop-blur"
+                          : "bg-blue-100 text-blue-500"
+                      } `}
                     >
                       {`${chapter.id < 10 ? "0" : ""}${chapter.id}`}
                     </div>
                     <div className="flex min-w-0 flex-grow flex-col">
                       <div className="flex items-center gap-2">
                         <strong
-                          className={`text-md truncate ${isFullyCompleted ? "text-emerald-800" : "text-gray-800"}`}
+                          className={`text-md truncate ${isFullyCompleted ? "text-emerald-900" : "text-gray-800"}`}
                         >
                           {chapter.transliteration}
                         </strong>
                         <span
-                          className={`font-sura -mt-1 truncate text-xl ${isFullyCompleted ? "text-emerald-600" : ""}`}
+                          className={`font-sura -mt-1 truncate text-xl ${isFullyCompleted ? "text-emerald-700" : ""}`}
                         >{`surah${chapter.id < 10 ? "00" : chapter.id < 100 ? "0" : ""}${chapter.id}`}</span>
                       </div>
                       <p
@@ -410,7 +436,11 @@ export default function SouratePage() {
                       </p>
                     </div>
                     <div
-                      className={`mt-2 inline-block rounded-full px-2 py-1 text-sm font-semibold ${isFullyCompleted ? "border border-emerald-200 bg-white text-emerald-700 group-hover:bg-white group-hover:text-emerald-700" : "bg-blue-100 text-blue-500"} `}
+                      className={`mt-2 inline-block rounded-full px-2 py-1 text-sm font-semibold ${
+                        isFullyCompleted
+                          ? "border border-emerald-300 bg-white text-emerald-700"
+                          : "bg-blue-100 text-blue-500"
+                      } `}
                     >
                       {chapter.type === "meccan" ? "Mecque" : "Médine"}
                     </div>
@@ -426,7 +456,7 @@ export default function SouratePage() {
                           />
                           <AudioLines
                             size={18}
-                            className="inline-block text-emerald-300"
+                            className="inline-block text-white"
                           />
                         </div>
                       ) : (
