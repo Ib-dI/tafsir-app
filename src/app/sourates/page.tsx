@@ -333,13 +333,15 @@ export default function SouratePage() {
                   key={chapter.id}
                   variants={itemVariants}
                   layout
-                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-md transition-colors duration-200 md:w-80 ${
+                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-md transition-colors duration-200 md:w-80 will-change-transform will-change-opacity ${
                     isFullyCompleted
-                      ? "bg-gradient-to-br from-emerald-50 via-emerald-100 to-amber-50 border border-emerald-200 ring-1 ring-emerald-100/60 backdrop-blur-md shadow-lg hover:from-emerald-100 hover:to-amber-100"
+                      ? "bg-card-gradient border border-emerald-200 ring-1 ring-emerald-100/60 hover:opacity-95"
                       : "bg-white border-gray-200 hover:bg-slate-50/50"
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+    
                   onClick={() =>
                     router.push(
                       `/sourates/${chapter.id}${!showOnlyWithAudio ? "?showAudio=all" : ""}`,
@@ -347,9 +349,9 @@ export default function SouratePage() {
                   }
                   tabIndex={0}
                   role="button"
-                  style={{ textDecoration: "none" }}
+                  style={{ textDecoration: "none", willChange: "transform" }}
                 >
-                  {/* Barre de progression flottante en haut à droite */}
+                  {/* Barre de progression flottante en bas à droite */}
                   {totalParts > 0 && (
                     <div
                       className={`absolute right-2 bottom-2 z-20 flex items-center`}
@@ -364,17 +366,11 @@ export default function SouratePage() {
                         <div
                           className={`h-full rounded-full transition-all ${
                             isFullyCompleted
-                              ? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-amber-400"
-                              : "border-amber-50 bg-green-500 hover:border"
+                              ? "bg-progress-gradient"
+                              : "border-amber-50 bg-green-500"
                           }`}
                           style={{
                             width: `${progressPercent}%`,
-                            boxShadow: isFullyCompleted
-                              ? "0 0 8px 2px rgba(16,185,129,0.45), 0 0 2px 1px rgba(245,158,11,0.35)"
-                              : undefined,
-                            background: isFullyCompleted
-                              ? "linear-gradient(90deg, #10b981 0%, #34d399 55%, #f59e0b 100%)"
-                              : undefined,
                           }}
                         />
                       </div>
@@ -402,7 +398,7 @@ export default function SouratePage() {
                     <div
                       className={`flex h-8 w-8 -mb-4 flex-shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${
                         isFullyCompleted
-                          ? "bg-white text-emerald-700 border border-emerald-300 backdrop-blur"
+                          ? "bg-white text-emerald-700 border border-emerald-300"
                           : "bg-blue-100 text-blue-500"
                       } `}
                     >
@@ -452,11 +448,13 @@ export default function SouratePage() {
                         <div className="flex">
                           <AudioLines
                             size={18}
-                            className="inline-block text-emerald-600"
+                            strokeWidth={2.5}
+                            className="inline-block text-emerald-600 drop-shadow-sm"
                           />
                           <AudioLines
                             size={18}
-                            className="inline-block text-white"
+                            strokeWidth={2.5}
+                            className="text-white stroke-white"
                           />
                         </div>
                       ) : (

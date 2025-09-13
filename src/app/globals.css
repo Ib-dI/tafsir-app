@@ -159,3 +159,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+.bg-card-gradient {
+  background: linear-gradient(to bottom right, #ecfdf5, #d1fae5, #fef3c7);
+}
+
+.bg-progress-gradient {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 55%, #f59e0b 100%);
+}
