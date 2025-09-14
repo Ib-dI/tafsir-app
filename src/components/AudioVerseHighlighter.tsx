@@ -346,10 +346,10 @@ const AudioVerseHighlighter = ({
     }
   };
 
-  const isIOS = () => {
-    if (typeof window === "undefined") return false;
-    return /iPad|iPhone|iPod/.test(navigator.userAgent);
-  };
+  // const isIOS = () => {
+  //   if (typeof window === "undefined") return false;
+  //   return /iPad|iPhone|iPod/.test(navigator.userAgent);
+  // };
 
 const seekToVerse = (verse: Verse) => {
   if (verse.noAudio || verse.occurrences.length === 0) return;
