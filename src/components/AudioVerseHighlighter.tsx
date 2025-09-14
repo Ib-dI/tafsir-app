@@ -355,9 +355,9 @@ const seekToVerse = (verse: Verse) => {
   if (verse.noAudio || verse.occurrences.length === 0) return;
 
   if (wavesurferRef.current) {
-    const offset = isIOS() ? 1.05 : 0;
+    // const offset = isIOS() ? 0 : 0;
     const firstOccurrence = verse.occurrences[0]; // 🔑 première occurrence
-    const seekTime = Math.max(0, firstOccurrence.startTime + offset);
+    const seekTime = Math.max(0, firstOccurrence.startTime );
     const seekPosition = duration > 0 ? seekTime / duration : 0;
 
     wavesurferRef.current.seekTo(seekPosition);
