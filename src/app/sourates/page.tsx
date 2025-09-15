@@ -6,7 +6,7 @@ import { getSimpleChapters } from "@/lib/quranSimpleApi";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { collection, onSnapshot, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
-import { AudioLines, Search, Heart, Star } from "lucide-react";
+import { AudioLines, Search, Heart } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
