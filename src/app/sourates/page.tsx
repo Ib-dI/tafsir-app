@@ -4,11 +4,11 @@ import { audiosTafsir } from "@/lib/data/audios";
 import { auth, db } from "@/lib/firebase";
 import { getSimpleChapters } from "@/lib/quranSimpleApi";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
-import { AudioLines, Search } from "lucide-react";
+import { AudioLines, Search, Heart, Star } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"; // Ajout de useCallback
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Chapter = {
   id: number;
@@ -41,7 +41,7 @@ const itemVariants = {
 
 export default function SouratePage() {
   const router = useRouter();
-  const searchParams = useSearchParams(); // Hook pour lire les paramètres d'URL
+  const searchParams = useSearchParams();
 
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [filteredChapters, setFilteredChapters] = useState<Chapter[]>([]);
@@ -49,14 +49,17 @@ export default function SouratePage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
 
-  // Initialise showOnlyWithAudio à partir du paramètre d'URL 'showAudio'
-  // Si 'showAudio' est 'all', alors false (afficher tout), sinon true (afficher avec audio seulement)
-  // On le définit après le premier rendu via useEffect pour s'assurer que searchParams est prêt
-  const [showOnlyWithAudio, setShowOnlyWithAudio] = useState<boolean>(true); // Valeur par défaut robuste
+  // États pour les filtres
+  const [showOnlyWithAudio, setShowOnlyWithAudio] = useState<boolean>(true);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState<boolean>(false);
 
   const [completedChaptersByPartId, setCompletedChaptersByPartId] = useState<
     Set<string>
   >(new Set());
+  
+  // État pour les favoris
+  const [favoriteChapters, setFavoriteChapters] = useState<Set<number>>(new Set());
+  
   const [userId, setUserId] = useState<string | null>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -71,31 +74,27 @@ export default function SouratePage() {
           )
           .map((audio) => audio.id),
       ),
-    [], // audiosTafsir est une constante, pas besoin de la mettre en dépendance ici
+    [],
   );
 
-  // Premier useEffect: Charger les chapitres et initialiser le filtre basé sur l'URL
+  // Premier useEffect: Charger les chapitres et initialiser les filtres basés sur l'URL
   useEffect(() => {
     async function loadChaptersAndSetInitialFilter() {
       try {
         setLoading(true);
         const fetchedChapters = await getSimpleChapters();
         if (fetchedChapters) {
-          setChapters(fetchedChapters); // Stocke tous les chapitres
+          setChapters(fetchedChapters);
 
-          // Lire la valeur du paramètre d'URL une fois que searchParams est prêt
-          const initialShowAudioFromUrl =
-            searchParams.get("showAudio") !== "all";
+          // Lire les valeurs des paramètres d'URL
+          const initialShowAudioFromUrl = searchParams.get("showAudio") !== "all";
+          const initialShowFavoritesFromUrl = searchParams.get("showFavorites") === "true";
+          
           setShowOnlyWithAudio(initialShowAudioFromUrl);
+          setShowOnlyFavorites(initialShowFavoritesFromUrl);
 
-          // Appliquer le filtre initial immédiatement après avoir chargé les chapitres
-          let initialChaptersToFilter = fetchedChapters;
-          if (initialShowAudioFromUrl) {
-            initialChaptersToFilter = fetchedChapters.filter(
-              (chapter: Chapter) => sourateIdsWithAudio.has(chapter.id),
-            );
-          }
-          setFilteredChapters(initialChaptersToFilter); // Initialise filteredChapters ici
+          // Le filtrage initial sera fait par l'useEffect de filtrage
+          setFilteredChapters(fetchedChapters);
         } else {
           setError(true);
         }
@@ -107,9 +106,9 @@ export default function SouratePage() {
       }
     }
     loadChaptersAndSetInitialFilter();
-  }, [searchParams, sourateIdsWithAudio]); // Dépend de searchParams et sourateIdsWithAudio (même si constant, bonne pratique)
+  }, [searchParams, sourateIdsWithAudio]);
 
-  // Auth anonyme (factorisé)
+  // Auth anonyme
   useEffect(() => {
     if (!auth) return;
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -141,24 +140,82 @@ export default function SouratePage() {
     });
   }, [userId]);
 
-  // Défilement vers le haut de la page au montage (pour navigation)
+  // Écoute les favoris avec gestion d'erreur améliorée
+  useEffect(() => {
+    if (!db || !userId) {
+      console.log("Pas de DB ou userId pour les favoris:", { db: !!db, userId });
+      return;
+    }
+    
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    if (!projectId) {
+      console.log("Project ID manquant pour les favoris");
+      return;
+    }
+    
+    console.log("Initialisation de l'écoute des favoris pour userId:", userId);
+    
+    const favoritesRef = collection(
+      db,
+      `artifacts/${projectId}/users/${userId}/favorites`,
+    );
+    
+    const unsubscribe = onSnapshot(
+      favoritesRef, 
+      (snapshot) => {
+        const favorites = new Set<number>();
+        console.log("Snapshot favoris reçu, nombre de documents:", snapshot.size);
+        
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const chapterId = parseInt(doc.id);
+          console.log("Document favori:", { id: doc.id, chapterId, data });
+          
+          if (!isNaN(chapterId)) {
+            favorites.add(chapterId);
+          }
+        });
+        
+        console.log("Favoris mis à jour:", Array.from(favorites));
+        setFavoriteChapters(favorites);
+      },
+      (error) => {
+        console.error("Erreur lors de l'écoute des favoris:", error);
+      }
+    );
+    
+    return () => {
+      console.log("Nettoyage de l'écoute des favoris");
+      unsubscribe();
+    };
+  }, [userId]);
+
+  // Défilement vers le haut de la page au montage
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Effet pour re-filtrer quand le terme de recherche OU l'état du filtre audio change
-  // Ce useEffect s'exécutera après le chargement initial si chapters, searchTerm ou showOnlyWithAudio changent
+  // Effet pour filtrer les chapitres
   useEffect(() => {
-    if (loading) return; // Ne filtre pas si les chapitres ne sont pas encore chargés (pour éviter le filtrage sur chapters vides)
+    if (loading) return;
 
     let currentChaptersToFilter = chapters;
 
+    // Filtre par audio
     if (showOnlyWithAudio) {
-      currentChaptersToFilter = chapters.filter((chapter: Chapter) =>
+      currentChaptersToFilter = currentChaptersToFilter.filter((chapter: Chapter) =>
         sourateIdsWithAudio.has(chapter.id),
       );
     }
 
+    // Filtre par favoris
+    if (showOnlyFavorites) {
+      currentChaptersToFilter = currentChaptersToFilter.filter((chapter: Chapter) =>
+        favoriteChapters.has(chapter.id),
+      );
+    }
+
+    // Filtre par terme de recherche
     if (searchTerm === "") {
       setFilteredChapters(currentChaptersToFilter);
     } else {
@@ -174,10 +231,9 @@ export default function SouratePage() {
       );
       setFilteredChapters(results);
     }
-  }, [searchTerm, chapters, showOnlyWithAudio, sourateIdsWithAudio, loading]); // Ajout de 'loading' pour déclencher le filtre après le chargement
+  }, [searchTerm, chapters, showOnlyWithAudio, showOnlyFavorites, sourateIdsWithAudio, favoriteChapters, loading]);
 
   const handleFocus = useCallback(() => {
-    // Utilisez useCallback pour cette fonction
     if (searchInputRef.current) {
       const inputRect = searchInputRef.current.getBoundingClientRect();
       const offset = 20;
@@ -188,28 +244,67 @@ export default function SouratePage() {
         behavior: "smooth",
       });
     }
-  }, []); // Aucune dépendance car searchInputRef.current est constant sur le cycle de vie du composant
+  }, []);
 
-
-  // Nouvelle fonction pour gérer le changement du filtre et mettre à jour l'URL
+  // Fonction pour gérer le changement du filtre audio et mettre à jour l'URL
   const toggleShowOnlyWithAudio = () => {
     const newState = !showOnlyWithAudio;
     setShowOnlyWithAudio(newState);
+    updateURLParams({ showAudio: newState ? undefined : "all" });
+  };
 
-    // Crée une nouvelle URLSearchParams à partir de l'actuelle
+  // Fonction pour gérer le changement du filtre favoris et mettre à jour l'URL
+  const toggleShowOnlyFavorites = () => {
+    const newState = !showOnlyFavorites;
+    setShowOnlyFavorites(newState);
+    updateURLParams({ showFavorites: newState ? "true" : undefined });
+  };
+
+  // Fonction utilitaire pour mettre à jour les paramètres d'URL
+  const updateURLParams = (params: { showAudio?: string; showFavorites?: string }) => {
     const currentParams = new URLSearchParams(searchParams.toString());
-    if (newState) {
-      currentParams.delete("showAudio"); // Si true, on n'a pas besoin du paramètre (URL plus propre)
-    } else {
-      currentParams.set("showAudio", "all"); // Si false, on met 'all'
-    }
+    
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === undefined) {
+        currentParams.delete(key);
+      } else {
+        currentParams.set(key, value);
+      }
+    });
 
-    // Met à jour l'URL sans recharger la page
     router.replace(`?${currentParams.toString()}`);
   };
 
+  // Fonction pour basculer le statut de favori d'un chapitre
+  const toggleFavorite = async (chapterId: number, event: React.MouseEvent) => {
+    event.stopPropagation(); // Empêche la navigation vers le chapitre
+    
+    if (!db || !userId) return;
+    
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    if (!projectId) return;
+
+    const favoriteRef = doc(
+      db,
+      `artifacts/${projectId}/users/${userId}/favorites`,
+      chapterId.toString()
+    );
+
+    try {
+      if (favoriteChapters.has(chapterId)) {
+        await deleteDoc(favoriteRef);
+      } else {
+        await setDoc(favoriteRef, {
+          chapterId,
+          createdAt: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des favoris:", error);
+    }
+  };
+
   if (loading && chapters.length === 0) {
-    // Condition de chargement plus robuste
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 text-blue-600">
         <div className="mb-4 h-16 w-16 animate-spin rounded-full border-t-4 border-b-4 border-blue-500"></div>
@@ -233,7 +328,7 @@ export default function SouratePage() {
       </h1>
 
       <div className="flex flex-col gap-4 mb-6">
-        {/* Barre de recherche améliorée */}
+        {/* Barre de recherche */}
         <motion.div
           className="w-full relative"
           onFocus={handleFocus}
@@ -256,14 +351,16 @@ export default function SouratePage() {
           </div>
         </motion.div>
 
-        {/* Filtre Audio avec statistiques */}
+        {/* Filtres avec statistiques */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 p-4 rounded-xl"
+          className="flex flex-col gap-4 bg-gray-50 p-4 rounded-xl"
         >
-          <div className="flex items-center gap-3">
+          {/* Boutons de filtre */}
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {/* Filtre Audio */}
             <button
               onClick={toggleShowOnlyWithAudio}
               className={`relative overflow-hidden rounded-full px-5 py-2.5 font-semibold text-white transition-all duration-300 ${
@@ -278,19 +375,36 @@ export default function SouratePage() {
                   ? "Afficher toutes les sourates"
                   : "Afficher les sourates avec audio"}
               </span>
-              <div
-                className={`absolute inset-0 transition-transform duration-300 ${
-                  showOnlyWithAudio ? "translate-x-0" : "-translate-x-full"
-                }`}
-              />
+            </button>
+
+            {/* Filtre Favoris */}
+            <button
+              onClick={toggleShowOnlyFavorites}
+              className={`relative overflow-hidden rounded-full px-5 py-2.5 font-semibold text-white transition-all duration-300 ${
+                showOnlyFavorites
+                  ? "bg-rose-600 hover:bg-rose-700"
+                  : "bg-gray-600 hover:bg-gray-700"
+              }`}
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                <Heart size={18} fill={showOnlyFavorites ? "white" : "none"} />
+                {showOnlyFavorites
+                  ? "Afficher toutes les sourates"
+                  : "Afficher mes favoris"}
+              </span>
             </button>
           </div>
 
           {/* Statistiques */}
-          <div className="flex items-center gap-4 text-sm text-gray-600">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-blue-500" />
               <span>{`${sourateIdsWithAudio.size} sourates avec audio`}</span>
+            </div>
+            <div className="h-4 w-px bg-gray-300" />
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-rose-500" />
+              <span>{`${favoriteChapters.size} favoris`}</span>
             </div>
             <div className="h-4 w-px bg-gray-300" />
             <div className="flex items-center gap-2">
@@ -311,10 +425,8 @@ export default function SouratePage() {
         <AnimatePresence mode="popLayout">
           {filteredChapters.length > 0 ? (
             filteredChapters.map((chapter: Chapter) => {
-              // Trouver les parties audio pour cette sourate
               const audioData = audiosTafsir.find((a) => a.id === chapter.id);
               const partIds = audioData?.parts?.map((part) => part.id) || [];
-              // Parties terminées pour cette sourate
               const completedPartIds = new Set(
                 Array.from(completedChaptersByPartId).filter((partId) =>
                   partIds.includes(partId),
@@ -328,6 +440,8 @@ export default function SouratePage() {
                 totalParts > 0
                   ? Math.round((completedParts / totalParts) * 100)
                   : 0;
+              const isFavorite = favoriteChapters.has(chapter.id);
+
               return (
                 <motion.li
                   key={chapter.id}
@@ -341,7 +455,6 @@ export default function SouratePage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 20 }}
-    
                   onClick={() =>
                     router.push(
                       `/sourates/${chapter.id}${!showOnlyWithAudio ? "?showAudio=all" : ""}`,
@@ -351,11 +464,27 @@ export default function SouratePage() {
                   role="button"
                   style={{ textDecoration: "none", willChange: "transform" }}
                 >
-                  {/* Barre de progression flottante en bas à droite */}
+                  {/* Bouton favori */}
+                  <button
+                    onClick={(e) => toggleFavorite(chapter.id, e)}
+                    className={`absolute top-0 right-2 z-20 p-1.5 rounded-full transition-all duration-200 hover:scale-110 ${
+                      isFavorite
+                        ? "text-rose-500 hover:text-rose-600"
+                        : "text-gray-400 hover:text-rose-500"
+                    }`}
+                    title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+                  >
+                    <Heart
+                      size={18}
+                      fill={isFavorite ? "currentColor" : "none"}
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    />
+                  </button>
+
+                  {/* Barre de progression */}
                   {totalParts > 0 && (
-                    <div
-                      className={`absolute right-2 bottom-2 z-20 flex items-center`}
-                    >
+                    <div className="absolute right-2 bottom-2 z-20 flex items-center">
                       <div
                         className={`h-1.5 w-20 overflow-hidden rounded-full border border-white shadow-inner ${
                           isFullyCompleted
@@ -383,24 +512,14 @@ export default function SouratePage() {
                       </span>
                     </div>
                   )}
-                  {/* Badge progression en bas à droite */}
-                  {/* {isFullyCompleted && (
-                    <span
-                      className="absolute bottom-2 right-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500 border-2 border-white shadow z-10"
-                      title="Sourate complétée"
-                    >
-                      <svg width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 10.5L8.5 14L15 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </span>
-                  )} */}
+
                   <div className="flex flex-grow items-center justify-between gap-2">
                     <div
                       className={`flex h-8 w-8 -mb-4 flex-shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${
                         isFullyCompleted
                           ? "bg-white text-emerald-700 border border-emerald-300"
                           : "bg-blue-100 text-blue-500"
-                      } `}
+                      }`}
                     >
                       {`${chapter.id < 10 ? "0" : ""}${chapter.id}`}
                     </div>
@@ -436,7 +555,7 @@ export default function SouratePage() {
                         isFullyCompleted
                           ? "border border-emerald-300 bg-white text-emerald-700"
                           : "bg-blue-100 text-blue-500"
-                      } `}
+                      }`}
                     >
                       {chapter.type === "meccan" ? "Mecque" : "Médine"}
                     </div>
@@ -454,7 +573,7 @@ export default function SouratePage() {
                           <AudioLines
                             size={18}
                             strokeWidth={2.5}
-                            className="text-white stroke-white"
+                            className="text-white stroke-white drop-shadow-sm"
                           />
                         </div>
                       ) : (
@@ -484,8 +603,9 @@ export default function SouratePage() {
               exit={{ opacity: 0 }}
               className="mt-4 text-center text-gray-500"
             >
-              Aucun chapitre ne correspond à votre recherche ou ne contient
-              d&apos;audio.
+              {showOnlyFavorites && favoriteChapters.size === 0
+                ? "Vous n'avez pas encore de sourates favorites. Cliquez sur le cœur pour en ajouter !"
+                : "Aucun chapitre ne correspond à vos critères de recherche."}
             </motion.li>
           )}
         </AnimatePresence>
