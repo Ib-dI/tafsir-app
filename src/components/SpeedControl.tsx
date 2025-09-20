@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { motion, AnimatePresence } from "framer-motion";
 
 function SpeedControl({
   playbackRate,
@@ -9,43 +10,85 @@ function SpeedControl({
   onChange: (rate: number) => void;
 }) {
   const speeds = [1, 1.25, 1.5, 2];
-  const [isOpen, setIsOpen] = useState(false);
-  // let currentRateIndex = 0;
-
-  const handleSelectSpeed = (speed: number) => {
-    onChange(speed);
-    setIsOpen(false);
+  
+  const handleClick = () => {
+    if (!speeds.includes(playbackRate)) {
+      onChange(1);
+      return;
+    }
+    
+    const currentIndex = speeds.indexOf(playbackRate);
+    const nextIndex = (currentIndex + 1) % speeds.length;
+    onChange(speeds[nextIndex]);
   };
-  // currentRateIndex = (currentRateIndex + 1) % speeds.length;
-  //                               const newRate = speeds[currentRateIndex];
-  //                               wavesurfer.setPlaybackRate(newRate);
+
+  // Fonction pour obtenir les classes de couleur en fonction de la vitesse
+  const getColorClasses = (rate: number) => {
+    switch (rate) {
+      case 1:
+        return {
+          bg: "bg-green-100/50",
+          hover: "hover:bg-green-100",
+          text: "text-green-600",
+          border: "border-green-300"
+        };
+      case 1.25:
+        return {
+          bg: "bg-blue-100/50",
+          hover: "hover:bg-blue-100",
+          text: "text-blue-500",
+          border: "border-blue-300"
+        };
+      case 1.5:
+        return {
+          bg: "bg-yellow-100/50",
+          hover: "hover:bg-yellow-100",
+          text: "text-yellow-600",
+          border: "border-yellow-400"
+        };
+      case 2:
+        return {
+          bg: "bg-red-100/50",
+          hover: "hover:bg-red-100",
+          text: "text-red-700",
+          border: "border-red-400"
+        };
+      default:
+        return {
+          bg: "bg-gray-100",
+          hover: "hover:bg-gray-200",
+          text: "text-gray-700",
+          border: "border-gray-300"
+        };
+    }
+  };
+
+  const colors = getColorClasses(playbackRate);
 
   return (
     <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="cursor-pointer rounded-md bg-gray-200 px-3 py-1 text-xs hover:bg-gray-300"
+      <motion.button
+        onClick={handleClick}
+        className={`cursor-pointer rounded-lg font-medium px-2.5 py-1 text-xs md:text-sm w-[40px] md:w-[50px] h-7 flex items-center justify-center transition-colors duration-200 border-[0.8px] ${colors.bg} ${colors.hover} ${colors.text} ${colors.border}`}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
-        x{playbackRate}
-      </button>
-      {isOpen && (
-        <div className="absolute right-0 z-50 mb-2 rounded-md bg-white p-1 shadow-lg">
-          {speeds.map((speed) => (
-            <button
-              key={speed}
-              onClick={() => handleSelectSpeed(speed)}
-              className={`block w-full rounded-md px-2 py-1 text-left text-sm ${
-                speed === playbackRate
-                  ? "bg-blue-100 text-blue-600"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              x{speed}
-            </button>
-          ))}
-        </div>
-      )}
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={playbackRate}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
+            className="font-medium"
+          >
+            x{playbackRate}
+          </motion.span>
+        </AnimatePresence>
+      </motion.button>
     </div>
   );
 }
+
 export default SpeedControl;
