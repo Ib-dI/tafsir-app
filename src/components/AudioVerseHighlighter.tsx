@@ -1,11 +1,27 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Info } from "lucide-react";
-import React, { useEffect, useRef, useState, type ReactNode, useCallback } from "react";
+import {
+  Info,
+  CheckCircle,
+  Play,
+  ChevronLeft,
+  ChevronRight,
+  X,
+} from "lucide-react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  useCallback,
+} from "react";
 import WaveSurfer from "wavesurfer.js";
+import confetti from "canvas-confetti";
+import useSound from "use-sound";
 import { useMediaQuery } from "./UseMediaQuery";
 import SpeedControl from "./SpeedControl";
+import { useRouter } from "next/navigation";
 import { PauseIcon } from "./icons/PauseIcon";
 import { PlayIcon } from "./icons/PlayIcon";
 
@@ -25,6 +41,13 @@ type AudioVerseHighlighterProps = {
   infoSourate: string[];
   children?: ReactNode;
   onAudioFinished?: () => void;
+  onNextChapter?: () => void;
+  onPreviousChapter?: () => void;
+  hasNextChapter?: boolean;
+  hasPreviousChapter?: boolean;
+  currentChapterId: number;
+  totalChapters?: number;
+  showOnlyWithAudio?: boolean;
 };
 
 const toArabicNumerals = (n: number): string => {
@@ -131,7 +154,16 @@ const AudioVerseHighlighter = ({
   infoSourate,
   children,
   onAudioFinished,
-}: AudioVerseHighlighterProps) => {
+  onNextChapter,
+  onPreviousChapter,
+  hasNextChapter = true,
+  hasPreviousChapter = true,
+  currentChapterId,
+  totalChapters = 114,
+}: AudioVerseHighlighterProps & {
+  currentChapterId: number;
+  totalChapters?: number;
+}) => {
   const waveformRef = useRef(null);
   const waveformContainerRef = useRef<HTMLDivElement>(null);
   const versesRef = useRef<HTMLDivElement>(null);
@@ -141,12 +173,20 @@ const AudioVerseHighlighter = ({
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
-  const [currentOccurrence, setCurrentOccurrence] = useState<number | null>(null);
+  const [currentOccurrence, setCurrentOccurrence] = useState<number | null>(
+    null,
+  );
   const [playbackRate, setPlaybackRate] = useState(1);
   const [audioError, setAudioError] = useState<boolean>(false);
-  const [hasFinished, setHasFinished] = useState(false);
+
+  // ✅ États séparés pour une meilleure gestion
+  const [hasAudioFinished, setHasAudioFinished] = useState(false);
+  const [showCompletionOverlay, setShowCompletionOverlay] = useState(false);
+
   const [isDragging, setIsDragging] = useState(false);
   const [isTouching, setIsTouching] = useState(false);
+  const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
+  const [completionVisible, setCompletionVisible] = useState(false);
 
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
   const wasPlayingRef = useRef(false);
@@ -158,35 +198,141 @@ const AudioVerseHighlighter = ({
   const lastUpdateTimeRef = useRef(0);
   const rafIdRef = useRef<number | null>(null);
 
+  // ✅ Référence pour éviter les doubles déclenchements
+  const finishHandledRef = useRef(false);
+
+  const [playSuccessSound] = useSound("/sounds/success.m4a", { volume: 0.5 });
+  const router = useRouter();
+
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // ✅ Fonction utilitaire pour trouver le verset correspondant à un temps donné
-  const findVerseAtTime = useCallback((time: number): Verse | null => {
-    for (const verse of verses) {
-      if (verse.noAudio) continue;
-      const match = verse.occurrences.find(
-        (occ) => time >= occ.startTime && time <= occ.endTime,
-      );
-      if (match) {
-        return verse;
-      }
+  // ✅ Fonction pour lancer les confettis
+  const launchConfetti = useCallback(() => {
+    const count = 200;
+    const defaults = {
+      origin: { y: 0.7 },
+      zIndex: 1000,
+    };
+
+    function fire(particleRatio: number, opts: confetti.Options) {
+      confetti({
+        ...defaults,
+        ...opts,
+        particleCount: Math.floor(count * particleRatio),
+      });
     }
-    return null;
-  }, [verses]);
+
+    fire(0.25, {
+      spread: 26,
+      startVelocity: 55,
+    });
+
+    fire(0.2, {
+      spread: 60,
+    });
+
+    fire(0.35, {
+      spread: 100,
+      decay: 0.91,
+      scalar: 0.8,
+    });
+
+    fire(0.1, {
+      spread: 120,
+      startVelocity: 25,
+      decay: 0.92,
+      scalar: 1.2,
+    });
+
+    fire(0.1, {
+      spread: 120,
+      startVelocity: 45,
+    });
+
+    setTimeout(() => {
+      fire(0.15, {
+        spread: 80,
+        startVelocity: 30,
+      });
+    }, 500);
+  }, []);
+
+  // ✅ Fonctions de navigation
+  const goToPreviousChapter = () => {
+    if (onPreviousChapter) {
+      onPreviousChapter();
+    } else {
+      const prevChapterId =
+        currentChapterId === 1 ? totalChapters : currentChapterId - 1;
+      router.push(`/sourates/${prevChapterId}`);
+    }
+  };
+
+  const goToNextChapter = () => {
+    if (onNextChapter) {
+      onNextChapter();
+    } else {
+      const nextChapterId =
+        currentChapterId === totalChapters ? 1 : currentChapterId + 1;
+      router.push(`/sourates/${nextChapterId}`);
+    }
+  };
+
+  // ✅ Réinitialisation lors du changement de chapitre
+  useEffect(() => {
+    setShowCompletionOverlay(false);
+    setCompletionVisible(false);
+    setShowCompletionAnimation(false);
+    setHasAudioFinished(false);
+    finishHandledRef.current = false;
+  }, [currentChapterId]);
+
+  const closeOverlay = () => {
+    setCompletionVisible(false);
+    setShowCompletionAnimation(false);
+    setShowCompletionOverlay(false);
+    setHasAudioFinished(false);
+    finishHandledRef.current = false;
+  };
+
+  // ✅ Fonction pour trouver le verset correspondant à un temps donné
+  const findVerseAtTime = useCallback(
+    (time: number): Verse | null => {
+      for (const verse of verses) {
+        if (verse.noAudio) continue;
+        const match = verse.occurrences.find(
+          (occ) => time >= occ.startTime && time <= occ.endTime,
+        );
+        if (match) {
+          return verse;
+        }
+      }
+      return null;
+    },
+    [verses],
+  );
 
   // ✅ Fonction pour mettre à jour le verset actuel
-  const updateCurrentVerse = useCallback((time: number) => {
-    const foundVerse = findVerseAtTime(time);
-    if (foundVerse) {
-      setCurrentVerseId(foundVerse.id);
-    } else {
-      setCurrentVerseId(null);
-    }
-  }, [findVerseAtTime]);
+  // 3. Stabiliser la fonction updateCurrentVerse avec useCallback :
+  const updateCurrentVerse = useCallback(
+    (time: number) => {
+      const foundVerse = findVerseAtTime(time);
+      if (foundVerse) {
+        setCurrentVerseId(foundVerse.id);
+      } else {
+        setCurrentVerseId(null);
+      }
+    },
+    [findVerseAtTime], // ✅ Dépendance stable
+  );
 
-  // Initialisation de WaveSurfer et gestion du chargement
+  // 4. Stabiliser onAudioFinished avec useCallback si nécessaire :
+  const stableOnAudioFinished = useCallback(() => {
+    onAudioFinished?.();
+  }, [onAudioFinished]);
+
+  // ✅ Initialisation de WaveSurfer - NE PAS réinitialiser hasAudioFinished ici
   useEffect(() => {
-    setHasFinished(false);
     if (wavesurferRef.current) {
       wavesurferRef.current.destroy();
       wavesurferRef.current = null;
@@ -293,13 +439,25 @@ const AudioVerseHighlighter = ({
 
     wavesurfer.on("play", () => setIsPlaying(true));
     wavesurfer.on("pause", () => setIsPlaying(false));
+
+    // ✅ Gestion de l'événement finish avec protection contre les doubles déclenchements
     wavesurfer.on("finish", () => {
-      if (!hasFinished) {
-        setHasFinished(true);
+      console.log(
+        "Audio finished, finishHandledRef.current:",
+        finishHandledRef.current,
+      );
+
+      if (!finishHandledRef.current) {
+        finishHandledRef.current = true;
         setIsPlaying(false);
         setCurrentVerseId(null);
         setCurrentOccurrence(null);
+        setHasAudioFinished(true);
+
+        // Appeler la callback si elle existe
         onAudioFinished?.();
+
+        console.log("Audio finish handled, setting hasAudioFinished to true");
       }
     });
 
@@ -318,7 +476,62 @@ const AudioVerseHighlighter = ({
       }
       wavesurferRef.current = null;
     };
-  }, [audioUrl, verses, isMobile, updateCurrentVerse, onAudioFinished, hasFinished]);
+  }, [audioUrl, isMobile]);
+
+  // ✅ Effet séparé pour gérer l'affichage de l'overlay
+  useEffect(() => {
+    console.log(
+      "hasAudioFinished changed:",
+      hasAudioFinished,
+      "showCompletionOverlay:",
+      showCompletionOverlay,
+    );
+
+    if (hasAudioFinished && !showCompletionOverlay && wavesurferRef.current) {
+      console.log("Showing completion overlay");
+      setShowCompletionOverlay(true);
+      setShowCompletionAnimation(true);
+      setCompletionVisible(true);
+
+      // Lancer les effets visuels et sonores
+      launchConfetti();
+      playSuccessSound();
+    }
+  }, [
+    hasAudioFinished,
+    showCompletionOverlay,
+    launchConfetti,
+    playSuccessSound,
+  ]);
+
+  // Gestion de la navigation au clavier
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (completionVisible) {
+        switch (e.key) {
+          case "Escape":
+            closeOverlay();
+            break;
+          case "ArrowLeft":
+            if (hasPreviousChapter) {
+              goToPreviousChapter();
+            }
+            break;
+          case "ArrowRight":
+            if (hasNextChapter) {
+              goToNextChapter();
+            }
+            break;
+          case "Enter":
+            replayChapter();
+            break;
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [completionVisible, hasPreviousChapter, hasNextChapter]);
 
   // Gestion du défilement
   useEffect(() => {
@@ -411,6 +624,76 @@ const AudioVerseHighlighter = ({
     }
   };
 
+  const replayChapter = () => {
+    if (wavesurferRef.current) {
+      wavesurferRef.current.seekTo(0);
+      wavesurferRef.current.play();
+
+      // ✅ Réinitialisation complète des états
+      setHasAudioFinished(false);
+      setShowCompletionOverlay(false);
+      setCompletionVisible(false);
+      setShowCompletionAnimation(false);
+      finishHandledRef.current = false;
+      setCurrentVerseId(null);
+      setCurrentOccurrence(null);
+    }
+  };
+  useEffect(() => {
+    if (!wavesurferRef.current) return;
+
+    const wavesurfer = wavesurferRef.current;
+
+    // Gestionnaire pour l'événement finish
+    const handleFinish = () => {
+      console.log(
+        "Audio finished, finishHandledRef.current:",
+        finishHandledRef.current,
+      );
+
+      if (!finishHandledRef.current) {
+        finishHandledRef.current = true;
+        setIsPlaying(false);
+        setCurrentVerseId(null);
+        setCurrentOccurrence(null);
+        setHasAudioFinished(true);
+
+        // Appeler la callback si elle existe
+        onAudioFinished?.();
+
+        console.log("Audio finish handled, setting hasAudioFinished to true");
+      }
+    };
+
+    // Gestionnaire pour timeupdate
+    const handleTimeUpdate = () => {
+      if (!isDragging) {
+        const time = wavesurfer.getCurrentTime();
+        setCurrentTime(time);
+        updateCurrentVerse(time);
+      }
+    };
+
+    // Gestionnaire pour audioprocess
+    const handleAudioProcess = () => {
+      const time = wavesurfer.getCurrentTime();
+      setCurrentTime(time);
+      updateCurrentVerse(time);
+    };
+
+    // Ajouter les écouteurs
+    wavesurfer.on("finish", handleFinish);
+    wavesurfer.on("timeupdate", handleTimeUpdate);
+    wavesurfer.on("audioprocess", handleAudioProcess);
+
+    // Nettoyer les écouteurs
+    return () => {
+      wavesurfer.un("finish", handleFinish);
+      wavesurfer.un("timeupdate", handleTimeUpdate);
+      wavesurfer.un("audioprocess", handleAudioProcess);
+    };
+  }, [isDragging, updateCurrentVerse, onAudioFinished]);
+
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
@@ -435,7 +718,7 @@ const AudioVerseHighlighter = ({
       isProcessingTouchRef.current = true;
       setIsTouching(true);
       setDragTime(null);
-      
+
       touchStartXRef.current = e.touches[0].clientX;
       touchStartTimeRef.current = Date.now();
       isDragModeRef.current = false;
@@ -457,20 +740,19 @@ const AudioVerseHighlighter = ({
       const containerRect = container.getBoundingClientRect();
       const relativeX = Math.max(
         0,
-        Math.min(containerRect.width, clientX - containerRect.left)
+        Math.min(containerRect.width, clientX - containerRect.left),
       );
-      const seekPosition = containerRect.width > 0 ? relativeX / containerRect.width : 0;
+      const seekPosition =
+        containerRect.width > 0 ? relativeX / containerRect.width : 0;
       const duration = wavesurferRef.current.getDuration() || 0;
       const newTime = duration * seekPosition;
 
-      // ✅ Mise à jour immédiate du temps affiché
       setDragTime(newTime);
       setCurrentTime(newTime);
       updateCurrentVerse(newTime);
 
-      // ✅ Mise à jour de la position audio (avec throttling)
       const now = Date.now();
-      if (now - lastUpdateTimeRef.current > 16) { // ~60fps
+      if (now - lastUpdateTimeRef.current > 16) {
         wavesurferRef.current.seekTo(seekPosition);
         lastUpdateTimeRef.current = now;
       }
@@ -487,7 +769,6 @@ const AudioVerseHighlighter = ({
       const currentX = e.touches[0].clientX;
       const deltaX = Math.abs(currentX - touchStartXRef.current);
 
-      // ✅ Mise à jour en continu via requestAnimationFrame
       if (rafIdRef.current) {
         cancelAnimationFrame(rafIdRef.current);
       }
@@ -496,7 +777,6 @@ const AudioVerseHighlighter = ({
         updateDragPosition(currentX);
       });
 
-      // ✅ Activation du mode drag après un certain seuil
       if (!isDragModeRef.current && deltaX > 5) {
         isDragModeRef.current = true;
         setIsDragging(true);
@@ -509,13 +789,11 @@ const AudioVerseHighlighter = ({
       e.preventDefault();
       e.stopPropagation();
 
-      // ✅ Annulation de l'animation frame en cours
       if (rafIdRef.current) {
         cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;
       }
 
-      // ✅ Synchronisation finale
       if (wavesurferRef.current) {
         const finalTime = wavesurferRef.current.getCurrentTime();
         setCurrentTime(finalTime);
@@ -526,7 +804,6 @@ const AudioVerseHighlighter = ({
       setIsTouching(false);
       setIsDragging(false);
 
-      // ✅ Reprise de lecture si nécessaire
       setTimeout(() => {
         if (wavesurferRef.current && wasPlayingRef.current) {
           wavesurferRef.current.play();
@@ -581,6 +858,149 @@ const AudioVerseHighlighter = ({
       className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible rounded-lg bg-white p-1 shadow sm:p-4"
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
+      {/* Overlay de completion */}
+      {completionVisible && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="fixed inset-0 z-[900] flex items-center justify-center bg-black/10 p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 100,
+              damping: 15,
+              delay: 0.2,
+            }}
+            className="relative flex w-full max-w-md flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-green-50 to-emerald-100 p-8 shadow-2xl"
+          >
+            {/* Bouton de fermeture */}
+            <button
+              onClick={closeOverlay}
+              className="absolute top-4 right-4 rounded-full p-1 transition-colors hover:bg-green-200"
+            >
+              <X className="h-5 w-5 text-gray-600" />
+            </button>
+
+            {/* Icône de succès */}
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 150,
+                damping: 15,
+                delay: 0.4,
+              }}
+              className="mb-4 md:mb-6"
+            >
+              <CheckCircle
+                className="h-14 w-14 text-green-500 md:h-20 md:w-20"
+                strokeWidth={1.5}
+              />
+            </motion.div>
+
+            {/* Message de félicitations */}
+            <motion.h3
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="mb-2 text-center text-2xl font-bold text-gray-800"
+            >
+              Chapitre terminé !
+            </motion.h3>
+
+            <motion.p
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+              className="mb-6 text-center text-gray-600"
+            >
+              Vous avez complété{" "}
+              <span className="font-semibold">
+                {infoSourate[0]}. {infoSourate[2]}
+              </span>
+            </motion.p>
+
+            {/* Conteneur des boutons d'action */}
+
+            {/* Conteneur des boutons d'action */}
+            <div className="flex w-full flex-col gap-3">
+              {/* Bouton de rejouer */}
+              <motion.button
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1, duration: 0.5 }}
+                onClick={replayChapter}
+                className="group flex w-full items-center justify-center gap-2 rounded-full bg-green-500 px-6 py-3 font-semibold text-white transition-all hover:bg-green-600 hover:shadow-lg"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Play className="h-5 w-5" fill="currentColor" />
+                Réécouter ce chapitre
+              </motion.button>
+
+              {/* Navigation entre chapitres */}
+              <div className="flex w-full gap-3">
+                {/* Bouton chapitre précédent */}
+                <motion.button
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 1.2, duration: 0.5 }}
+                  onClick={goToPreviousChapter}
+                  disabled={!hasPreviousChapter}
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 font-medium transition-all ${
+                    hasPreviousChapter
+                      ? "bg-blue-500 text-white hover:bg-blue-600 hover:shadow-lg"
+                      : "cursor-not-allowed bg-gray-300 text-gray-500"
+                  }`}
+                  whileHover={hasPreviousChapter ? { scale: 1.02 } : {}}
+                  whileTap={hasPreviousChapter ? { scale: 0.98 } : {}}
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                  Précédent
+                </motion.button>
+
+                {/* Bouton chapitre suivant */}
+                <motion.button
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 1.2, duration: 0.5 }}
+                  onClick={goToNextChapter}
+                  disabled={!hasNextChapter}
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 font-medium transition-all ${
+                    hasNextChapter
+                      ? "bg-indigo-500 text-white hover:bg-indigo-600 hover:shadow-lg"
+                      : "cursor-not-allowed bg-gray-300 text-gray-500"
+                  }`}
+                  whileHover={hasNextChapter ? { scale: 1.02 } : {}}
+                  whileTap={hasNextChapter ? { scale: 0.98 } : {}}
+                >
+                  Suivant
+                  <ChevronRight className="h-5 w-5" />
+                </motion.button>
+              </div>
+            </div>
+
+            {/* Indicateur de progression */}
+            {!isMobile && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.4, duration: 0.5 }}
+                className="mt-6 text-center text-xs text-gray-500"
+              >
+                Appuyez sur Échap pour fermer
+              </motion.div>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+
       {(() => {
         const currentVerse = verses.find((v) => v.id === currentVerseId);
         const overlayThreshold = isMobile ? 290 : 410;
@@ -680,14 +1100,14 @@ const AudioVerseHighlighter = ({
                   isMobile && (isDragging || isTouching) ? "none" : "auto",
               }}
             />
-            {/* ✅ Indicateur visuel corrigé utilisant dragTime en priorité */}
+            {/* ✅ Indicateur visuel avec mise à jour en temps réel */}
             {isMobile && (isDragging || isTouching) && dragTime !== null && (
-            <div className="pointer-events-none absolute inset-0 z-50 -mt-[1px] flex h-[42px] items-center justify-center rounded-lg border-2 border-blue-300 bg-blue-400/25">
-              <div className="rounded-lg bg-blue-600 px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
-                {formatTime(dragTime)}
+              <div className="pointer-events-none absolute inset-0 z-50 -mt-[1px] flex h-[42px] items-center justify-center rounded-lg border-2 border-blue-300 bg-blue-400/25">
+                <div className="rounded-lg bg-blue-600 px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
+                  {formatTime(dragTime)}
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
         )}
         {isLoading && audioUrl && (

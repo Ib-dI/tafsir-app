@@ -609,6 +609,7 @@ const versesToDisplay = selectedPart
         <AudioVerseHighlighter
           key={selectedPart?.id}
           audioUrl={currentAudioUrl}
+          currentChapterId={chapterId}
           verses={memoizedVersesToDisplay}
           infoSourate={memoizedInfoSourate}
           onAudioFinished={handleAudioFinished}
