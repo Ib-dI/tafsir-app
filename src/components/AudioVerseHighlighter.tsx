@@ -185,7 +185,7 @@ const AudioVerseHighlighter = ({
 
   const [isDragging, setIsDragging] = useState(false);
   const [isTouching, setIsTouching] = useState(false);
-  const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
+  // const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
   const [completionVisible, setCompletionVisible] = useState(false);
 
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
@@ -282,14 +282,14 @@ const AudioVerseHighlighter = ({
   useEffect(() => {
     setShowCompletionOverlay(false);
     setCompletionVisible(false);
-    setShowCompletionAnimation(false);
+    // setShowCompletionAnimation(false);
     setHasAudioFinished(false);
     finishHandledRef.current = false;
   }, [currentChapterId]);
 
   const closeOverlay = () => {
     setCompletionVisible(false);
-    setShowCompletionAnimation(false);
+    // setShowCompletionAnimation(false);
     setShowCompletionOverlay(false);
     setHasAudioFinished(false);
     finishHandledRef.current = false;
@@ -327,9 +327,9 @@ const AudioVerseHighlighter = ({
   );
 
   // 4. Stabiliser onAudioFinished avec useCallback si nécessaire :
-  const stableOnAudioFinished = useCallback(() => {
-    onAudioFinished?.();
-  }, [onAudioFinished]);
+  // const stableOnAudioFinished = useCallback(() => {
+  //   onAudioFinished?.();
+  // }, [onAudioFinished]);
 
   // ✅ Initialisation de WaveSurfer - NE PAS réinitialiser hasAudioFinished ici
   useEffect(() => {
@@ -490,7 +490,7 @@ const AudioVerseHighlighter = ({
     if (hasAudioFinished && !showCompletionOverlay && wavesurferRef.current) {
       console.log("Showing completion overlay");
       setShowCompletionOverlay(true);
-      setShowCompletionAnimation(true);
+      // setShowCompletionAnimation(true);
       setCompletionVisible(true);
 
       // Lancer les effets visuels et sonores
@@ -633,7 +633,7 @@ const AudioVerseHighlighter = ({
       setHasAudioFinished(false);
       setShowCompletionOverlay(false);
       setCompletionVisible(false);
-      setShowCompletionAnimation(false);
+      // setShowCompletionAnimation(false);
       finishHandledRef.current = false;
       setCurrentVerseId(null);
       setCurrentOccurrence(null);
