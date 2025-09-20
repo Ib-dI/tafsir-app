@@ -2,10 +2,12 @@
 
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
-import React, { useEffect, useRef, useState, type ReactNode } from "react";
+import React, { useEffect, useRef, useState, type ReactNode, useCallback } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { useMediaQuery } from "./UseMediaQuery";
-
+import SpeedControl from "./SpeedControl";
+import { PauseIcon } from "./icons/PauseIcon";
+import { PlayIcon } from "./icons/PlayIcon";
 
 type Verse = {
   id: number;
@@ -14,7 +16,7 @@ type Verse = {
   transliteration: string;
   translation: string;
   noAudio?: boolean;
-  occurrences: { startTime: number; endTime: number }[]; // ✅ tableau
+  occurrences: { startTime: number; endTime: number }[];
 };
 
 type AudioVerseHighlighterProps = {
@@ -35,7 +37,6 @@ const toArabicNumerals = (n: number): string => {
     .join("");
 };
 
-// Composant VerseItem modifié pour afficher l'occurrence
 const VerseItem = React.memo(
   ({
     verse,
@@ -49,9 +50,7 @@ const VerseItem = React.memo(
     audioUrl: string;
     seekToVerse: (verse: Verse) => void;
   }) => {
-    // Détermine si ce verset est actuellement actif
     const isActive = verse.id === currentVerseId;
-
 
     return (
       <motion.div
@@ -105,12 +104,6 @@ const VerseItem = React.memo(
               Verset sans audio
             </span>
           )}
-          {/* Indicateur d'occurrence pour les versets répétés */}
-          {/* {verse.occurrence && verse.occurrence > 1 && (
-            <span className="mb-1 self-start rounded bg-purple-100 px-2 py-1 text-xs font-medium text-purple-600">
-              {verse.occurrence}ème occurrence
-            </span>
-          )} */}
           <div
             className="font-uthmanic mt-2 flex items-center text-right text-[23.5px] leading-relaxed text-gray-800 md:gap-1 md:text-3xl"
             style={{ direction: "rtl" }}
@@ -140,6 +133,7 @@ const AudioVerseHighlighter = ({
   onAudioFinished,
 }: AudioVerseHighlighterProps) => {
   const waveformRef = useRef(null);
+  const waveformContainerRef = useRef<HTMLDivElement>(null);
   const versesRef = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -147,14 +141,48 @@ const AudioVerseHighlighter = ({
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
-  const [currentOccurrence, setCurrentOccurrence] = useState<number | null>(
-    null,
-  );
+  const [currentOccurrence, setCurrentOccurrence] = useState<number | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [audioError, setAudioError] = useState<boolean>(false);
   const [hasFinished, setHasFinished] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isTouching, setIsTouching] = useState(false);
 
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+  const wasPlayingRef = useRef(false);
+  const [dragTime, setDragTime] = useState<number | null>(null);
+  const touchStartXRef = useRef(0);
+  const touchStartTimeRef = useRef(0);
+  const isDragModeRef = useRef(false);
+  const isProcessingTouchRef = useRef(false);
+  const lastUpdateTimeRef = useRef(0);
+  const rafIdRef = useRef<number | null>(null);
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // ✅ Fonction utilitaire pour trouver le verset correspondant à un temps donné
+  const findVerseAtTime = useCallback((time: number): Verse | null => {
+    for (const verse of verses) {
+      if (verse.noAudio) continue;
+      const match = verse.occurrences.find(
+        (occ) => time >= occ.startTime && time <= occ.endTime,
+      );
+      if (match) {
+        return verse;
+      }
+    }
+    return null;
+  }, [verses]);
+
+  // ✅ Fonction pour mettre à jour le verset actuel
+  const updateCurrentVerse = useCallback((time: number) => {
+    const foundVerse = findVerseAtTime(time);
+    if (foundVerse) {
+      setCurrentVerseId(foundVerse.id);
+    } else {
+      setCurrentVerseId(null);
+    }
+  }, [findVerseAtTime]);
 
   // Initialisation de WaveSurfer et gestion du chargement
   useEffect(() => {
@@ -170,6 +198,7 @@ const AudioVerseHighlighter = ({
     setAudioError(false);
     setCurrentVerseId(null);
     setCurrentOccurrence(null);
+    setDragTime(null);
 
     if (!audioUrl) {
       setIsLoading(false);
@@ -184,12 +213,16 @@ const AudioVerseHighlighter = ({
       container: waveformRef.current,
       waveColor: "#e2e8f0",
       progressColor: "#1961fc",
-      cursorColor: "#7ca7fc",
+      cursorColor: "#ff611dff",
       barWidth: 2,
       barRadius: 3,
-      cursorWidth: 1,
-      height: 50,
+      cursorWidth: 3,
+      height: 40,
       barGap: 2,
+      interact: !isMobile,
+      dragToSeek: !isMobile,
+      hideScrollbar: true,
+      normalize: true,
     });
 
     wavesurfer.load(audioUrl).catch((err) => {
@@ -218,33 +251,45 @@ const AudioVerseHighlighter = ({
       }
     });
 
-    // Logique modifiée pour gérer les multiples occurrences
-    wavesurfer.on("audioprocess", () => {
-  const time = wavesurfer.getCurrentTime();
-  setCurrentTime(time);
+    if (!isMobile) {
+      wavesurfer.on("interaction", () => {
+        setIsDragging(true);
+      });
 
-  let foundVerse: Verse | null = null;
+      wavesurfer.on("seeking", (time: number) => {
+        setCurrentTime(time);
+        updateCurrentVerse(time);
 
-  for (const verse of verses) {
-    if (verse.noAudio) continue;
+        setTimeout(() => {
+          setIsDragging(false);
+          const currentTime = wavesurfer.getCurrentTime();
+          setCurrentTime(currentTime);
+          updateCurrentVerse(currentTime);
+        }, 10);
+      });
 
-    const match = verse.occurrences.find(
-      (occ) => time >= occ.startTime && time <= occ.endTime
-    );
-
-    if (match) {
-      foundVerse = verse;
-      break;
+      wavesurfer.on("click", () => {
+        setTimeout(() => {
+          const currentTime = wavesurfer.getCurrentTime();
+          setCurrentTime(currentTime);
+          updateCurrentVerse(currentTime);
+        }, 10);
+      });
     }
-  }
 
-  if (foundVerse) {
-    setCurrentVerseId(foundVerse.id);
-  } else {
-    setCurrentVerseId(null);
-  }
-});
+    wavesurfer.on("audioprocess", () => {
+      const time = wavesurfer.getCurrentTime();
+      setCurrentTime(time);
+      updateCurrentVerse(time);
+    });
 
+    wavesurfer.on("timeupdate", () => {
+      if (!isDragging) {
+        const time = wavesurfer.getCurrentTime();
+        setCurrentTime(time);
+        updateCurrentVerse(time);
+      }
+    });
 
     wavesurfer.on("play", () => setIsPlaying(true));
     wavesurfer.on("pause", () => setIsPlaying(false));
@@ -273,17 +318,17 @@ const AudioVerseHighlighter = ({
       }
       wavesurferRef.current = null;
     };
-  }, [audioUrl, verses]);
+  }, [audioUrl, verses, isMobile, updateCurrentVerse, onAudioFinished, hasFinished]);
 
-  // Gestion du défilement modifiée pour tenir compte de l'occurrence
+  // Gestion du défilement
   useEffect(() => {
-  if (currentVerseId === null || !versesRef.current) return;
+    if (currentVerseId === null || !versesRef.current) return;
 
-  const verseElement = document.getElementById(`verse-${currentVerseId}`);
-  if (verseElement) {
-    verseElement.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-}, [currentVerseId]);
+    const verseElement = document.getElementById(`verse-${currentVerseId}`);
+    if (verseElement) {
+      verseElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [currentVerseId]);
 
   // Gestion du Wake Lock
   useEffect(() => {
@@ -346,25 +391,25 @@ const AudioVerseHighlighter = ({
     }
   };
 
-  // const isIOS = () => {
-  //   if (typeof window === "undefined") return false;
-  //   return /iPad|iPhone|iPod/.test(navigator.userAgent);
-  // };
+  const seekToVerse = (verse: Verse) => {
+    if (verse.noAudio || verse.occurrences.length === 0) return;
 
-const seekToVerse = (verse: Verse) => {
-  if (verse.noAudio || verse.occurrences.length === 0) return;
+    if (wavesurferRef.current) {
+      const firstOccurrence = verse.occurrences[0];
+      const seekTime = Math.max(0, firstOccurrence.startTime);
+      const seekPosition = duration > 0 ? seekTime / duration : 0;
 
-  if (wavesurferRef.current) {
-    // const offset = isIOS() ? 0 : 0;
-    const firstOccurrence = verse.occurrences[0]; // 🔑 première occurrence
-    const seekTime = Math.max(0, firstOccurrence.startTime );
-    const seekPosition = duration > 0 ? seekTime / duration : 0;
+      wavesurferRef.current.seekTo(seekPosition);
+      setCurrentTime(seekTime);
+      setCurrentVerseId(verse.id);
 
-    wavesurferRef.current.seekTo(seekPosition);
-    setCurrentVerseId(verse.id);
-  }
-};
-
+      setTimeout(() => {
+        const currentTime = wavesurferRef.current?.getCurrentTime() || 0;
+        setCurrentTime(currentTime);
+        updateCurrentVerse(currentTime);
+      }, 50);
+    }
+  };
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -372,7 +417,164 @@ const seekToVerse = (verse: Verse) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  // ✅ Gestionnaires d'événements tactiles optimisés
+  useEffect(() => {
+    if (!isMobile || !waveformContainerRef.current) return;
+
+    const container = waveformContainerRef.current;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+
+      isProcessingTouchRef.current = true;
+      setIsTouching(true);
+      setDragTime(null);
+      
+      touchStartXRef.current = e.touches[0].clientX;
+      touchStartTimeRef.current = Date.now();
+      isDragModeRef.current = false;
+      lastUpdateTimeRef.current = 0;
+
+      if (wavesurferRef.current) {
+        const currentTime = wavesurferRef.current.getCurrentTime();
+        setDragTime(currentTime);
+        wasPlayingRef.current = wavesurferRef.current.isPlaying();
+        if (wasPlayingRef.current) {
+          wavesurferRef.current.pause();
+        }
+      }
+    };
+
+    const updateDragPosition = (clientX: number) => {
+      if (!wavesurferRef.current || !isProcessingTouchRef.current) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const relativeX = Math.max(
+        0,
+        Math.min(containerRect.width, clientX - containerRect.left)
+      );
+      const seekPosition = containerRect.width > 0 ? relativeX / containerRect.width : 0;
+      const duration = wavesurferRef.current.getDuration() || 0;
+      const newTime = duration * seekPosition;
+
+      // ✅ Mise à jour immédiate du temps affiché
+      setDragTime(newTime);
+      setCurrentTime(newTime);
+      updateCurrentVerse(newTime);
+
+      // ✅ Mise à jour de la position audio (avec throttling)
+      const now = Date.now();
+      if (now - lastUpdateTimeRef.current > 16) { // ~60fps
+        wavesurferRef.current.seekTo(seekPosition);
+        lastUpdateTimeRef.current = now;
+      }
+
+      return newTime;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isProcessingTouchRef.current) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const currentX = e.touches[0].clientX;
+      const deltaX = Math.abs(currentX - touchStartXRef.current);
+
+      // ✅ Mise à jour en continu via requestAnimationFrame
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+
+      rafIdRef.current = requestAnimationFrame(() => {
+        updateDragPosition(currentX);
+      });
+
+      // ✅ Activation du mode drag après un certain seuil
+      if (!isDragModeRef.current && deltaX > 5) {
+        isDragModeRef.current = true;
+        setIsDragging(true);
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!isProcessingTouchRef.current) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // ✅ Annulation de l'animation frame en cours
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+
+      // ✅ Synchronisation finale
+      if (wavesurferRef.current) {
+        const finalTime = wavesurferRef.current.getCurrentTime();
+        setCurrentTime(finalTime);
+        setDragTime(null);
+        updateCurrentVerse(finalTime);
+      }
+
+      setIsTouching(false);
+      setIsDragging(false);
+
+      // ✅ Reprise de lecture si nécessaire
+      setTimeout(() => {
+        if (wavesurferRef.current && wasPlayingRef.current) {
+          wavesurferRef.current.play();
+        }
+        isProcessingTouchRef.current = false;
+        wasPlayingRef.current = false;
+      }, 50);
+    };
+
+    const handleTouchCancel = (e: TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+
+      setIsTouching(false);
+      setIsDragging(false);
+      setDragTime(null);
+      isProcessingTouchRef.current = false;
+
+      if (wavesurferRef.current) {
+        const actualTime = wavesurferRef.current.getCurrentTime();
+        setCurrentTime(actualTime);
+        updateCurrentVerse(actualTime);
+      }
+    };
+
+    const eventOptions = { passive: false, capture: true };
+
+    container.addEventListener("touchstart", handleTouchStart, eventOptions);
+    container.addEventListener("touchmove", handleTouchMove, eventOptions);
+    container.addEventListener("touchend", handleTouchEnd, eventOptions);
+    container.addEventListener("touchcancel", handleTouchCancel, eventOptions);
+
+    return () => {
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("touchend", handleTouchEnd);
+      container.removeEventListener("touchcancel", handleTouchCancel);
+    };
+  }, [isMobile, updateCurrentVerse]);
 
   return (
     <div
@@ -380,12 +582,7 @@ const seekToVerse = (verse: Verse) => {
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
       {(() => {
-        // Trouve le verset actuel en tenant compte de l'occurrence
-        const currentVerse = verses.find(
-          (v) =>
-            v.id === currentVerseId ,
-        );
-
+        const currentVerse = verses.find((v) => v.id === currentVerseId);
         const overlayThreshold = isMobile ? 290 : 410;
 
         if (
@@ -424,12 +621,6 @@ const seekToVerse = (verse: Verse) => {
                   className="animate-fade-in mx-2 flex max-h-fit w-full max-w-2xl flex-col items-end rounded-lg border border-yellow-400 bg-yellow-50 px-4 py-3 shadow-lg"
                   style={{ direction: "rtl" }}
                 >
-                  {/* Indicateur d'occurrence dans l'overlay */}
-                  {/* {currentVerse.occurrence && currentVerse.occurrence > 1 && (
-                    <span className="mb-2 self-end rounded bg-purple-100 px-2 py-1 text-xs font-medium text-purple-600">
-                      {currentVerse.occurrence}ème occurrence
-                    </span>
-                  )} */}
                   <div className="font-uthmanic flex items-center gap-1 text-right text-[24px] leading-relaxed text-gray-800 md:text-3xl">
                     <span>
                       {currentVerse.text} {toArabicNumerals(currentVerse.id)}
@@ -461,17 +652,50 @@ const seekToVerse = (verse: Verse) => {
       <div className="relative mt-3 flex flex-shrink-0 flex-col md:mt-6">
         {audioUrl && (
           <div
-            ref={waveformRef}
-            className="relative w-full transition-opacity duration-300"
-            style={{ minHeight: 60 }}
-          />
+            ref={waveformContainerRef}
+            className={`relative w-full transition-opacity duration-300 ${
+              isDragging || isTouching ? "cursor-grabbing" : "cursor-grab"
+            } hover:opacity-80`}
+            style={{
+              minHeight: 50,
+              userSelect: "none",
+              WebkitUserSelect: "none",
+              touchAction: "none",
+              WebkitTouchCallout: "none",
+              WebkitTapHighlightColor: "transparent",
+              msContentZooming: "none",
+              msTouchAction: "none",
+            }}
+            title={
+              isMobile
+                ? "Touchez ou glissez pour naviguer"
+                : "Cliquez ou glissez pour naviguer dans l'audio"
+            }
+          >
+            <div
+              ref={waveformRef}
+              className="h-full w-full"
+              style={{
+                pointerEvents:
+                  isMobile && (isDragging || isTouching) ? "none" : "auto",
+              }}
+            />
+            {/* ✅ Indicateur visuel corrigé utilisant dragTime en priorité */}
+            {isMobile && (isDragging || isTouching) && dragTime !== null && (
+            <div className="pointer-events-none absolute inset-0 z-50 -mt-[1px] flex h-[42px] items-center justify-center rounded-lg border-2 border-blue-300 bg-blue-400/25">
+              <div className="rounded-lg bg-blue-600 px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
+                {formatTime(dragTime)}
+              </div>
+            </div>
+          )}
+          </div>
         )}
         {isLoading && audioUrl && (
-          <div className="absolute top-0 left-0 z-10 flex h-[60px] w-full flex-col items-center justify-center rounded bg-transparent md:h-[80px]">
+          <div className="absolute top-0 left-0 z-10 flex h-[50px] w-full flex-col items-center justify-center rounded bg-transparent md:h-[60px]">
             <p className="mb-2 text-sm text-blue-500">
               Chargement de l&apos;audio...
             </p>
-            <div className="h-6 w-6 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+            <div className="h-5 w-5 animate-spin rounded-full border-3 border-blue-500 border-t-transparent" />
           </div>
         )}
         {audioError && !isLoading && (
@@ -484,7 +708,7 @@ const seekToVerse = (verse: Verse) => {
               damping: 10,
               delay: 0.1,
             }}
-            className="absolute top-0 left-0 z-10 flex h-[80px] w-full flex-col items-center justify-center rounded border border-red-200 bg-red-50/80"
+            className="absolute top-0 left-0 z-10 flex h-[50px] w-full flex-col items-center justify-center rounded border border-red-200 bg-red-50/80"
           >
             <p className="font-semibold text-red-700">
               Erreur de chargement audio.
@@ -584,81 +808,6 @@ const seekToVerse = (verse: Verse) => {
           />
         ))}
       </div>
-    </div>
-  );
-};
-
-// Composants d'icônes et contrôles (inchangés)
-const PlayIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className="h-6 w-6"
-  >
-    <path
-      fillRule="evenodd"
-      d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-const PauseIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className="h-6 w-6"
-  >
-    <path
-      fillRule="evenodd"
-      d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-const SpeedControl = ({
-  playbackRate,
-  onChange,
-}: {
-  playbackRate: number;
-  onChange: (rate: number) => void;
-}) => {
-  const speeds = [1, 1.25, 1.5, 2];
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleSelectSpeed = (speed: number) => {
-    onChange(speed);
-    setIsOpen(false);
-  };
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="rounded-md bg-gray-200 px-2 py-1 text-xs hover:bg-gray-300"
-      >
-        x{playbackRate}
-      </button>
-      {isOpen && (
-        <div className="absolute right-0 z-50 mb-2 rounded-md bg-white p-1 shadow-lg">
-          {speeds.map((speed) => (
-            <button
-              key={speed}
-              onClick={() => handleSelectSpeed(speed)}
-              className={`block w-full rounded-md px-2 py-1 text-left text-sm ${
-                speed === playbackRate
-                  ? "bg-blue-100 text-blue-600"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              x{speed}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
