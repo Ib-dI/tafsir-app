@@ -2,8 +2,9 @@
 
 // Importez les instances pré-initialisées depuis votre fichier src/lib/firebase.ts
 import { auth, db } from "@/lib/firebase";
-
+import AnimatedBackButton from "./AnimatedBackButton";
 import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
+import HeaderRight from "@/components/HeaderRight"; // Import du nouveau composant
 import {
   Select,
   SelectContent,
@@ -113,12 +114,25 @@ export default function SourateInteractiveContent({
   );
   const [userId, setUserId] = useState<string | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [completedPartIds, setCompletedPartIds] = useState<Set<string>>(
     new Set(),
   );
 
   const buttonRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
+
+  // Vérifier si on est sur mobile
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   // Initialise selectedPart lorsque le composant est monté ou que les parties audio changent
   useEffect(() => {
@@ -265,71 +279,70 @@ export default function SourateInteractiveContent({
   );
 
   // Modification principale : versesToDisplay pour gérer les multiples occurrences
-// Modification principale : versesToDisplay pour gérer les multiples occurrences
-const versesToDisplay = selectedPart
-  ? (() => {
-      if (selectedPart.id === "remaining-verses") {
-        // Pour les versets restants sans audio
-        const coveredVerseIds = new Set(
-          initialAudioParts.flatMap((part) =>
-            part.timings.map((timing) => timing.id),
-          ),
-        );
-        return initialVerses
-          .filter((verse) => !coveredVerseIds.has(verse.id))
-          .map((verse) => ({
-            ...verse,
-            startTime: 0,
-            endTime: 0,
-            verset: verse.text,
-            noAudio: true,
-            occurrences: [], // pas d'audio donc pas d'occurrence
-          }));
-      } else {
-        // 🔑 Grouper par verse.id
-        const verseMap = new Map<number, {
-          id: number;
-          text: string;
-          translation: string;
-          transliteration: string;
-          noAudio: boolean;
-          verset: string;
-          occurrences: { startTime: number; endTime: number }[];
-        }>();
+  const versesToDisplay = selectedPart
+    ? (() => {
+        if (selectedPart.id === "remaining-verses") {
+          // Pour les versets restants sans audio
+          const coveredVerseIds = new Set(
+            initialAudioParts.flatMap((part) =>
+              part.timings.map((timing) => timing.id),
+            ),
+          );
+          return initialVerses
+            .filter((verse) => !coveredVerseIds.has(verse.id))
+            .map((verse) => ({
+              ...verse,
+              startTime: 0,
+              endTime: 0,
+              verset: verse.text,
+              noAudio: true,
+              occurrences: [], // pas d'audio donc pas d'occurrence
+            }));
+        } else {
+          // 🔑 Grouper par verse.id
+          const verseMap = new Map<number, {
+            id: number;
+            text: string;
+            translation: string;
+            transliteration: string;
+            noAudio: boolean;
+            verset: string;
+            occurrences: { startTime: number; endTime: number }[];
+          }>();
 
-        selectedPart.timings.forEach((timing) => {
-          const originalVerse = initialVerses.find(v => v.id === timing.id);
-          if (!originalVerse) {
-            console.warn(`Verset ${timing.id} non trouvé dans initialVerses`);
-            return;
-          }
+          selectedPart.timings.forEach((timing) => {
+            const originalVerse = initialVerses.find(v => v.id === timing.id);
+            if (!originalVerse) {
+              console.warn(`Verset ${timing.id} non trouvé dans initialVerses`);
+              return;
+            }
 
-          if (!verseMap.has(timing.id)) {
-            verseMap.set(timing.id, {
-              ...originalVerse,
-              noAudio: false,
-              verset: originalVerse.text,
-              occurrences: [],
+            if (!verseMap.has(timing.id)) {
+              verseMap.set(timing.id, {
+                ...originalVerse,
+                noAudio: false,
+                verset: originalVerse.text,
+                occurrences: [],
+              });
+            }
+
+            // Ajouter toutes les occurrences au même verset
+            verseMap.get(timing.id)!.occurrences.push({
+              startTime: timing.startTime,
+              endTime: timing.endTime,
             });
-          }
-
-          // Ajouter toutes les occurrences au même verset
-          verseMap.get(timing.id)!.occurrences.push({
-            startTime: timing.startTime,
-            endTime: timing.endTime,
           });
-        });
 
-        return Array.from(verseMap.values());
-      }
-    })()
-  : initialVerses.map((verse) => ({
-      ...verse,
-      startTime: 0,
-      endTime: 0,
-      verset: verse.text,
-      occurrences: [],
-    }));
+          return Array.from(verseMap.values());
+        }
+      })()
+    : initialVerses.map((verse) => ({
+        ...verse,
+        startTime: 0,
+        endTime: 0,
+        verset: verse.text,
+        occurrences: [],
+      }));
 
 
   // Déterminer l'URL audio à passer
@@ -388,6 +401,13 @@ const versesToDisplay = selectedPart
     [infoSourate],
   );
 
+  // Fonction pour changer la partie sélectionnée
+  const setCurrentPartIndex = useCallback((index: number) => {
+    if (index >= 0 && index < audioParts.length) {
+      setSelectedPart(audioParts[index]);
+    }
+  }, [audioParts]);
+
   if (!isAuthReady || !db || !userId) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 text-blue-600">
@@ -396,11 +416,40 @@ const versesToDisplay = selectedPart
     );
   }
 
+  // Définition des couleurs pour HeaderRight
+  const headerColors = {
+    card: "#f9fafb", // bg-gray-50
+    border: "#e5e7eb", // border-gray-200
+    text: "#1f2937", // text-gray-800
+    primary: "#3b82f6", // blue-500
+    textSecondary: "#6b7280", // text-gray-500
+  };
 
   return (
     <div className="container mx-auto">
-      {/* Barre de sélection des parties audio */}
-      {audioParts.length > 1 && (
+      {/* HeaderRight pour la version mobile - affiché en haut de la page */}
+      <div className="flex items-center h-10 justify-between mb-4">
+        {/* AnimatedBackButton à gauche */}
+        <div className="flex-shrink-0">
+          <AnimatedBackButton />
+        </div>
+        
+        {/* HeaderRight à droite - version mobile uniquement */}
+        {isMobile && audioParts.length > 1 && (
+          <div className="flex-shrink-0 -mt-3">
+            <HeaderRight
+              audioParts={audioParts}
+              currentPartIndex={currentPartIndex}
+              setCurrentPartIndex={setCurrentPartIndex}
+              completedPartIds={completedPartIds}
+              colors={headerColors}
+            />
+          </div>
+        )}
+      </div>
+      
+      {/* Barre de sélection des parties audio - Version Desktop */}
+      {!isMobile && audioParts.length > 1 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -439,6 +488,7 @@ const versesToDisplay = selectedPart
               />
             </svg>
           </motion.button>
+          
 
           {/* Select universel */}
           <div className="flex w-full flex-grow items-center justify-center gap-2">
