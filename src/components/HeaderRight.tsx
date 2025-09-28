@@ -1,42 +1,18 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, List, Check, X } from 'lucide-react';
+import { HeaderRightProps } from "@/types/types";
 
-// Types pour les données audio
-type TafsirAudioTiming = {
-  id: number;
-  startTime: number;
-  endTime: number;
-  occurrence?: number;
-};
-
-type TafsirAudioPart = {
-  id: string;
-  title: string;
-  url: string;
-  timings: TafsirAudioTiming[];
-};
-
-interface HeaderRightProps {
-  audioParts: TafsirAudioPart[];
-  currentPartIndex: number;
-  setCurrentPartIndex: (index: number) => void;
-  completedPartIds: Set<string>;
-  colors: {
-    card: string;
-    border: string;
-    text: string;
-    primary: string;
-    textSecondary: string;
-    success?: string;
-  };
-}
 
 const HeaderRight: React.FC<HeaderRightProps> = ({ 
   audioParts, 
   currentPartIndex, 
   setCurrentPartIndex, 
   completedPartIds,
-  colors 
+  colors,
+  onNextPart,
+  onPreviousPart,
 }) => {
   const [isPartSelectorVisible, setIsPartSelectorVisible] = useState(false);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -44,6 +20,34 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
   // Déterminer si la partie actuelle est complétée
   const currentPart = audioParts[currentPartIndex];
   const isCurrentPartCompleted = currentPart && completedPartIds.has(currentPart.id);
+
+  // ✅ GESTIONNAIRES pour les boutons de navigation - VERSION SIMPLIFIÉE
+  const handleNextPart = () => {
+    if (currentPartIndex < audioParts.length - 1) {
+      if (onNextPart) {
+        onNextPart();
+      } else {
+        setCurrentPartIndex(currentPartIndex + 1);
+      }
+    }
+  };
+
+  const handlePreviousPart = () => {
+    if (currentPartIndex > 0) {
+      if (onPreviousPart) {
+        onPreviousPart();
+      } else {
+        setCurrentPartIndex(currentPartIndex - 1);
+      }
+    }
+  };
+
+  // ✅ GESTIONNAIRE pour la sélection de partie - VERSION SIMPLIFIÉE
+  const handlePartSelection = (newPartIndex: number) => {
+    console.log('🔄 HeaderRight: Sélection partie:', newPartIndex);
+    setCurrentPartIndex(newPartIndex);
+    setIsPartSelectorVisible(false);
+  };
 
   // Empêcher le défilement du body lorsque la modal est ouverte
   useEffect(() => {
@@ -74,18 +78,24 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
     <>
       {audioParts && audioParts.length > 1 ? (
         <div className="flex flex-row items-center gap-2">
+          {/* Bouton précédent */}
           <button
-            onClick={() => setCurrentPartIndex(Math.max(0, currentPartIndex - 1))}
+            onClick={handlePreviousPart}
             className="px-2.5 py-1.5 rounded-full border transition-all duration-200 hover:shadow-sm active:scale-95"
             style={{
               backgroundColor: colors.card,
               borderColor: colors.border
             }}
             disabled={currentPartIndex === 0}
+            aria-label="Partie précédente"
           >
-            <ArrowLeft size={16} color={currentPartIndex === 0 ? colors.textSecondary : colors.text} />
+            <ArrowLeft 
+              size={16} 
+              color={currentPartIndex === 0 ? colors.textSecondary : colors.text} 
+            />
           </button>
           
+          {/* Sélecteur de partie */}
           <button
             onClick={() => setIsPartSelectorVisible(true)}
             className={`px-2.5 py-1.5 rounded-full flex flex-row items-center gap-1.5 border relative transition-all duration-200 hover:shadow-sm active:scale-95 ${
@@ -107,22 +117,30 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
               </div>
             )}
             
-            <List size={16} className={isCurrentPartCompleted ? 'text-green-600' : ''} />
+            <List 
+              size={16} 
+              className={isCurrentPartCompleted ? 'text-green-600' : ''} 
+            />
             <span className={`text-xs font-mono ${isCurrentPartCompleted ? 'text-green-600' : ''}`}>
               {currentPartIndex + 1}/{audioParts.length}
             </span>
           </button>
           
+          {/* Bouton suivant */}
           <button
-            onClick={() => setCurrentPartIndex(Math.min(audioParts.length - 1, currentPartIndex + 1))}
+            onClick={handleNextPart}
             className="px-2.5 py-1.5 rounded-full border transition-all duration-200 hover:shadow-sm active:scale-95"
             style={{
               backgroundColor: colors.card,
               borderColor: colors.border
             }}
             disabled={currentPartIndex === audioParts.length - 1}
+            aria-label="Partie suivante"
           >
-            <ArrowRight size={16} color={currentPartIndex === audioParts.length - 1 ? colors.textSecondary : colors.text} />
+            <ArrowRight 
+              size={16} 
+              color={currentPartIndex === audioParts.length - 1 ? colors.textSecondary : colors.text} 
+            />
           </button>
         </div>
       ) : null}
@@ -185,15 +203,14 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                   <button
                     key={part && part.id ? String(part.id) : String(idx)}
                     data-part-index={idx}
-                    onClick={() => {
-                      setCurrentPartIndex(idx);
-                      setIsPartSelectorVisible(false);
-                    }}
+                    onClick={() => handlePartSelection(idx)}
                     className={`w-full py-4 px-6 flex flex-row items-center transition-all duration-200 ${
                       isCurrentPart 
                         ? 'bg-blue-50 border-l-4 border-l-blue-500' 
                         : 'bg-white hover:bg-gray-50 border-l-4 border-l-transparent'
                     } ${idx !== audioParts.length - 1 ? 'border-b border-gray-100' : ''}`}
+                    aria-label={`Sélectionner ${part.title}`}
+                    aria-current={isCurrentPart ? 'page' : undefined}
                   >
                     {/* Numéro de partie avec design amélioré */}
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
@@ -221,7 +238,10 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                         
                         {/* Badge pour les occurrences multiples */}
                         {hasMultipleOccurrences && part.id !== "remaining-verses" && (
-                          <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium">
+                          <span 
+                            className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium"
+                            aria-label="Contient des occurrences multiples"
+                          >
                             +occurrences
                           </span>
                         )}
@@ -229,7 +249,10 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                       
                       {/* Badge sans audio */}
                       {part.id === "remaining-verses" && (
-                        <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium">
+                        <span 
+                          className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium"
+                          aria-label="Partie sans audio"
+                        >
                           sans audio
                         </span>
                       )}
@@ -238,13 +261,18 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                     {/* Icônes de statut avec design amélioré */}
                     <div className="flex items-center gap-3">
                       {isCompleted && part.id !== "remaining-verses" && (
-                        <div className="w-6 h-6 rounded-full bg-green-100 border-2 border-green-300 flex items-center justify-center">
+                        <div 
+                          className="w-6 h-6 rounded-full bg-green-100 border-2 border-green-300 flex items-center justify-center"
+                          aria-label="Partie complétée"
+                        >
                           <Check size={12} className="text-green-600" strokeWidth={2.5} />
                         </div>
                       )}
-                      
                       {isCurrentPart && (
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                        <div 
+                          className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"
+                          aria-label="Partie actuelle"
+                        />
                       )}
                     </div>
                   </button>

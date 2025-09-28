@@ -201,12 +201,3 @@
   }
 }
 
-.confetti {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9c74f, #90be6d);
-  border-radius: 50%;
-  animation: confettiFall 2s ease-in-out forwards;
-  z-index: 1000;
-}

@@ -27,35 +27,8 @@ import {
   where,
 } from "firebase/firestore";
 
-// Définitions des types modifiées
-type Verse = {
-  id: number;
-  text: string;
-  translation: string;
-  transliteration: string;
-};
+import { TafsirAudioPart, SourateInteractiveContentProps } from "@/types/types";
 
-// Type modifié pour inclure l'occurrence
-type TafsirAudioTiming = {
-  id: number;
-  startTime: number;
-  endTime: number;
-  occurrence?: number; // Nouvelle propriété pour gérer les multiples occurrences
-};
-
-type TafsirAudioPart = {
-  id: string;
-  title: string;
-  url: string;
-  timings: TafsirAudioTiming[];
-};
-
-interface SourateInteractiveContentProps {
-  verses: Verse[];
-  audioParts: TafsirAudioPart[];
-  infoSourate: (number | string)[];
-  chapterId: number;
-}
 
 export default function SourateInteractiveContent({
   verses: initialVerses,
@@ -109,18 +82,20 @@ export default function SourateInteractiveContent({
     return initialAudioParts;
   });
 
-  const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
-    null,
-  );
+  const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
-  const [completedPartIds, setCompletedPartIds] = useState<Set<string>>(
-    new Set(),
-  );
+  const [completedPartIds, setCompletedPartIds] = useState<Set<string>>(new Set());
 
   const buttonRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
+  const [navigateToPartFunction, setNavigateToPartFunction] = useState<((partIndex: number) => void) | null>(null);
+
+  // ✅ CALLBACK pour recevoir la fonction d'AudioVerseHighlighter
+const handleNavigateToPart = useCallback((navigateFunction: (partIndex: number) => void) => {
+  console.log('📞 Fonction navigateToPart reçue d\'AudioVerseHighlighter');
+  setNavigateToPartFunction(() => navigateFunction);
+}, []);
 
   // Vérifier si on est sur mobile
   useEffect(() => {
@@ -278,6 +253,21 @@ export default function SourateInteractiveContent({
     [db, userId],
   );
 
+  // Fonction de changement de partie - VERSION CORRIGÉE
+ const handlePartChange = useCallback((newPartIndex: number) => {
+  console.log('🔄 SourateInteractiveContent handlePartChange appelé:', newPartIndex);
+  
+  if (navigateToPartFunction) {
+    // ✅ Utiliser la fonction optimisée d'AudioVerseHighlighter
+    navigateToPartFunction(newPartIndex);
+  } else {
+    // Fallback vers la méthode standard
+    if (newPartIndex >= 0 && newPartIndex < audioParts.length) {
+      setSelectedPart(audioParts[newPartIndex]);
+    }
+  }
+}, [navigateToPartFunction, audioParts, setSelectedPart]);
+
   // Modification principale : versesToDisplay pour gérer les multiples occurrences
   const versesToDisplay = selectedPart
     ? (() => {
@@ -344,7 +334,6 @@ export default function SourateInteractiveContent({
         occurrences: [],
       }));
 
-
   // Déterminer l'URL audio à passer
   const currentAudioUrl = selectedPart?.url || "";
 
@@ -356,17 +345,18 @@ export default function SourateInteractiveContent({
   const canGoNext =
     currentPartIndex !== -1 && currentPartIndex < audioParts.length - 1;
 
-  const goToPreviousPart = useCallback(() => {
-    if (canGoPrevious) {
-      setSelectedPart(audioParts[currentPartIndex - 1]);
-    }
-  }, [canGoPrevious, currentPartIndex, audioParts]);
-
-  const goToNextPart = useCallback(() => {
+  // Fonctions de navigation CORRIGÉES
+  const handleNextPart = useCallback(() => {
     if (canGoNext) {
-      setSelectedPart(audioParts[currentPartIndex + 1]);
+      handlePartChange(currentPartIndex + 1);
     }
-  }, [canGoNext, currentPartIndex, audioParts]);
+  }, [canGoNext, currentPartIndex, handlePartChange]);
+
+  const handlePreviousPart = useCallback(() => {
+    if (canGoPrevious) {
+      handlePartChange(currentPartIndex - 1);
+    }
+  }, [canGoPrevious, currentPartIndex, handlePartChange]);
 
   // Callback de fin d'audio modifié
   const handleAudioFinished = useCallback(() => {
@@ -380,8 +370,7 @@ export default function SourateInteractiveContent({
     // Passer à la suite
     const currentIndex = audioParts.findIndex((p) => p.id === selectedPart.id);
     if (currentIndex !== -1 && currentIndex < audioParts.length - 1) {
-      const nextPart = audioParts[currentIndex + 1];
-      setSelectedPart(nextPart);
+      handlePartChange(currentIndex + 1);
     }
   }, [
     selectedPart,
@@ -389,6 +378,7 @@ export default function SourateInteractiveContent({
     completedPartIds,
     audioParts,
     markPartAsCompleted,
+    handlePartChange,
   ]);
 
   const memoizedVersesToDisplay = useMemo(
@@ -400,13 +390,6 @@ export default function SourateInteractiveContent({
     () => infoSourate.map(String),
     [infoSourate],
   );
-
-  // Fonction pour changer la partie sélectionnée
-  const setCurrentPartIndex = useCallback((index: number) => {
-    if (index >= 0 && index < audioParts.length) {
-      setSelectedPart(audioParts[index]);
-    }
-  }, [audioParts]);
 
   if (!isAuthReady || !db || !userId) {
     return (
@@ -440,9 +423,11 @@ export default function SourateInteractiveContent({
             <HeaderRight
               audioParts={audioParts}
               currentPartIndex={currentPartIndex}
-              setCurrentPartIndex={setCurrentPartIndex}
+              setCurrentPartIndex={handlePartChange}
               completedPartIds={completedPartIds}
               colors={headerColors}
+              onNextPart={handleNextPart}
+              onPreviousPart={handlePreviousPart}
             />
           </div>
         )}
@@ -463,7 +448,7 @@ export default function SourateInteractiveContent({
         >
           {/* Flèche Gauche */}
           <motion.button
-            onClick={goToPreviousPart}
+            onClick={handlePreviousPart}
             disabled={!canGoPrevious}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -488,7 +473,6 @@ export default function SourateInteractiveContent({
               />
             </svg>
           </motion.button>
-          
 
           {/* Select universel */}
           <div className="flex w-full flex-grow items-center justify-center gap-2">
@@ -496,7 +480,10 @@ export default function SourateInteractiveContent({
               value={selectedPart?.id || ""}
               onValueChange={(value) => {
                 const part = audioParts.find((p) => p.id === value);
-                if (part) setSelectedPart(part);
+                if (part) {
+                  const partIndex = audioParts.findIndex((p) => p.id === value);
+                  handlePartChange(partIndex);
+                }
               }}
             >
               <SelectTrigger className="w-full max-w-[220px] md:max-w-[260px]">
@@ -565,7 +552,7 @@ export default function SourateInteractiveContent({
 
           {/* Flèche Droite */}
           <motion.button
-            onClick={goToNextPart}
+            onClick={handleNextPart}
             disabled={!canGoNext}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -663,6 +650,10 @@ export default function SourateInteractiveContent({
           verses={memoizedVersesToDisplay}
           infoSourate={memoizedInfoSourate}
           onAudioFinished={handleAudioFinished}
+          currentPartIndex={currentPartIndex}
+          totalParts={audioParts.length}
+          onPartChange={handlePartChange}
+          onNavigateToPart={handleNavigateToPart}
         >
           <div className="sticky top-[-8px] md:top-[-10px] z-20 flex w-full items-center justify-center border-b border-gray-100 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-6 text-center text-gray-800 shadow backdrop-blur-lg md:min-h-[3.8rem] md:text-5xl">
             <h1 className="font-sura absolute z-30 flex h-full w-full items-center justify-center">
