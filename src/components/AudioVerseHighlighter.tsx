@@ -1,19 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  Info,
-  CheckCircle,
-  Play,
-  ChevronLeft,
-  ChevronRight,
-  X,
-} from "lucide-react";
+import { Info } from "lucide-react";
 import React, {
   useEffect,
   useRef,
   useState,
-  type ReactNode,
   useCallback,
 } from "react";
 import WaveSurfer from "wavesurfer.js";
@@ -34,7 +26,7 @@ import OverlayVerses from "./OverlayVerses";
 // Clé pour le localStorage
 const PROGRESS_KEY = 'audioVerseProgress';
 
-VerseItem.displayName = "VerseItem";
+
 
 const AudioVerseHighlighter = ({
   audioUrl,

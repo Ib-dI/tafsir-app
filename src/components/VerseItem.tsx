@@ -100,4 +100,5 @@ const VerseItem = React.memo(
   },
 );
 
+VerseItem.displayName = "VerseItem";
 export default VerseItem;
