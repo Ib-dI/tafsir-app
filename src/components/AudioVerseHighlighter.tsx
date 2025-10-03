@@ -1,32 +1,34 @@
 "use client";
 
+import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
-import { Info } from "lucide-react";
-import React, {
+import {
+  Info
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  useCallback,
   useEffect,
   useRef,
-  useState,
-  useCallback,
+  useState
 } from "react";
-import WaveSurfer from "wavesurfer.js";
-import confetti from "canvas-confetti";
 import useSound from "use-sound";
-import { useMediaQuery } from "./UseMediaQuery";
-import SpeedControl from "./SpeedControl";
-import { useRouter } from "next/navigation";
+import WaveSurfer from "wavesurfer.js";
 import { PauseIcon } from "./icons/PauseIcon";
 import { PlayIcon } from "./icons/PlayIcon";
+import SpeedControl from "./SpeedControl";
+import { useMediaQuery } from "./UseMediaQuery";
 import VerseItem, { toArabicNumerals } from "./VerseItem";
 
-import { VerseHighlight, AudioVerseHighlighterProps, ProgressData } from "@/types/types";
-import SuccessCard from "./SuccessCard";
-import ProgressIndicator from "./ProgressIndicator";
+import { AudioVerseHighlighterProps, ProgressData, VerseHighlight } from "@/types/types";
 import OverlayVerses from "./OverlayVerses";
+import ProgressIndicator from "./ProgressIndicator";
+import SuccessCard from "./SuccessCard";
 
 // Clé pour le localStorage
 const PROGRESS_KEY = 'audioVerseProgress';
 
-
+VerseItem.displayName = "VerseItem";
 
 const AudioVerseHighlighter = ({
   audioUrl,
@@ -71,16 +73,13 @@ const AudioVerseHighlighter = ({
   const [isTouching, setIsTouching] = useState(false);
   const [dragTime, setDragTime] = useState<number | null>(null);
 
-  // États pour garder le statut de lecture
-  const [wasPlayingBeforePartChange, setWasPlayingBeforePartChange] = useState(false);
-  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
 
   const [isRestoringProgress, setIsRestoringProgress] = useState(false);
-  const [pendingRestoration, setPendingRestoration] = useState<{
-    partIndex: number;
-    time: number;
-  } | null>(null);
-  const [hasManualNavigation, setHasManualNavigation] = useState(false);
+const [pendingRestoration, setPendingRestoration] = useState<{
+  partIndex: number;
+  time: number;
+} | null>(null);
+const [hasManualNavigation, setHasManualNavigation] = useState(false);
 
   // Références pour la gestion des événements
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
@@ -128,7 +127,7 @@ const AudioVerseHighlighter = ({
     } catch (error) {
       console.warn('Erreur lors de la sauvegarde de la progression:', error);
     }
-  }, [currentChapterId, audioUrl, currentPartIndex, totalParts]); // Retirer currentPartId
+  }, [currentChapterId, currentPartId, audioUrl, currentPartIndex, totalParts]);
 
   // Fonction pour charger la progression
   const loadProgress = useCallback((): ProgressData | null => {
@@ -165,68 +164,67 @@ const AudioVerseHighlighter = ({
       console.warn('Erreur lors de la suppression de la progression:', error);
     }
   }, []);
-
   // ✅ FONCTION pour la navigation manuelle (dans AudioVerseHighlighter)
-  const navigateToPart = useCallback((newPartIndex: number) => {
-    console.log('🧭 Navigation MANUELLE dans AudioVerseHighlighter:', newPartIndex);
-    
-    // Sauvegarder l'état de lecture avant changement
-    setWasPlayingBeforePartChange(isPlaying);
-    if (isPlaying) {
-      setShouldAutoPlay(true);
-    }
-    
-    // 1. Marquer comme navigation manuelle
-    setHasManualNavigation(true);
-    
-    // 2. Réinitialiser la progression pour cette nouvelle partie
-    clearProgress();
-    
-    // 3. Changer de partie via la prop normale
-    if (onPartChange) {
-      onPartChange(newPartIndex);
-    }
-  }, [onPartChange, clearProgress, isPlaying]);
+const navigateToPart = useCallback((newPartIndex: number) => {
+  console.log('🧭 Navigation MANUELLE dans AudioVerseHighlighter:', newPartIndex);
+  
+  // 1. Marquer comme navigation manuelle
+  setHasManualNavigation(true);
+  
+  // 2. Réinitialiser la progression pour cette nouvelle partie
+  clearProgress();
+  
+  // 3. Changer de partie via la prop normale
+  if (onPartChange) {
+    onPartChange(newPartIndex);
+  }
+}, [onPartChange, clearProgress]);
 
-  // ✅ EXPOSER la fonction au parent (dans AudioVerseHighlighter)
-  useEffect(() => {
+// ✅ EXPOSER la fonction au parent (dans AudioVerseHighlighter)
+useEffect(() => {
     if (onNavigateToPart) {
       console.log('📞 Exposition de navigateToPart au parent');
       onNavigateToPart(navigateToPart);
     }
-  }, [onNavigateToPart]); // Retirer navigateToPart pour éviter la boucle
+  }, [onNavigateToPart]);
 
   // Gestion de la restauration de progression lors du changement de partie
   // ✅ EFFET DE RESTAURATION CORRIGÉ (remplacez l'effet actuel)
-  useEffect(() => {
-    // Si l'utilisateur a déjà navigué manuellement, ne pas restaurer automatiquement
-    if (hasManualNavigation) {
-      console.log('⏸️ Restauration ignorée - navigation manuelle détectée');
-      return;
-    }
-    const progress = loadProgress();
+useEffect(() => {
+  // Si l'utilisateur a déjà navigué manuellement, ne pas restaurer automatiquement
+  if (hasManualNavigation) {
+    console.log('⏸️ Restauration ignorée - navigation manuelle détectée');
+    return;
+  }
+  const progress = loadProgress();
+  
+  if (progress && progress.currentPartIndex !== currentPartIndex) {
+    console.log('📦 Restauration de partie nécessaire:', {
+      sauvegardé: progress.currentPartIndex,
+      actuel: currentPartIndex
+    });
     
-    if (progress && progress.currentPartIndex !== currentPartIndex) {
-      console.log('📦 Restauration de partie nécessaire:', {
-        sauvegardé: progress.currentPartIndex,
-        actuel: currentPartIndex
-      });
+    if (!isRestoringProgress) {
+      setIsRestoringProgress(true);
       
-      if (!isRestoringProgress) {
-        setIsRestoringProgress(true);
-        
-        setTimeout(() => {
-          if (onPartChange) {
-            console.log('🔄 Demande de changement vers partie:', progress.currentPartIndex);
-            onPartChange(progress.currentPartIndex);
-          }
-          setIsRestoringProgress(false);
-        }, 150);
-      }
+      // setPendingRestoration({
+      //   partIndex: progress.currentPartIndex,
+      //   time: progress.currentTime
+      // });
+      
+      setTimeout(() => {
+        if (onPartChange) {
+          console.log('🔄 Demande de changement vers partie:', progress.currentPartIndex);
+          onPartChange(progress.currentPartIndex);
+        }
+        setIsRestoringProgress(false);
+      }, 150);
     }
-  }, [currentPartIndex, loadProgress, onPartChange, isRestoringProgress, hasManualNavigation]);
+  }
+}, [currentPartIndex, loadProgress, onPartChange, isRestoringProgress, hasManualNavigation]);
 
-  // Fonction pour trouver le verset correspondant à un temps donné
+
+// Fonction pour trouver le verset correspondant à un temps donné
   const findVerseAtTime = useCallback(
     (time: number): VerseHighlight | null => {
       for (const verse of verses) {
@@ -243,43 +241,54 @@ const AudioVerseHighlighter = ({
     [verses],
   );
 
-  // Fonction pour mettre à jour le verset actuel
-  const updateCurrentVerse = useCallback(
-    (time: number) => {
-      const foundVerse = findVerseAtTime(time);
-      if (foundVerse) {
-        setCurrentVerseId(foundVerse.id);
-      } else {
-        setCurrentVerseId(null);
-      }
-    },
-    [findVerseAtTime],
-  );
-
-  // ✅ EFFET POUR LA RESTAURATION AUDIO (ajoutez-le)
-  useEffect(() => {
-    if (pendingRestoration && wavesurferRef.current && wavesurferRef.current.getDuration() > 0) {
-      console.log('🎵 Restauration audio pour partie:', pendingRestoration.partIndex);
-      
-      const duration = wavesurferRef.current.getDuration();
-      if (pendingRestoration.time > 0 && pendingRestoration.time < duration - 2) {
-        const seekPosition = pendingRestoration.time / duration;
-        wavesurferRef.current.seekTo(seekPosition);
-        setCurrentTime(pendingRestoration.time);
-        updateCurrentVerse(pendingRestoration.time);
-        
-        console.log('✅ Position audio restaurée:', pendingRestoration.time);
-      }
-      
-      setPendingRestoration(null);
+// Fonction pour mettre à jour le verset actuel
+const updateCurrentVerse = useCallback(
+  (time: number) => {
+    const foundVerse = findVerseAtTime(time);
+    if (foundVerse) {
+      setCurrentVerseId(foundVerse.id);
+    } else {
+      setCurrentVerseId(null);
     }
-  }, [pendingRestoration, updateCurrentVerse]);
+  },
+  [findVerseAtTime],
+);
+// ✅ EFFET POUR LA RESTAURATION AUDIO (ajoutez-le)
+useEffect(() => {
+  if (pendingRestoration && wavesurferRef.current && wavesurferRef.current.getDuration() > 0) {
+    console.log('🎵 Restauration audio pour partie:', pendingRestoration.partIndex);
+    
+    const duration = wavesurferRef.current.getDuration();
+    if (pendingRestoration.time > 0 && pendingRestoration.time < duration - 2) {
+      const seekPosition = pendingRestoration.time / duration;
+      wavesurferRef.current.seekTo(seekPosition);
+      setCurrentTime(pendingRestoration.time);
+      updateCurrentVerse(pendingRestoration.time);
+      
+      console.log('✅ Position audio restaurée:', pendingRestoration.time);
+    }
+    
+    setPendingRestoration(null);
+  }
+}, [pendingRestoration, updateCurrentVerse]);
+  
+  
+
 
   // Mise à jour de l'ID de la partie lors des changements
   useEffect(() => {
+    if (!wavesurferRef.current || !audioUrl || isRestoringProgress) return;
+
     const newPartId = `${currentChapterId}-part${currentPartIndex}-${audioUrl}`;
     setCurrentPartId(newPartId);
-  }, [currentPartIndex, currentChapterId, audioUrl]);
+  
+    // Sauvegarder la progression actuelle
+    if (!isRestoringProgress) {
+      const currentTime = wavesurferRef.current.getCurrentTime();
+      saveProgress(currentTime, newPartId);
+      console.log('💾 Sauvegarde lors changement partie:', currentPartIndex);
+    }
+  }, [currentPartIndex, currentChapterId, audioUrl, saveProgress, isRestoringProgress]);
 
   // Sauvegarde régulière pendant la lecture
   useEffect(() => {
@@ -295,22 +304,19 @@ const AudioVerseHighlighter = ({
     return () => clearInterval(interval);
   }, [isPlaying, saveProgress, isRestoringProgress]);
 
-  // Sauvegarde lors des interactions utilisateur avec debounce plus strict
+  // Sauvegarde lors des interactions utilisateur
   useEffect(() => {
-    if (!wavesurferRef.current || isDragging || isRestoringProgress || !currentTime) return;
+    if (!wavesurferRef.current || isDragging || isRestoringProgress) return;
 
     const debounceTimer = setTimeout(() => {
-      if (wavesurferRef.current && !isDragging && !isRestoringProgress) {
-        const time = wavesurferRef.current.getCurrentTime();
-        if (time > 0 && isFinite(time)) {
-          const newPartId = `${currentChapterId}-part${currentPartIndex}-${audioUrl}`;
-          saveProgress(time, newPartId);
-        }
+      if (wavesurferRef.current) {
+        const currentTime = wavesurferRef.current.getCurrentTime();
+        saveProgress(currentTime);
       }
-    }, 2000); // Augmenter le délai à 2 secondes
+    }, 1500);
 
     return () => clearTimeout(debounceTimer);
-  }, [currentTime, isDragging, isRestoringProgress, saveProgress, currentChapterId, currentPartIndex, audioUrl]);
+  }, [currentTime, isDragging, saveProgress, isRestoringProgress]);
 
   // Fonction pour effacer manuellement la progression
   const clearProgressManually = () => {
@@ -352,12 +358,6 @@ const AudioVerseHighlighter = ({
 
   // Fonctions de navigation entre chapitres
   const goToPreviousChapter = () => {
-    // Sauvegarder l'état de lecture
-    setWasPlayingBeforePartChange(isPlaying);
-    if (isPlaying) {
-      setShouldAutoPlay(true);
-    }
-    
     if (wavesurferRef.current) {
       const currentTime = wavesurferRef.current.getCurrentTime();
       saveProgress(currentTime);
@@ -372,12 +372,6 @@ const AudioVerseHighlighter = ({
   };
 
   const goToNextChapter = () => {
-    // Sauvegarder l'état de lecture
-    setWasPlayingBeforePartChange(isPlaying);
-    if (isPlaying) {
-      setShouldAutoPlay(true);
-    }
-    
     if (wavesurferRef.current) {
       const currentTime = wavesurferRef.current.getCurrentTime();
       saveProgress(currentTime);
@@ -406,9 +400,18 @@ const AudioVerseHighlighter = ({
     finishHandledRef.current = false;
   };
 
-  // ✅ INITIALISATION DE WAVESURFER SANS isMobile dans les dépendances
+  // Initialisation de WaveSurfer
   useEffect(() => {
+    if (!audioUrl) {
+      setIsLoading(false);
+      return;
+    }
+
     if (wavesurferRef.current) {
+      // Ne pas détruire si c'est juste un changement de mode responsive
+      if (wavesurferRef.current.getMediaElement()?.src === audioUrl) {
+        return;
+      }
       wavesurferRef.current.destroy();
       wavesurferRef.current = null;
     }
@@ -431,9 +434,6 @@ const AudioVerseHighlighter = ({
 
     if (!waveformRef.current) return;
 
-    // ✅ Utiliser isMobile directement ici au lieu de dans les dépendances
-    const currentIsMobile = window.innerWidth <= 768;
-
     const wavesurfer = WaveSurfer.create({
       container: waveformRef.current,
       waveColor: "#e2e8f0",
@@ -444,8 +444,8 @@ const AudioVerseHighlighter = ({
       cursorWidth: 3,
       height: 40,
       barGap: 2,
-      interact: !currentIsMobile,
-      dragToSeek: !currentIsMobile,
+      interact: !isMobile,
+      dragToSeek: !isMobile,
       hideScrollbar: true,
       normalize: true,
     });
@@ -480,15 +480,6 @@ const AudioVerseHighlighter = ({
           }
         }
       }
-
-      // Reprendre la lecture automatiquement si nécessaire
-      if (shouldAutoPlay || wasPlayingBeforePartChange) {
-        setTimeout(() => {
-          wavesurfer.play();
-          setShouldAutoPlay(false);
-          setWasPlayingBeforePartChange(false);
-        }, 500);
-      }
     });
 
     wavesurfer.on("error", (err) => {
@@ -502,7 +493,7 @@ const AudioVerseHighlighter = ({
     });
 
     // Gestionnaires d'événements pour desktop
-    if (!currentIsMobile) {
+    if (!isMobile) {
       wavesurfer.on("interaction", () => {
         setIsDragging(true);
       });
@@ -573,17 +564,17 @@ const AudioVerseHighlighter = ({
       }
       wavesurferRef.current = null;
     };
-  }, [audioUrl, loadProgress, currentPartIndex, updateCurrentVerse]); // ✅ Retirer isMobile d'ici
+  }, [audioUrl, loadProgress, currentPartIndex, updateCurrentVerse]);
 
-  // ✅ EFFET SÉPARÉ POUR ADAPTER L'INTERACTIVITÉ SELON isMobile
-  useEffect(() => {
-    if (!wavesurferRef.current) return;
-    
-    wavesurferRef.current.setOptions({
-      interact: !isMobile,
-      dragToSeek: !isMobile
-    });
-  }, [isMobile]); // ✅ Maintenant isMobile est dans son propre effet
+  // Effet séparé pour adapter l'interactivité
+useEffect(() => {
+  if (!wavesurferRef.current) return;
+  
+  wavesurferRef.current.setOptions({
+    interact: !isMobile,
+    dragToSeek: !isMobile
+  });
+}, [isMobile]);
 
   // Effacer la progression quand l'audio est terminé
   useEffect(() => {
@@ -609,26 +600,26 @@ const AudioVerseHighlighter = ({
 
   // Gestion de la navigation au clavier
   useEffect(() => {
-    if (!completionVisible) return;
-
     const handleKeyPress = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case "Escape":
-          closeOverlay();
-          break;
-        case "ArrowLeft":
-          if (hasPreviousChapter) {
-            goToPreviousChapter();
-          }
-          break;
-        case "ArrowRight":
-          if (hasNextChapter) {
-            goToNextChapter();
-          }
-          break;
-        case "Enter":
-          replayChapter();
-          break;
+      if (completionVisible) {
+        switch (e.key) {
+          case "Escape":
+            closeOverlay();
+            break;
+          case "ArrowLeft":
+            if (hasPreviousChapter) {
+              goToPreviousChapter();
+            }
+            break;
+          case "ArrowRight":
+            if (hasNextChapter) {
+              goToNextChapter();
+            }
+            break;
+          case "Enter":
+            replayChapter();
+            break;
+        }
       }
     };
 
@@ -761,6 +752,8 @@ const AudioVerseHighlighter = ({
     const container = waveformContainerRef.current;
 
     const handleTouchStart = (e: TouchEvent) => {
+      if (!isMobile) return;
+      
       e.preventDefault();
       e.stopPropagation();
 
@@ -777,6 +770,12 @@ const AudioVerseHighlighter = ({
       touchStartTimeRef.current = Date.now();
       isDragModeRef.current = false;
       lastUpdateTimeRef.current = 0;
+
+      // Vérification et sauvegarde de l'état de lecture
+      if (wavesurferRef.current) {
+        wasPlayingRef.current = wavesurferRef.current.isPlaying();
+        console.log('🎧 Début touch - Lecture en cours:', wasPlayingRef.current);
+      }
 
       if (wavesurferRef.current) {
         const currentTime = wavesurferRef.current.getCurrentTime();
@@ -815,7 +814,7 @@ const AudioVerseHighlighter = ({
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isProcessingTouchRef.current) return;
+      if (!isMobile || !isProcessingTouchRef.current) return;
 
       e.preventDefault();
       e.stopPropagation();
@@ -827,18 +826,28 @@ const AudioVerseHighlighter = ({
         cancelAnimationFrame(rafIdRef.current);
       }
 
-      rafIdRef.current = requestAnimationFrame(() => {
-        updateDragPosition(currentX);
-      });
-
       if (!isDragModeRef.current && deltaX > 5) {
         isDragModeRef.current = true;
         setIsDragging(true);
+        
+        // Pause l'audio au début du drag seulement si nécessaire
+        if (wavesurferRef.current?.isPlaying()) {
+          wavesurferRef.current.pause();
+          console.log('⏸️ Audio mis en pause pour le drag');
+        }
       }
+
+      // Utiliser requestAnimationFrame pour les mises à jour visuelles
+      rafIdRef.current = requestAnimationFrame(() => {
+        const newTime = updateDragPosition(currentX);
+        if (newTime !== undefined && wavesurferRef.current) {
+          wavesurferRef.current.setTime(newTime);
+        }
+      });
     };
 
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (!isProcessingTouchRef.current) return;
+    const handleTouchEnd = async (e: TouchEvent) => {
+      if (!isMobile || !isProcessingTouchRef.current) return;
 
       e.preventDefault();
       e.stopPropagation();
@@ -848,23 +857,35 @@ const AudioVerseHighlighter = ({
         rafIdRef.current = null;
       }
 
+      const shouldResumePlaying = wasPlayingRef.current;
+      console.log('🎧 Fin touch - Doit reprendre:', shouldResumePlaying);
+
       if (wavesurferRef.current) {
         const finalTime = wavesurferRef.current.getCurrentTime();
         setCurrentTime(finalTime);
         setDragTime(null);
         updateCurrentVerse(finalTime);
+
+        // Réinitialiser les états avant la reprise
+        setIsTouching(false);
+        setIsDragging(false);
+        isProcessingTouchRef.current = false;
+
+        // Attendre un court instant pour la stabilisation
+        if (shouldResumePlaying) {
+          try {
+            await new Promise(resolve => setTimeout(resolve, 50));
+            if (wavesurferRef.current && !wavesurferRef.current.isPlaying()) {
+              await wavesurferRef.current.play();
+              console.log('▶️ Lecture reprise avec succès');
+            }
+          } catch (error) {
+            console.error('Erreur lors de la reprise de la lecture:', error);
+          }
+        }
       }
 
-      setIsTouching(false);
-      setIsDragging(false);
-
-      setTimeout(() => {
-        if (wavesurferRef.current && wasPlayingRef.current) {
-          wavesurferRef.current.play();
-        }
-        isProcessingTouchRef.current = false;
-        wasPlayingRef.current = false;
-      }, 50);
+      wasPlayingRef.current = false;
     };
 
     const handleTouchCancel = (e: TouchEvent) => {
@@ -913,19 +934,20 @@ const AudioVerseHighlighter = ({
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
       <ProgressIndicator
-        loadProgress={loadProgress}
-        clearProgressManually={clearProgressManually}
-        currentChapterId={currentChapterId}
-        currentPartIndex={currentPartIndex}
-        audioUrl={audioUrl}
-        isRestoringProgress={isRestoringProgress}
-        isMobile={isMobile}
+      loadProgress={loadProgress}
+      clearProgressManually={clearProgressManually}
+      currentChapterId={currentChapterId}
+      currentPartIndex={currentPartIndex}
+      audioUrl={audioUrl}
+      isRestoringProgress={isRestoringProgress}
+      isMobile={isMobile}
+
       />
       
       {/* Overlay de completion */}
       {completionVisible && (
         <SuccessCard
-          replayChapter={replayChapter}
+          replayChapter ={replayChapter}
           hasNextChapter={hasNextChapter}
           hasPreviousChapter={hasPreviousChapter}
           infoSourate={infoSourate}
@@ -933,18 +955,18 @@ const AudioVerseHighlighter = ({
           goToPreviousChapter={goToPreviousChapter}
           goToNextChapter={goToNextChapter}
           isMobile={isMobile}
-        />
+          />
       )}
       
       {/* Overlay pour les versets longs */}
       {
-        <OverlayVerses
-          currentVerseId={currentVerseId}
-          verses={verses}
-          isMobile={isMobile}
-          audioUrl={audioUrl}
-          toArabicNumerals={toArabicNumerals}
-        />
+      <OverlayVerses
+        currentVerseId={currentVerseId}
+        verses={verses}
+        isMobile={isMobile}
+        audioUrl={audioUrl}
+        toArabicNumerals={toArabicNumerals}
+      />
       }
 
       {/* Section des contrôles audio */}
