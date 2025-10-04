@@ -47,7 +47,7 @@ const SuccessCard = ({
                   damping: 15,
                   delay: 0.2,
                 }}
-                className="relative flex w-full max-w-md flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-green-50 to-emerald-100 p-8 shadow-2xl"
+                className="relative flex w-full max-w-md flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 p-8 shadow-2xl"
               >
                 {/* Bouton de fermeture */}
                 <button
@@ -92,9 +92,15 @@ const SuccessCard = ({
                   className="mb-6 text-center text-gray-600"
                 >
                   Vous avez complété{" "}
-                  <span className="font-semibold">
-                    {infoSourate[0]}. {infoSourate[2]}
-                  </span>
+                  <div className="text-gray-800 flex gap-2 shadow-xs items-center bg-green-100 px-2 py-1 rounded-lg">
+                    <span className="font-bold">
+                      {infoSourate[0]}. {infoSourate[2]}
+                    </span>
+                    <span
+                      className={`font-sura text-xl`}
+                      >{`surah${Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}${Number(infoSourate[0])}`}
+                      </span>
+                  </div>
                 </motion.p>
     
                 {/* Conteneur des boutons d'action */}
@@ -124,8 +130,8 @@ const SuccessCard = ({
                       disabled={!hasPreviousChapter}
                       className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 font-medium transition-all ${
                         hasPreviousChapter
-                          ? "bg-blue-500 text-white hover:bg-blue-600 hover:shadow-lg"
-                          : "cursor-not-allowed bg-gray-300 text-gray-500"
+                          ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md shadow-blue-500/30 hover:shadow-lg hover:shadow-blue-500/40"
+                    : "cursor-not-allowed bg-gray-200 text-gray-400"
                       }`}
                       whileHover={hasPreviousChapter ? { scale: 1.02 } : {}}
                       whileTap={hasPreviousChapter ? { scale: 0.98 } : {}}
@@ -143,8 +149,8 @@ const SuccessCard = ({
                       disabled={!hasNextChapter}
                       className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 font-medium transition-all ${
                         hasNextChapter
-                          ? "bg-indigo-500 text-white hover:bg-indigo-600 hover:shadow-lg"
-                          : "cursor-not-allowed bg-gray-300 text-gray-500"
+                          ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/40"
+                    : "cursor-not-allowed bg-gray-200 text-gray-400"
                       }`}
                       whileHover={hasNextChapter ? { scale: 1.02 } : {}}
                       whileTap={hasNextChapter ? { scale: 0.98 } : {}}
@@ -163,7 +169,8 @@ const SuccessCard = ({
                     transition={{ delay: 1.4, duration: 0.5 }}
                     className="mt-6 text-center text-xs text-gray-500"
                   >
-                    Appuyez sur Échap pour fermer
+                    <span className="inline-block px-2 py-0.5 rounded bg-gray-100 font-mono border border-gray-200">Échap</span>
+              <span className="ml-2">pour fermer</span>
                   </motion.div>
                 )}
               </motion.div>

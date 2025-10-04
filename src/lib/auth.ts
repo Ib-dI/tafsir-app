@@ -1,3 +1,5 @@
+// lib/auth.ts
+
 import { GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
 import { auth } from './firebase';
 

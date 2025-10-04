@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, List, Check, X } from 'lucide-react';
 import { HeaderRightProps } from "@/types/types";
 
@@ -15,13 +15,18 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
   onPreviousPart,
 }) => {
   const [isPartSelectorVisible, setIsPartSelectorVisible] = useState(false);
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const startTouchY = useRef<number>(0);
+  const startScrollTop = useRef<number>(0);
   
   // Déterminer si la partie actuelle est complétée
   const currentPart = audioParts[currentPartIndex];
   const isCurrentPartCompleted = currentPart && completedPartIds.has(currentPart.id);
 
-  // ✅ GESTIONNAIRES pour les boutons de navigation - VERSION SIMPLIFIÉE
+  // ✅ GESTIONNAIRES pour les boutons de navigation
   const handleNextPart = () => {
     if (currentPartIndex < audioParts.length - 1) {
       if (onNextPart) {
@@ -42,19 +47,63 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
     }
   };
 
-  // ✅ GESTIONNAIRE pour la sélection de partie - VERSION SIMPLIFIÉE
+  // ✅ GESTIONNAIRE pour la sélection de partie
   const handlePartSelection = (newPartIndex: number) => {
     console.log('🔄 HeaderRight: Sélection partie:', newPartIndex);
     setCurrentPartIndex(newPartIndex);
     setIsPartSelectorVisible(false);
   };
 
-  // Empêcher le défilement du body lorsque la modal est ouverte
+  // ✅ GESTIONNAIRES de swipe pour fermer la modal
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    startTouchY.current = e.touches[0].clientY;
+    startScrollTop.current = scrollContainer.scrollTop;
+    setIsDragging(false);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const currentTouchY = e.touches[0].clientY;
+    const deltaY = currentTouchY - startTouchY.current;
+
+    // Ne déclencher le drag que si on est en haut et qu'on tire vers le bas
+    if (startScrollTop.current === 0 && deltaY > 0) {
+      setIsDragging(true);
+      setDragOffset(deltaY);
+      
+      // Empêcher le scroll par défaut pendant le drag
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (isDragging) {
+      // Si on a tiré de plus de 150px, fermer la modal
+      if (dragOffset > 150) {
+        setIsPartSelectorVisible(false);
+      }
+      
+      // Réinitialiser
+      setDragOffset(0);
+      setIsDragging(false);
+    }
+  };
+
+  // Empêcher le défilement du body et gérer le scroll initial
   useEffect(() => {
     if (isPartSelectorVisible) {
       document.body.style.overflow = 'hidden';
       
-      // Scroll vers la partie sélectionnée après un délai pour laisser la modal s'ouvrir
+      // Reset du drag offset
+      setDragOffset(0);
+      setIsDragging(false);
+      
+      // Scroll vers la partie sélectionnée
       setTimeout(() => {
         const currentButton = document.querySelector(`[data-part-index="${currentPartIndex}"]`);
         if (currentButton && scrollContainerRef.current) {
@@ -145,37 +194,55 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
         </div>
       ) : null}
       
-      {/* Modal de sélection des parties - Version améliorée */}
+      {/* Modal de sélection des parties avec swipe to dismiss */}
       {isPartSelectorVisible && (
         <div 
           className="fixed inset-0 z-50 flex items-end justify-center"
           onClick={() => setIsPartSelectorVisible(false)}
         >
-          {/* Overlay avec animation de fade */}
-          <div className="absolute inset-0 bg-black/10 backdrop-blur-[0.5px] animate-in fade-in duration-200" />
-          
-          {/* Conteneur de la modal avec animations */}
+          {/* Overlay avec animation de fade et opacité dynamique */}
           <div 
-            className="relative bg-white rounded-t-3xl shadow-xl w-full max-w-lg mx-1 mb-0 overflow-hidden animate-in slide-in-from-bottom duration-300 ease-out flex flex-col"
-            style={{ maxHeight: '70vh' }}
+            className="absolute inset-0 bg-black/10 backdrop-blur-[0.5px] transition-opacity duration-200"
+            style={{
+              opacity: isDragging ? Math.max(0, 1 - dragOffset / 300) : 1
+            }}
+          />
+          
+          {/* Conteneur de la modal avec animations et swipe */}
+          <div 
+            ref={modalRef}
+            className="relative bg-white rounded-t-3xl shadow-xl w-full max-w-lg mx-1 mb-0 overflow-hidden flex flex-col"
+            style={{ 
+              maxHeight: '70vh',
+              transform: `translateY(${dragOffset}px)`,
+              transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+            }}
             onClick={e => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             {/* En-tête fixe avec design amélioré */}
             <div className="relative px-6 pt-4 pb-3 bg-white border-b border-gray-100 shrink-0">
               {/* Poignée de drag centrée et stylisée */}
               <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-                <div className="w-12 h-1 rounded-full bg-gray-300" />
+                <div 
+                  className="w-12 h-1 rounded-full bg-gray-300 transition-all duration-200"
+                  style={{
+                    width: isDragging ? '16px' : '48px',
+                    backgroundColor: isDragging && dragOffset > 150 ? '#22c55e' : ''
+                  }}
+                />
               </div>
               
               {/* Conteneur du titre et croix */}
               <div className="flex items-center justify-between pt-2">
-                <div className="w-8" /> {/* Spacer pour centrer le titre */}
+                <div className="w-8" />
                 
                 <h3 className="font-semibold text-lg text-gray-800 text-center">
                   Choisir la partie
                 </h3>
                 
-                {/* Croix de fermeture bien positionnée */}
                 <button
                   onClick={() => setIsPartSelectorVisible(false)}
                   className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center active:scale-95"
@@ -186,13 +253,15 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
               </div>
             </div>
             
-            {/* Liste des parties avec défilement interne et design amélioré */}
+            {/* Liste des parties avec défilement interne */}
             <div 
               ref={scrollContainerRef}
               className="overflow-y-auto flex-1 bg-gray-50/30 min-h-0"
+              style={{
+                overflowY: isDragging ? 'hidden' : 'auto'
+              }}
             >
               {audioParts.map((part, idx) => {
-                // Compter les versets uniques et les occurrences multiples
                 const uniqueVerses = new Set(part.timings.map(t => t.id));
                 const totalOccurrences = part.timings.length;
                 const hasMultipleOccurrences = totalOccurrences > uniqueVerses.size;
@@ -212,7 +281,7 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                     aria-label={`Sélectionner ${part.title}`}
                     aria-current={isCurrentPart ? 'page' : undefined}
                   >
-                    {/* Numéro de partie avec design amélioré */}
+                    {/* Numéro de partie */}
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
                       isCurrentPart 
                         ? 'bg-blue-500 text-white' 
@@ -236,7 +305,6 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                           )}
                         </span>
                         
-                        {/* Badge pour les occurrences multiples */}
                         {hasMultipleOccurrences && part.id !== "remaining-verses" && (
                           <span 
                             className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium"
@@ -247,7 +315,6 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                         )}
                       </div>
                       
-                      {/* Badge sans audio */}
                       {part.id === "remaining-verses" && (
                         <span 
                           className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium"
@@ -258,7 +325,7 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                       )}
                     </div>
                     
-                    {/* Icônes de statut avec design amélioré */}
+                    {/* Icônes de statut */}
                     <div className="flex items-center gap-3">
                       {isCompleted && part.id !== "remaining-verses" && (
                         <div 
