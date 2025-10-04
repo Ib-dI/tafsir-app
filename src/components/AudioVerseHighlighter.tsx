@@ -751,30 +751,47 @@ useEffect(() => {
 
     const container = waveformContainerRef.current;
 
-    const handleTouchStart = (e: TouchEvent) => {
-      if (!isMobile) return;
-      
-      e.preventDefault();
-      e.stopPropagation();
-
+    // Fonction de nettoyage des états
+    const cleanupTouchStates = () => {
       if (rafIdRef.current) {
         cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;
       }
-
-      isProcessingTouchRef.current = true;
-      setIsTouching(true);
-      setDragTime(null);
-
-      touchStartXRef.current = e.touches[0].clientX;
-      touchStartTimeRef.current = Date.now();
+      isProcessingTouchRef.current = false;
       isDragModeRef.current = false;
-      lastUpdateTimeRef.current = 0;
-
-      // Vérification et sauvegarde de l'état de lecture
+      setIsTouching(false);
+      setIsDragging(false);
+      setDragTime(null);
+      
+      // Rétablir le volume si nécessaire
       if (wavesurferRef.current) {
+        wavesurferRef.current.setVolume(1);
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (!isMobile || !wavesurferRef.current) return;
+      
+      try {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Nettoyer les états précédents
+        cleanupTouchStates();
+
+        isProcessingTouchRef.current = true;
+        setIsTouching(true);
+        
+        touchStartXRef.current = e.touches[0].clientX;
+        touchStartTimeRef.current = Date.now();
+        lastUpdateTimeRef.current = 0;
+
+        // Sauvegarde sécurisée de l'état de lecture
         wasPlayingRef.current = wavesurferRef.current.isPlaying();
         console.log('🎧 Début touch - Lecture en cours:', wasPlayingRef.current);
+      } catch (error) {
+        console.error('Erreur dans handleTouchStart:', error);
+        cleanupTouchStates();
       }
 
       if (wavesurferRef.current) {
@@ -826,24 +843,39 @@ useEffect(() => {
         cancelAnimationFrame(rafIdRef.current);
       }
 
-      if (!isDragModeRef.current && deltaX > 5) {
-        isDragModeRef.current = true;
-        setIsDragging(true);
-        
-        // Pause l'audio au début du drag seulement si nécessaire
-        if (wavesurferRef.current?.isPlaying()) {
-          wavesurferRef.current.pause();
-          console.log('⏸️ Audio mis en pause pour le drag');
-        }
-      }
+      try {
+        // Utiliser une seule animation frame pour toutes les opérations
+        rafIdRef.current = requestAnimationFrame(() => {
+          if (!wavesurferRef.current) return;
 
-      // Utiliser requestAnimationFrame pour les mises à jour visuelles
-      rafIdRef.current = requestAnimationFrame(() => {
-        const newTime = updateDragPosition(currentX);
-        if (newTime !== undefined && wavesurferRef.current) {
-          wavesurferRef.current.setTime(newTime);
-        }
-      });
+          try {
+            // Vérifier si on commence un nouveau drag
+            if (!isDragModeRef.current && deltaX > 5) {
+              isDragModeRef.current = true;
+              setIsDragging(true);
+              
+              // S'assurer que l'audio est complètement arrêté
+              wavesurferRef.current.pause();
+              wavesurferRef.current.setVolume(0);
+              console.log('🔇 Audio mis en pause et son coupé pour le drag');
+            }
+
+            // Mettre à jour la position de manière sécurisée
+            if (isDragModeRef.current) {
+              const newTime = updateDragPosition(currentX);
+              if (newTime !== undefined && newTime >= 0 && newTime <= wavesurferRef.current.getDuration()) {
+                wavesurferRef.current.setTime(newTime);
+              }
+            }
+          } catch (innerError) {
+            console.error('Erreur dans l\'animation frame:', innerError);
+            cleanupTouchStates();
+          }
+        });
+      } catch (error) {
+        console.error('Erreur dans handleTouchMove:', error);
+        cleanupTouchStates();
+      }
     };
 
     const handleTouchEnd = async (e: TouchEvent) => {
@@ -862,26 +894,81 @@ useEffect(() => {
 
       if (wavesurferRef.current) {
         const finalTime = wavesurferRef.current.getCurrentTime();
+        
+        // Réinitialiser les états immédiatement
+        setIsTouching(false);
+        setIsDragging(false);
         setCurrentTime(finalTime);
         setDragTime(null);
         updateCurrentVerse(finalTime);
-
-        // Réinitialiser les états avant la reprise
-        setIsTouching(false);
-        setIsDragging(false);
         isProcessingTouchRef.current = false;
 
-        // Attendre un court instant pour la stabilisation
+        // Séquence de reprise de lecture optimisée
         if (shouldResumePlaying) {
           try {
-            await new Promise(resolve => setTimeout(resolve, 50));
-            if (wavesurferRef.current && !wavesurferRef.current.isPlaying()) {
-              await wavesurferRef.current.play();
-              console.log('▶️ Lecture reprise avec succès');
+            if (!wavesurferRef.current) throw new Error('WaveSurfer non disponible');
+
+            // Vérifier que la position est valide
+            const currentTime = wavesurferRef.current.getCurrentTime();
+            const duration = wavesurferRef.current.getDuration();
+            
+            if (currentTime < 0 || currentTime > duration) {
+              console.warn('Position invalide détectée, réinitialisation...');
+              wavesurferRef.current.setTime(0);
+            }
+
+            // Rétablir le volume progressivement avec une fonction plus robuste
+            wavesurferRef.current.setVolume(0);
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            if (!wavesurferRef.current.isPlaying()) {
+              await wavesurferRef.current.play().catch(e => {
+                console.error('Erreur lors du démarrage de la lecture:', e);
+                throw e;
+              });
+              
+              // Fondu sonore avec gestion des erreurs
+              let fadeAttempt = 0;
+              const maxAttempts = 3;
+              
+              const fadeIn = () => {
+                if (!wavesurferRef.current) return;
+                let vol = 0;
+                const fadeInterval = setInterval(() => {
+                  if (!wavesurferRef.current || fadeAttempt >= maxAttempts) {
+                    clearInterval(fadeInterval);
+                    return;
+                  }
+                  
+                  try {
+                    vol = Math.min(1, vol + 0.1);
+                    wavesurferRef.current.setVolume(vol);
+                    if (vol >= 1) {
+                      clearInterval(fadeInterval);
+                      console.log('▶️ Lecture reprise avec fondu');
+                    }
+                  } catch (fadeError) {
+                    console.error('Erreur pendant le fondu:', fadeError);
+                    fadeAttempt++;
+                    if (fadeAttempt >= maxAttempts) {
+                      clearInterval(fadeInterval);
+                      wavesurferRef.current?.setVolume(1);
+                    }
+                  }
+                }, 20);
+              };
+              fadeIn();
             }
           } catch (error) {
             console.error('Erreur lors de la reprise de la lecture:', error);
+            // En cas d'erreur, s'assurer que le volume est rétabli
+            if (wavesurferRef.current) {
+              wavesurferRef.current.setVolume(1);
+            }
           }
+        } else {
+          // Si on ne reprend pas la lecture, rétablir quand même le volume
+          wavesurferRef.current.setVolume(1);
         }
       }
 
