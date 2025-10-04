@@ -1084,7 +1084,7 @@ useEffect(() => {
           >
             <button
               onClick={togglePlayPause}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 cursor-pointer text-white hover:bg-blue-700"
             >
               {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </button>

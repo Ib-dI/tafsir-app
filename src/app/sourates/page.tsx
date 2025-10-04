@@ -416,7 +416,7 @@ export default function SouratePage() {
       </div>
 
       <motion.ul
-        className="flex w-full flex-col flex-wrap items-center justify-center gap-2 md:flex-row md:gap-4"
+        className="flex w-full flex-col flex-wrap items-center justify-center gap-2 md:flex-row md:gap-3"
         variants={containerVariants}
         initial="hidden"
         animate="show"
@@ -447,7 +447,7 @@ export default function SouratePage() {
                   key={chapter.id}
                   variants={itemVariants}
                   layout
-                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-md transition-colors duration-200 md:w-80 will-change-transform will-change-opacity ${
+                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-xs transition-colors duration-200 md:w-80 will-change-transform will-change-opacity ${
                     isFullyCompleted
                       ? "bg-card-gradient border border-emerald-200 ring-1 ring-emerald-100/60 hover:opacity-95"
                       : "bg-white border-gray-200 hover:bg-slate-50/50"

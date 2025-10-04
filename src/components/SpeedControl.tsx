@@ -9,7 +9,7 @@ function SpeedControl({
   playbackRate: number;
   onChange: (rate: number) => void;
 }) {
-  const speeds = [1, 1.25, 1.5, 2];
+  const speeds = [1, 1.25, 1.5, 1.75, 2];
   
   const handleClick = () => {
     if (!speeds.includes(playbackRate)) {
@@ -45,6 +45,13 @@ function SpeedControl({
           hover: "hover:bg-yellow-100",
           text: "text-yellow-600",
           border: "border-yellow-400"
+        };
+      case 1.75:
+        return {
+          bg: "bg-orange-100/50",
+          hover: "hover:bg-orange-100",
+          text: "text-orange-600",
+          border: "border-orange-400"
         };
       case 2:
         return {
