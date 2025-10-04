@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { signInWithGoogle } from '@/lib/auth';
+
 
 export default function AdminNotificationsPage() {
   const [user, loading] = useAuthState(auth);
@@ -15,7 +15,7 @@ export default function AdminNotificationsPage() {
   const [isSending, setIsSending] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
 
   // Gérer l'hydratation
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function AdminNotificationsPage() {
     },
   ];
 
-  const useTemplate = (template: typeof templates[0]) => {
+  const handleTemplate = (template: typeof templates[0]) => {
     setTitle(template.title);
     setMessage(template.message);
   };
@@ -135,7 +135,7 @@ export default function AdminNotificationsPage() {
               {templates.map((template, index) => (
                 <button
                   key={index}
-                  onClick={() => useTemplate(template)}
+                  onClick={() => handleTemplate(template)}
                   className="text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <p className="font-medium text-sm text-gray-900">{template.title}</p>
