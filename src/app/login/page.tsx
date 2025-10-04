@@ -35,7 +35,7 @@ export default function LoginPage() {
       // Vérifiez l'utilisateur après la connexion pop-up
       if (user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
         console.log("Connexion via pop-up réussie, redirection...");
-        router.push('/admin');
+        router.push('/admin/notifications');
       } else {
         setError("Accès refusé. Veuillez utiliser l'email administrateur.");
       }

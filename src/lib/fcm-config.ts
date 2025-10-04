@@ -1,49 +1,31 @@
 // lib/fcm-config.ts
-const rawVapid = (process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || '').trim();
-export const FCM_VAPID_KEY = rawVapid.replace(/^"|"$/g, '');
+'use client';
 
-export const initializeFCM = async () => {
+export const FCM_VAPID_KEY = "BCf9C1oFQIL59fnJT9cM4e9VAIhLdH87Bsdw-LuicluBLr4JxiNw6asfbCUfvf5HHEizPaDmLyMJrO2v77W7zNY"; // À remplacer par votre clé VAPID
+
+export const initializeFCM = async (): Promise<ServiceWorkerRegistration | null> => {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
-    console.warn('[FCM] SW non supporté dans cet environnement');
+    console.log('❌ Service Worker non supporté par ce navigateur');
     return null;
   }
 
   try {
-    // 1. Vérifier si un service worker existe déjà
-    const existingRegistration = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js');
-    if (!FCM_VAPID_KEY) {
-      console.warn('[FCM] VAPID absente (NEXT_PUBLIC_FIREBASE_VAPID_KEY)');
-    } else {
-      console.log('[FCM] VAPID présente, prefix:', FCM_VAPID_KEY.substring(0, 1));
-    }
+    console.log('🔵 Enregistrement du Service Worker...');
     
-    if (existingRegistration?.active) {
-      console.log('[FCM] SW existant actif détecté:', existingRegistration.scope);
-      return existingRegistration;
-    }
-
-    // 2. Si non, enregistrer un nouveau service worker
     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
       scope: '/',
-      updateViaCache: 'none'
+      updateViaCache: 'none',
     });
-
-    // 3. Attendre l'activation
-    if (registration.installing) {
-      await new Promise<void>((resolve) => {
-        registration.installing?.addEventListener('statechange', () => {
-          if (registration.active) {
-            console.log('[FCM] SW activé');
-            resolve();
-          }
-        });
-      });
-    }
-
-    console.log('[FCM] SW enregistré avec succès:', registration.scope);
+    
+    console.log('✅ Service Worker enregistré:', registration);
+    
+    // Attendre que le SW soit prêt
+    await navigator.serviceWorker.ready;
+    console.log('✅ Service Worker prêt');
+    
     return registration;
   } catch (error) {
-    console.error('Erreur lors de l\'initialisation du service worker:', error);
+    console.error('❌ Erreur d\'enregistrement du Service Worker:', error);
     return null;
   }
 };
