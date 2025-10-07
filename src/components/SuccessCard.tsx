@@ -85,23 +85,23 @@ const SuccessCard = ({
                   Chapitre terminé !
                 </motion.h3>
     
-                <motion.p
+                <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.8, duration: 0.5 }}
                   className="mb-6 text-center text-gray-600"
                 >
                   Vous avez complété{" "}
-                  <div className="text-gray-800 flex gap-2 shadow-xs items-center bg-green-100 px-2 py-1 rounded-lg">
-                    <span className="font-bold">
+                  <div className="text-gray-800 flex gap-2 shadow-xs items-center bg-green-100 mt-1 px-2 py-1 rounded-lg border border-green-300">
+                    <p className="font-bold text-lg">
                       {infoSourate[0]}. {infoSourate[2]}
-                    </span>
-                    <span
-                      className={`font-sura text-xl`}
+                    </p>
+                    <p
+                      className={`font-sura text-3xl`}
                       >{`surah${Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}${Number(infoSourate[0])}`}
-                      </span>
+                      </p>
                   </div>
-                </motion.p>
+                </motion.div>
     
                 {/* Conteneur des boutons d'action */}
                 <div className="flex w-full flex-col gap-3">

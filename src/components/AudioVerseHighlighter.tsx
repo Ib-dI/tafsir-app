@@ -391,7 +391,7 @@ useEffect(() => {
     setCompletionVisible(false);
     setHasAudioFinished(false);
     finishHandledRef.current = false;
-  }, [currentChapterId]);
+  }, [currentChapterId, currentPartIndex, audioUrl]);
 
   const closeOverlay = () => {
     setCompletionVisible(false);
@@ -549,6 +549,19 @@ useEffect(() => {
 
         onAudioFinished?.();
         console.log("Audio finish handled, setting hasAudioFinished to true");
+        
+        // Navigation automatique vers la partie suivante si disponible
+        if (totalParts && currentPartIndex < totalParts - 1) {
+          console.log('🔄 Navigation automatique vers la partie suivante');
+          // Effacer la progression avant la navigation
+          clearProgress();
+          setTimeout(() => {
+            if (onPartChange) {
+              console.log('💾 Progression effacée, navigation vers la partie', currentPartIndex + 1);
+              onPartChange(currentPartIndex + 1);
+            }
+          }, 1500); // Délai de 1.5s pour permettre l'affichage de l'overlay
+        }
       }
     });
 
