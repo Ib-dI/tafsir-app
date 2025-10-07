@@ -1,6 +1,6 @@
 "use client";
 
-import NotificationPermission from "@/components/NotificationPermission";
+// import NotificationPermission from "@/components/NotificationPermission";
 import { motion } from "framer-motion";
 import { Compass, Headphones } from "lucide-react";
 import Link from "next/link";
@@ -42,7 +42,7 @@ export default function HomePage() {
         transition={{ delayChildren: 0.2, staggerChildren: 0.1 }}
         className="mt-8 mb-8 w-full max-w-4xl rounded-lg bg-white p-6 text-center shadow-lg sm:p-10" // Classes de la page sourates
       >
-        <NotificationPermission />
+        {/* <NotificationPermission /> */}
         {/* Titre principal */}
         <motion.h1
           variants={itemVariants}
