@@ -419,7 +419,7 @@ const handleNavigateToPart = useCallback((navigateFunction: (partIndex: number) 
         
         {/* HeaderRight à droite - version mobile uniquement */}
         {isMobile && audioParts.length > 1 && (
-          <div className="flex-shrink-0 -mt-3">
+          <div className="flex-shrink-0 -mt-4">
             <HeaderRight
               audioParts={audioParts}
               currentPartIndex={currentPartIndex}

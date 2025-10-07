@@ -130,7 +130,7 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
           {/* Bouton précédent */}
           <button
             onClick={handlePreviousPart}
-            className="px-2.5 py-1.5 rounded-full border transition-all duration-200 hover:shadow-sm active:scale-95"
+            className="px-3 py-2 rounded-full border transition-all duration-200 hover:shadow-sm active:scale-95"
             style={{
               backgroundColor: colors.card,
               borderColor: colors.border
@@ -147,7 +147,7 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
           {/* Sélecteur de partie */}
           <button
             onClick={() => setIsPartSelectorVisible(true)}
-            className={`px-2.5 py-1.5 rounded-full flex flex-row items-center gap-1.5 border relative transition-all duration-200 hover:shadow-sm active:scale-95 ${
+            className={`px-3 py-2 rounded-full flex flex-row items-center gap-1.5 border relative transition-all duration-200 hover:shadow-sm active:scale-95 ${
               isCurrentPartCompleted 
                 ? 'bg-green-100/50 text-green-600 border-green-300' 
                 : ''
@@ -178,7 +178,7 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
           {/* Bouton suivant */}
           <button
             onClick={handleNextPart}
-            className="px-2.5 py-1.5 rounded-full border transition-all duration-200 hover:shadow-sm active:scale-95"
+            className="px-3 py-2 rounded-full border transition-all duration-200 hover:shadow-sm active:scale-95"
             style={{
               backgroundColor: colors.card,
               borderColor: colors.border
