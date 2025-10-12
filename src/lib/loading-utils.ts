@@ -167,6 +167,16 @@ export function preloadResource(url: string, type: 'audio' | 'image' | 'video' =
 }
 
 /**
+ * Type pour NetworkInformation (non inclus par défaut dans TypeScript)
+ */
+type NetworkInformation = {
+  effectiveType?: string;
+  downlink?: number;
+  rtt?: number;
+  saveData?: boolean;
+};
+
+/**
  * Fonction pour détecter la vitesse de connexion
  */
 export function getConnectionSpeed(): 'slow' | 'medium' | 'fast' {
@@ -174,12 +184,12 @@ export function getConnectionSpeed(): 'slow' | 'medium' | 'fast' {
     return 'medium'; // Par défaut
   }
 
-  const connection = (navigator as any).connection;
-  
-  if (!connection) return 'medium';
+  const connection = navigator.connection as NetworkInformation | undefined;
+
+  if (!connection || typeof connection.effectiveType !== 'string') return 'medium';
 
   const effectiveType = connection.effectiveType;
-  
+
   switch (effectiveType) {
     case 'slow-2g':
     case '2g':

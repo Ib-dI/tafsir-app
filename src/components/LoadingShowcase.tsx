@@ -157,7 +157,7 @@ export default function LoadingShowcase() {
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <h3 className="font-semibold text-green-800 mb-2">Contenu Lazy Loadé</h3>
               <p className="text-green-700">
-                Ce contenu a été chargé de manière paresseuse lorsque vous avez fait défiler jusqu'ici !
+                Ce contenu a été chargé de manière paresseuse lorsque vous avez fait défiler jusqu&apos;ici !
               </p>
             </div>
           </LazyVerseLoader>
@@ -177,7 +177,7 @@ export default function LoadingShowcase() {
           <li>✅ Skeleton loaders pour les versets</li>
           <li>✅ Lazy loading optimisé</li>
           <li>✅ Transitions et micro-interactions</li>
-          <li>✅ Gestion d'erreurs améliorée</li>
+          <li>✅ Gestion d&apos;erreurs améliorée</li>
         </ul>
       </div>
     </div>
