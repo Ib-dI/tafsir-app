@@ -1,7 +1,7 @@
 "use client";
 
 // import NotificationPermission from "@/components/NotificationPermission";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Compass, Headphones } from "lucide-react";
 import Link from "next/link";
 
@@ -30,6 +30,18 @@ export default function HomePage() {
     },
   };
 
+  const floatingVariants: Variants = {
+    animate: {
+      y: [0, -10, 0],
+      rotate: [0, 2, 0, -2, 0],
+      transition: {
+        duration: 4,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-1 md:p-4">
       {" "}
@@ -49,7 +61,10 @@ export default function HomePage() {
           className="mb-6 text-4xl leading-tight font-bold text-gray-800 sm:text-5xl" // Font-bold pour harmoniser
         >
           Apprenez le Tafsir du Coran en{" "}
-          <span className="relative inline-block">
+          <motion.span className="relative inline-block "
+                variants={floatingVariants}
+                animate="animate"
+                >
             <span
               className="absolute inset-0 flex -rotate-2 transform items-center justify-center rounded-md bg-[#ff3131]/90"
               style={{ opacity: 1, filter: "blur(0px)", transform: "none" }}
@@ -62,7 +77,7 @@ export default function HomePage() {
               </span>
             </span>
             <span className="invisible px-3 pt-1 pb-2">Shi-Maoré</span>
-          </span>
+          </motion.span>
         </motion.h1>
 
         {/* Sous-titre / Description */}
@@ -132,7 +147,7 @@ export default function HomePage() {
         className="mt-12 text-sm text-gray-600"
       >
         <p>
-          &copy; {new Date().getFullYear()} Votre Plateforme Tafsir. Tous droits
+          &copy; {new Date().getFullYear()} Plateforme Tafsir. Tous droits
           réservés.
         </p>
       </motion.footer>
