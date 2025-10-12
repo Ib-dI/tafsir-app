@@ -1,9 +1,10 @@
 // src/app/layout.tsx
 import Header from "@/components/header";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { Suspense } from "react";
+import "./globals.css";
 // import NotificationsSetup from "@/components/NotificationsSetup"; // Ajoutez cette ligne
 
 const geistSans = Geist({
@@ -39,9 +40,13 @@ export default function RootLayout({
           {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
           <Suspense
             fallback={
-              <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 text-blue-600">
-                <div className="mb-4 h-16 w-16 animate-spin rounded-full border-t-4 border-b-4 border-blue-500"></div>
-                <p className="text-lg">Chargement du contenu...</p>
+              <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
+                <LoadingSpinner
+                  size="xl"
+                  color="blue"
+                  text="Chargement du contenu..."
+                  className="gap-4"
+                />
               </div>
             }
           >

@@ -1184,7 +1184,7 @@ export const audiosTafsir = [
       {
         id: "an-nisa-19",
         title: "An-Nisa - Partie 19",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part19.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part19.ogg",
         timings: [
           { id: 126, startTime: 74.45, endTime: 128.45 },
           { id: 127, startTime: 128.45, endTime: 530.71 },
@@ -1196,7 +1196,7 @@ export const audiosTafsir = [
       {
         id: "an-nisa-20",
         title: "An-Nisa - Partie 20",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part20.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part20.ogg",
         timings: [
           { id: 131, startTime: 37.06, endTime: 200.52 },
           { id: 132, startTime: 200.52, endTime: 230.63 },
@@ -1213,7 +1213,7 @@ export const audiosTafsir = [
       {
         id: "an-nisa-21",
         title: "An-Nisa - Partie 21",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part21.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part21.ogg",
         timings: [
           { id: 141, startTime: 60.07, endTime: 344.61 },
           { id: 142, startTime: 344.61, endTime: 597.98 },
@@ -1229,7 +1229,7 @@ export const audiosTafsir = [
       {
         id: "an-nisa-22",
         title: "An-Nisa - Partie 22",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part22.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part22.ogg",
         timings: [
           { id: 150, startTime: 74.2, endTime: 183.6 },
           { id: 151, startTime: 183.6, endTime: 254.9 },
@@ -1249,7 +1249,7 @@ export const audiosTafsir = [
       {
         id: "an-nisa-23",
         title: "An-Nisa - Partie 23",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part23.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part23.ogg",
         timings: [
           { id: 163, startTime: 132.21, endTime: 300.34 },
           { id: 164, startTime: 300.34, endTime: 442.54 },
@@ -1266,7 +1266,7 @@ export const audiosTafsir = [
       {
         id: "an-nisa-24",
         title: "An-Nisa - Partie 24",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part24.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part24.ogg",
         timings: [
           { id: 172, startTime: 46.67, endTime: 111.83 },
           { id: 173, startTime: 111.83, endTime: 234.21 },
@@ -1284,7 +1284,7 @@ export const audiosTafsir = [
       {
         id: "al-maidah-1",
         title: "Al-Ma'idah - Partie 1",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ma'idah-part1.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ma'idah-part1.ogg",
         timings: [
           { id: 1, startTime: 88.83, endTime: 243.73 },
           { id: 2, startTime: 243.73, endTime: 777.79 },
@@ -1294,7 +1294,7 @@ export const audiosTafsir = [
       {
         id: "al-maidah-2",
         title: "Al-Ma'idah - Partie 2",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ma'idah-part2.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ma'idah-part2.ogg",
         timings: [
           { id: 4, startTime: 82.13, endTime: 427.50 },
           { id: 5, startTime: 427.50, endTime: 834.62 },
@@ -1305,7 +1305,7 @@ export const audiosTafsir = [
       {
         id: "al-maidah-3",
         title: "Al-Ma'idah - Partie 3",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ma'idah-part3.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ma'idah-part3.ogg",
         timings: [
           { id: 8, startTime: 54.33, endTime: 303.92 },
           { id: 9, startTime: 303.92, endTime: 356.04 },
@@ -1319,7 +1319,7 @@ export const audiosTafsir = [
       {
         id: "al-maidah-4",
         title: "Al-Ma'idah - Partie 4",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ma'idah-part4.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ma'idah-part4.ogg",
         timings: [
           { id: 15, startTime: 56.13, endTime: 221.09 },
           { id: 16, startTime: 221.09, endTime: 326.08 },
@@ -1762,7 +1762,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-15",
         title: "Al-A‘raf - Partie 15",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part15_compressed.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part15_compressed.ogg",
         timings: [
           { id: 163, startTime: 56.01, endTime: 327.04 },
           { id: 164, startTime: 327.13, endTime: 535.86 },
@@ -1777,7 +1777,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-16",
         title: "Al-A‘raf - Partie 16",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part16_compressed.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part16_compressed.ogg",
         timings: [
           { id: 171, startTime: 61.15, endTime: 250.8 },
           { id: 172, startTime: 250.8, endTime: 444.11 },
@@ -1792,7 +1792,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-17",
         title: "Al-A‘raf - Partie 17",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part17_compressed.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part17_compressed.ogg",
         timings: [
           { id: 179, startTime: 56.95, endTime: 189.95 },
           { id: 180, startTime: 189.95, endTime: 314.39 },
@@ -1808,7 +1808,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-18",
         title: "Al-A‘raf - Partie 18",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part18_compressed.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part18_compressed.ogg",
         timings: [
           { id: 187, startTime: 39.77, endTime: 186.9 },
           { id: 188, startTime: 186.9, endTime: 410.66 },
@@ -1825,7 +1825,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-19",
         title: "Al-A‘raf - Partie 19",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part19_compressed.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part19_compressed.ogg",
         timings: [
           { id: 197, startTime: 82.28, endTime: 110.69 },
           { id: 198, startTime: 110.69, endTime: 220.41 },
@@ -2585,7 +2585,7 @@ export const audiosTafsir = [
       {
         id: "muhammad-1",
         title: "Muhammad - Partie 1",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Mouhammad-part1.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Mouhammad-part1.ogg",
         timings: [
           { id: 1, startTime: 70.95, endTime: 145.0 },
           { id: 2, startTime: 145.0, endTime: 234.36 },
@@ -2604,7 +2604,7 @@ export const audiosTafsir = [
       {
         id: "muhammad-2",
         title: "Muhammad - Partie 2",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Mouhammad-part2.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Mouhammad-part2.ogg",
         timings: [
           { id: 13, startTime: 75.34, endTime: 163.93 },
           { id: 14, startTime: 163.93, endTime: 320.91 },
@@ -2618,7 +2618,7 @@ export const audiosTafsir = [
       {
         id: "muhammad-3",
         title: "Muhammad - Partie 3",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Mouhammad-part3.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Mouhammad-part3.ogg",
         timings: [
           { id: 20, startTime: 52.45, endTime: 226.33 },
           { id: 21, startTime: 226.33, endTime: 400.5 },
@@ -2636,7 +2636,7 @@ export const audiosTafsir = [
       {
         id: "muhammad-4",
         title: "Muhammad - Partie 4",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Mouhammad-part4.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Mouhammad-part4.ogg",
         timings: [
           { id: 29, startTime: 41.77, endTime: 78.96 },
           { id: 30, startTime: 78.96, endTime: 116.32 },
@@ -2704,7 +2704,7 @@ export const audiosTafsir = [
       {
         id: "al-qamar-1",
         title: "Al-Qamar - Partie 1",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Qamar-part1.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Qamar-part1.ogg",
         timings: [
           { id: 1, startTime: 73.98, endTime: 330.91 },
           { id: 2, startTime: 330.91, endTime: 366.07 },
@@ -2727,7 +2727,7 @@ export const audiosTafsir = [
       {
         id: "al-qamar-2",
         title: "Al-Qamar - Partie 2",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Qamar-part2.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Qamar-part2.ogg",
         timings: [
           { id: 17, startTime: 68.92, endTime: 157.17 },
           { id: 18, startTime: 157.17, endTime: 200.83 },
@@ -2750,7 +2750,7 @@ export const audiosTafsir = [
       {
         id: "al-qamar-3",
         title: "Al-Qamar - Partie 3",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Qamar-part3.m4a",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Qamar-part3.ogg",
         timings: [
           { id: 33, startTime: 79.29, endTime: 145.31 },
           { id: 34, startTime: 145.31, endTime: 316.1 },

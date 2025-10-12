@@ -21,8 +21,11 @@ import { useMediaQuery } from "./UseMediaQuery";
 import VerseItem, { toArabicNumerals } from "./VerseItem";
 
 import { AudioVerseHighlighterProps, ProgressData, VerseHighlight } from "@/types/types";
+import AudioLoadingState from "./AudioLoadingState";
+import LoadingSkeleton from "./LoadingSkeleton";
 import OverlayVerses from "./OverlayVerses";
 import ProgressIndicator from "./ProgressIndicator";
+import ProgressRestorationLoader from "./ProgressRestorationLoader";
 import SuccessCard from "./SuccessCard";
 
 // Clé pour le localStorage
@@ -977,6 +980,9 @@ useEffect(() => {
       className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible rounded-lg bg-white p-1 shadow sm:p-4"
       style={{ height: "100vh", maxHeight: "100dvh" }}
     >
+      {/* Loader de restauration de progression */}
+      <ProgressRestorationLoader isRestoring={isRestoringProgress} />
+      
       <ProgressIndicator
       loadProgress={loadProgress}
       clearProgressManually={clearProgressManually}
@@ -1056,43 +1062,17 @@ useEffect(() => {
           </div>
         )}
         
-        {/* État de chargement */}
-        {isLoading && audioUrl && (
-          <div className="absolute top-0 left-0 z-10 flex h-[50px] w-full flex-col items-center justify-center rounded bg-transparent md:h-[60px]">
-            <p className="mb-2 text-sm text-blue-500">
-              Chargement de l&apos;audio...
-            </p>
-            <div className="h-5 w-5 animate-spin rounded-full border-3 border-blue-500 border-t-transparent" />
-          </div>
-        )}
-        
-        {/* État d'erreur */}
-        {audioError && !isLoading && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              type: "spring",
-              stiffness: 100,
-              damping: 10,
-              delay: 0.1,
-            }}
-            className="absolute top-0 left-0 z-10 flex h-[50px] w-full flex-col items-center justify-center rounded border border-red-200 bg-red-50/80"
-          >
-            <p className="font-semibold text-red-700">
-              Erreur de chargement audio.
-            </p>
-            <p className="text-sm text-red-600">
-              Veuillez réessayer plus tard.
-            </p>
-          </motion.div>
-        )}
+        {/* État de chargement amélioré */}
+        <AudioLoadingState
+          isLoading={isLoading}
+          audioError={audioError}
+        />
 
         {/* Contrôles audio */}
         {audioUrl && (
           <div
-            className={`flex w-full items-center justify-between ${
-              isLoading || audioError ? "pointer-events-none opacity-50" : ""
+            className={`flex w-full items-center justify-between transition-opacity duration-300 ${
+              isLoading || audioError ? "pointer-events-none opacity-0" : ""
             }`}
           >
             <button
@@ -1162,6 +1142,11 @@ useEffect(() => {
         className="relative z-20 mt-5 flex-1 overflow-y-auto rounded-lg border border-gray-200 p-2"
         style={{ minHeight: 0 }}
       >
+        {/* Skeleton loader pendant le chargement initial */}
+        {isLoading && !children && (
+          <LoadingSkeleton count={5} />
+        )}
+        
         {children}
         {/* Bismillah pour les sourates qui en ont besoin */}
         {Number(infoSourate[0]) !== 1 &&

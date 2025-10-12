@@ -1,8 +1,6 @@
 "use client";
 
 // Importez les instances pré-initialisées depuis votre fichier src/lib/firebase.ts
-import { auth, db } from "@/lib/firebase";
-import AnimatedBackButton from "./AnimatedBackButton";
 import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
 import HeaderRight from "@/components/HeaderRight"; // Import du nouveau composant
 import {
@@ -12,8 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { auth, db } from "@/lib/firebase";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import AnimatedBackButton from "./AnimatedBackButton";
 
 // Importations Firestore spécifiques pour les opérations
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
@@ -27,7 +27,7 @@ import {
   where,
 } from "firebase/firestore";
 
-import { TafsirAudioPart, SourateInteractiveContentProps } from "@/types/types";
+import { SourateInteractiveContentProps, TafsirAudioPart } from "@/types/types";
 
 
 export default function SourateInteractiveContent({

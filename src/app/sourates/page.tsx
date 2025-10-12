@@ -82,8 +82,14 @@ export default function SouratePage() {
     async function loadChaptersAndSetInitialFilter() {
       try {
         setLoading(true);
+        setError(false);
+        
         const fetchedChapters = await getSimpleChapters();
+        
         if (fetchedChapters) {
+          // Animation fluide lors du chargement des données
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
           setChapters(fetchedChapters);
 
           // Lire les valeurs des paramètres d'URL
@@ -306,9 +312,82 @@ export default function SouratePage() {
 
   if (loading && chapters.length === 0) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 text-blue-600">
-        <div className="mb-4 h-16 w-16 animate-spin rounded-full border-t-4 border-b-4 border-blue-500"></div>
-        <p className="text-lg">Chargement des chapitres...</p>
+      <div className="container mx-auto mt-8 w-full rounded-lg bg-white p-4 shadow-lg">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-600 text-balance mx-auto mb-8 max-w-[600px] text-center text-4xl font-bold !leading-[1.0] tracking-tighter text-gray-900 lg:max-w-[800px] lg:text-6xl"
+        >
+          📑Chapitres du Coran 📖
+        </motion.h1>
+
+        {/* Skeleton pour la barre de recherche */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="w-full mb-6"
+        >
+          <div className="w-full h-12 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-xl animate-pulse" />
+        </motion.div>
+
+        {/* Skeleton pour les filtres */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mb-6 bg-gray-50 p-4 rounded-xl"
+        >
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+            <div className="h-10 w-64 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full animate-pulse" />
+            <div className="h-10 w-48 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded-full animate-pulse" />
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gray-300 animate-pulse" />
+                <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Skeleton pour les cartes de sourates */}
+        <div className="flex w-full flex-col flex-wrap items-center justify-center gap-2 md:flex-row md:gap-3">
+          {[...Array(12)].map((_, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + index * 0.05 }}
+              className="w-full md:w-80 rounded-xl border border-gray-200 bg-white p-4 shadow-xs"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-200 via-blue-100 to-blue-200 animate-pulse" />
+                <div className="flex-grow space-y-2">
+                  <div className="h-5 w-3/4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded animate-pulse" />
+                  <div className="h-4 w-1/2 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="h-8 w-16 bg-gradient-to-r from-blue-200 via-blue-100 to-blue-200 rounded-full animate-pulse" />
+              </div>
+              <div className="mt-3 ml-9 h-4 w-20 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 rounded animate-pulse" />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Message de chargement animé */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-8 flex flex-col items-center justify-center text-blue-600"
+        >
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full border-4 border-blue-200 animate-pulse" />
+            <div className="absolute top-0 left-0 h-12 w-12 animate-spin rounded-full border-t-4 border-blue-500" />
+          </div>
+          <p className="mt-4 text-lg font-medium animate-pulse">Chargement des chapitres...</p>
+        </motion.div>
       </div>
     );
   }
@@ -420,7 +499,7 @@ export default function SouratePage() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        transition={{ staggerChildren: 0.05 }}
+        transition={{ staggerChildren: 0.03 }}
       >
         <AnimatePresence mode="popLayout">
           {filteredChapters.length > 0 ? (
