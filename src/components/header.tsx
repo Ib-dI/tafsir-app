@@ -99,7 +99,7 @@ export default function Header() {
                 variants={navVariants}
                 transition={{ staggerChildren: 0.1 }}
               >
-                {navItems.map((item, index) => {
+                {navItems.map((item) => {
                   const isActive = pathname === item.href;
                   return (
                     <motion.li key={item.href} variants={linkVariants}>
