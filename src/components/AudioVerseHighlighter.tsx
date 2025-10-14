@@ -123,10 +123,7 @@ const [hasManualNavigation, setHasManualNavigation] = useState(false);
       };
       
       localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressData));
-      console.log('💾 Progression sauvegardée:', { 
-        partIndex: currentPartIndex, 
-        time: Math.round(time * 100) / 100
-      });
+
     } catch (error) {
       console.warn('Erreur lors de la sauvegarde de la progression:', error);
     }
@@ -141,17 +138,14 @@ const [hasManualNavigation, setHasManualNavigation] = useState(false);
       const progressData: ProgressData = JSON.parse(saved);
       
       if (progressData.chapterId !== currentChapterId) {
-        console.log('Progression ignorée - mauvais chapitre');
         return null;
       }
       
       const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
       if (Date.now() - progressData.timestamp > TWENTY_FOUR_HOURS) {
-        console.log('Progression ignorée - trop ancienne');
         return null;
       }
       
-      console.log('📦 Progression trouvée:', progressData);
       return progressData;
     } catch (error) {
       console.warn('Erreur lors du chargement de la progression:', error);
@@ -169,8 +163,6 @@ const [hasManualNavigation, setHasManualNavigation] = useState(false);
   }, []);
   // ✅ FONCTION pour la navigation manuelle (dans AudioVerseHighlighter)
 const navigateToPart = useCallback((newPartIndex: number) => {
-  console.log('🧭 Navigation MANUELLE dans AudioVerseHighlighter:', newPartIndex);
-  
   // 1. Marquer comme navigation manuelle
   setHasManualNavigation(true);
   
@@ -186,7 +178,6 @@ const navigateToPart = useCallback((newPartIndex: number) => {
 // ✅ EXPOSER la fonction au parent (dans AudioVerseHighlighter)
 useEffect(() => {
     if (onNavigateToPart) {
-      console.log('📞 Exposition de navigateToPart au parent');
       onNavigateToPart(navigateToPart);
     }
   }, [onNavigateToPart]);
@@ -196,16 +187,12 @@ useEffect(() => {
 useEffect(() => {
   // Si l'utilisateur a déjà navigué manuellement, ne pas restaurer automatiquement
   if (hasManualNavigation) {
-    console.log('⏸️ Restauration ignorée - navigation manuelle détectée');
     return;
   }
   const progress = loadProgress();
   
   if (progress && progress.currentPartIndex !== currentPartIndex) {
-    console.log('📦 Restauration de partie nécessaire:', {
-      sauvegardé: progress.currentPartIndex,
-      actuel: currentPartIndex
-    });
+
     
     if (!isRestoringProgress) {
       setIsRestoringProgress(true);
@@ -217,7 +204,6 @@ useEffect(() => {
       
       setTimeout(() => {
         if (onPartChange) {
-          console.log('🔄 Demande de changement vers partie:', progress.currentPartIndex);
           onPartChange(progress.currentPartIndex);
         }
         setIsRestoringProgress(false);
@@ -289,7 +275,7 @@ useEffect(() => {
     if (!isRestoringProgress) {
       const currentTime = wavesurferRef.current.getCurrentTime();
       saveProgress(currentTime, newPartId);
-      console.log('💾 Sauvegarde lors changement partie:', currentPartIndex);
+
     }
   }, [currentPartIndex, currentChapterId, audioUrl, saveProgress, isRestoringProgress]);
 
@@ -465,7 +451,7 @@ useEffect(() => {
       setDuration(wavesurfer.getDuration());
       setIsLoading(false);
 
-      console.log('🎵 WaveSurfer prêt, durée:', wavesurfer.getDuration());
+
       
       // Restaurer la progression si disponible pour la même partie
       const progress = loadProgress();
@@ -478,7 +464,7 @@ useEffect(() => {
               wavesurfer.seekTo(seekPosition);
               setCurrentTime(progress.currentTime);
               updateCurrentVerse(progress.currentTime);
-              console.log('🔄 Position restaurée:', progress.currentTime);
+
             }, 300);
           }
         }
@@ -541,7 +527,7 @@ useEffect(() => {
     wavesurfer.on("pause", () => setIsPlaying(false));
 
     wavesurfer.on("finish", () => {
-      console.log("Audio finished, finishHandledRef.current:", finishHandledRef.current);
+
 
       if (!finishHandledRef.current) {
         finishHandledRef.current = true;
@@ -551,16 +537,16 @@ useEffect(() => {
         setHasAudioFinished(true);
 
         onAudioFinished?.();
-        console.log("Audio finish handled, setting hasAudioFinished to true");
+
         
         // Navigation automatique vers la partie suivante si disponible
         if (totalParts && currentPartIndex < totalParts - 1) {
-          console.log('🔄 Navigation automatique vers la partie suivante');
+
           // Effacer la progression avant la navigation
           clearProgress();
           setTimeout(() => {
             if (onPartChange) {
-              console.log('💾 Progression effacée, navigation vers la partie', currentPartIndex + 1);
+
               onPartChange(currentPartIndex + 1);
             }
           }, 1500); // Délai de 1.5s pour permettre l'affichage de l'overlay
@@ -596,16 +582,13 @@ useEffect(() => {
   useEffect(() => {
     if (hasAudioFinished) {
       clearProgress();
-      console.log('🧹 Progression effacée - chapitre terminé');
+
     }
   }, [hasAudioFinished, clearProgress]);
 
   // Gestion de l'affichage de l'overlay de completion
   useEffect(() => {
-    console.log("hasAudioFinished changed:", hasAudioFinished, "showCompletionOverlay:", showCompletionOverlay);
-
     if (hasAudioFinished && !showCompletionOverlay && wavesurferRef.current) {
-      console.log("Showing completion overlay");
       setShowCompletionOverlay(true);
       setCompletionVisible(true);
 
@@ -790,7 +773,7 @@ useEffect(() => {
       // Vérification et sauvegarde de l'état de lecture
       if (wavesurferRef.current) {
         wasPlayingRef.current = wavesurferRef.current.isPlaying();
-        console.log('🎧 Début touch - Lecture en cours:', wasPlayingRef.current);
+
       }
 
       if (wavesurferRef.current) {
@@ -852,7 +835,7 @@ useEffect(() => {
           if (wavesurferRef.current) {
             wavesurferRef.current.pause();
             wavesurferRef.current.setVolume(0); // Couper le son pendant le drag
-            console.log('🔇 Audio mis en pause et son coupé pour le drag');
+
           }
         }
 
@@ -876,7 +859,7 @@ useEffect(() => {
       }
 
       const shouldResumePlaying = wasPlayingRef.current;
-      console.log('🎧 Fin touch - Doit reprendre:', shouldResumePlaying);
+
 
       if (wavesurferRef.current) {
         const finalTime = wavesurferRef.current.getCurrentTime();
@@ -913,7 +896,7 @@ useEffect(() => {
                   wavesurferRef.current.setVolume(vol);
                   if (vol >= 1) {
                     clearInterval(fadeInterval);
-                    console.log('▶️ Lecture reprise avec fondu');
+
                   }
                 }, 20);
               };

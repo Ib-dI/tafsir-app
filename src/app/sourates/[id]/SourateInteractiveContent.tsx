@@ -2,7 +2,8 @@
 
 // Importez les instances pré-initialisées depuis votre fichier src/lib/firebase.ts
 import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
-import HeaderRight from "@/components/HeaderRight"; // Import du nouveau composant
+import HeaderRight from "@/components/HeaderRight"; 
+import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   Select,
   SelectContent,
@@ -394,7 +395,8 @@ const handleNavigateToPart = useCallback((navigateFunction: (partIndex: number) 
   if (!isAuthReady || !db || !userId) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 text-blue-600">
-        Initialisation de la connexion...
+        <LoadingSpinner size="lg" color="blue" text="
+        Initialisation de la connexion..." />
       </div>
     );
   }
