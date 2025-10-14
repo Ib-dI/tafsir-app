@@ -185,32 +185,44 @@ useEffect(() => {
   // Gestion de la restauration de progression lors du changement de partie
   // ✅ EFFET DE RESTAURATION CORRIGÉ (remplacez l'effet actuel)
 useEffect(() => {
-  // Si l'utilisateur a déjà navigué manuellement, ne pas restaurer automatiquement
-  if (hasManualNavigation) {
+  // Ne pas restaurer si navigation manuelle ou déjà en cours de restauration
+  if (hasManualNavigation || isRestoringProgress) {
     return;
   }
+
   const progress = loadProgress();
   
-  if (progress && progress.currentPartIndex !== currentPartIndex) {
-
-    
-    if (!isRestoringProgress) {
-      setIsRestoringProgress(true);
-      
-      // setPendingRestoration({
-      //   partIndex: progress.currentPartIndex,
-      //   time: progress.currentTime
-      // });
-      
-      setTimeout(() => {
-        if (onPartChange) {
-          onPartChange(progress.currentPartIndex);
-        }
-        setIsRestoringProgress(false);
-      }, 150);
-    }
+  if (!progress) {
+    return;
   }
-}, [currentPartIndex, loadProgress, onPartChange, isRestoringProgress, hasManualNavigation]);
+
+  // Définir immédiatement l'état de restauration
+  if (progress.currentPartIndex !== currentPartIndex) {
+    setIsRestoringProgress(true);
+    setPendingRestoration({
+      partIndex: progress.currentPartIndex,
+      time: progress.currentTime
+    });
+    
+    // Changer la partie directement
+    if (onPartChange) {
+      onPartChange(progress.currentPartIndex);
+    }
+  } else {
+    // Si nous sommes déjà sur la bonne partie, restaurer juste la position
+    setPendingRestoration({
+      partIndex: currentPartIndex,
+      time: progress.currentTime
+    });
+  }
+
+  // Réinitialiser l'état de restauration après un délai
+  const timer = setTimeout(() => {
+    setIsRestoringProgress(false);
+  }, 100);
+
+  return () => clearTimeout(timer);
+}, [currentPartIndex, loadProgress, onPartChange, hasManualNavigation, isRestoringProgress]);
 
 
 // Fonction pour trouver le verset correspondant à un temps donné
@@ -450,24 +462,26 @@ useEffect(() => {
       wavesurferRef.current = wavesurfer;
       setDuration(wavesurfer.getDuration());
       setIsLoading(false);
-
-
       
-      // Restaurer la progression si disponible pour la même partie
+      // Restaurer la progression
       const progress = loadProgress();
-      if (progress && progress.currentPartIndex === currentPartIndex) {
-        if (progress.currentTime > 0) {
-          const duration = wavesurfer.getDuration();
-          if (progress.currentTime < duration - 2) {
-            setTimeout(() => {
-              const seekPosition = progress.currentTime / duration;
-              wavesurfer.seekTo(seekPosition);
-              setCurrentTime(progress.currentTime);
-              updateCurrentVerse(progress.currentTime);
-
-            }, 300);
-          }
+      const shouldRestore = pendingRestoration || (progress && progress.currentPartIndex === currentPartIndex);
+      
+      if (shouldRestore) {
+        const timeToRestore = pendingRestoration ? pendingRestoration.time : progress?.currentTime;
+        const duration = wavesurfer.getDuration();
+        
+        if (timeToRestore && timeToRestore > 0 && timeToRestore < duration - 2) {
+          const seekPosition = timeToRestore / duration;
+          wavesurfer.seekTo(seekPosition);
+          setCurrentTime(timeToRestore);
+          updateCurrentVerse(timeToRestore);
         }
+      }
+      
+      // Réinitialiser pendingRestoration après utilisation
+      if (pendingRestoration) {
+        setPendingRestoration(null);
       }
     });
 
