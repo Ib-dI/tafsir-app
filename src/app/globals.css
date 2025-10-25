@@ -11,6 +11,12 @@
   font-display: swap;
 }
 @font-face {
+  font-family: 'SurahColors';
+  src: url('/fonts/surah_names_colors.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
   font-family: 'Bismillah';
   src: url('/fonts/Islamic.TTF') format('truetype');
   font-weight: 400;
@@ -37,6 +43,7 @@
 
   --font-uthmanic: Uthmanic;
   --font-sura: Surah;
+  --font-sura-colors: SurahColors;
   --font-quran: QuranKarim114;
   --font-bismillah: Bismillah;
   --font-quran-common: QuranCommon;
