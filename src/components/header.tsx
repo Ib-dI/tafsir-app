@@ -1,11 +1,12 @@
 'use client'
 
 import { motion, useScroll, useTransform, Variants } from "framer-motion";
-import { BookOpen, Home, Menu, X } from "lucide-react";
+import { Home, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { SouratesIcon } from "./icons/SouratesIcon";
 
 export default function Header() {
   const pathname = usePathname();
@@ -43,7 +44,7 @@ export default function Header() {
 
   const navItems = [
     { href: "/", label: "Accueil", icon: Home },
-    { href: "/sourates", label: "Sourates", icon: BookOpen },
+    { href: "/sourates", label: "Sourates", icon: SouratesIcon },
   ];
 
   return (
@@ -116,8 +117,8 @@ export default function Header() {
                           {isActive && (
                             <motion.div
                               layoutId="activeTab"
-                              className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg"
-                              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                              className="absolute inset-0 bg-gradient-to-r from-[#f28d00] via-[#f08800] to-[#e83d13] rounded-xl shadow-sm"
+                              transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             />
                           )}
                           <item.icon size={18} className="relative z-10" />
@@ -181,7 +182,7 @@ export default function Header() {
                       whileTap={{ scale: 0.98 }}
                       className={`flex items-center gap-3 px-5 py-4 rounded-xl font-semibold transition-all duration-300 ${
                         isActive
-                          ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                          ? "bg-gradient-to-r from-[#f28d00] via-[#f08800] to-[#e83d13] text-white shadow-sm"
                           : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                       }`}
                     >
