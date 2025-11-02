@@ -1150,9 +1150,6 @@ useEffect(() => {
           Number(infoSourate[0]) !== 9 &&
           verses[0]?.id === 1 && (
             <div className="mt-2 flex w-full justify-center">
-              {/* <p className="font-quran-common py-2 text-center text-3xl font-[300] text-gray-700 md:text-5xl">
-                ﷽
-              </p> */}
               <p className="font-sura-colors mt-4 text-center text-xl text-gray-900 md:text-[32px] leading-relaxed" style={{ direction: "rtl" }}>
               ﲪﲫﲮﲴ
               </p>
