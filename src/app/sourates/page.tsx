@@ -167,7 +167,7 @@ export default function SouratePage() {
       (snapshot) => {
         const favorites = new Set<number>();
         snapshot.forEach((doc) => {
-          const data = doc.data();
+          // const data = doc.data();
           const chapterId = parseInt(doc.id);
           if (!isNaN(chapterId)) {
             favorites.add(chapterId);
