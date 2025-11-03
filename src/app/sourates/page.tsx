@@ -155,34 +155,24 @@ export default function SouratePage() {
     
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
     if (!projectId) {
-      console.log("Project ID manquant pour les favoris");
       return;
     }
-    
-    console.log("Initialisation de l'écoute des favoris pour userId:", userId);
-    
+
     const favoritesRef = collection(
       db,
       `artifacts/${projectId}/users/${userId}/favorites`,
     );
-    
     const unsubscribe = onSnapshot(
       favoritesRef, 
       (snapshot) => {
         const favorites = new Set<number>();
-        console.log("Snapshot favoris reçu, nombre de documents:", snapshot.size);
-        
         snapshot.forEach((doc) => {
           const data = doc.data();
           const chapterId = parseInt(doc.id);
-          console.log("Document favori:", { id: doc.id, chapterId, data });
-          
           if (!isNaN(chapterId)) {
             favorites.add(chapterId);
           }
         });
-        
-        console.log("Favoris mis à jour:", Array.from(favorites));
         setFavoriteChapters(favorites);
       },
       (error) => {
@@ -549,15 +539,16 @@ export default function SouratePage() {
                     className={`absolute top-0 right-2 z-20 p-1.5 rounded-full transition-all duration-200 hover:scale-110 ${
                       isFavorite
                         ? "text-rose-500 hover:text-rose-600"
-                        : "text-gray-400 hover:text-rose-500"
+                        : `${isFullyCompleted ? "text-white": "text-gray-400"} hover:text-rose-500`
                     }`}
                     title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
                   >
                     <Heart
+                      className={`${!isFavorite && isFullyCompleted ? "drop-shadow-sm" : ""}`}
                       size={18}
-                      fill={isFavorite ? "currentColor" : "none"}
+                      fill={isFavorite || isFullyCompleted ? "currentColor" : "none"}
                       stroke="currentColor"
-                      strokeWidth={2}
+                      strokeWidth={1}
                     />
                   </button>
 
