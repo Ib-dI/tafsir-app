@@ -1,9 +1,6 @@
-// CE FICHIER EST UN SERVER COMPONENT
-
 import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapterVerses } from "@/lib/quranSimpleApi";
-
-import SourateInteractiveContent from "./SourateInteractiveContent"; // NOUVEAU CLIENT COMPONENT
+import SourateInteractiveContent from "./SourateInteractiveContent";
 
 // Définition des types des props pour un Server Component
 interface SouratePageProps {
@@ -14,7 +11,6 @@ export default async function Sourate({ params }: SouratePageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams; // Accède directement à l'ID
   const chapterId = Number(id); // Convertir l'ID de la sourate en nombre
-
   const data = await getSimpleChapterVerses(id); // Récupère tous les versets
   const verses = data?.verses || [];
   const infoSourate = data
@@ -36,7 +32,7 @@ export default async function Sourate({ params }: SouratePageProps) {
   return (
     <div className="container mx-auto mt-1 bg-white p-2 md:p-4">
       {/* Le bouton de retour est un Client Component qui lit ses propres searchParams */}
-      
+
       {/* Passe toutes les données nécessaires au Client Component interactif */}
       <SourateInteractiveContent
         verses={verses}

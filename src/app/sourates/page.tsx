@@ -42,7 +42,6 @@ const itemVariants = {
 export default function SouratePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [filteredChapters, setFilteredChapters] = useState<Chapter[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -59,9 +58,7 @@ export default function SouratePage() {
   
   // État pour les favoris
   const [favoriteChapters, setFavoriteChapters] = useState<Set<number>>(new Set());
-  
   const [userId, setUserId] = useState<string | null>(null);
-
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const sourateIdsWithAudio = useMemo(
