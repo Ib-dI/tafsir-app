@@ -786,16 +786,31 @@ useEffect(() => {
 
       // Vérification et sauvegarde de l'état de lecture
       if (wavesurferRef.current) {
-        wasPlayingRef.current = wavesurferRef.current.isPlaying();
+        // wavesurfer.isPlaying() can sometimes be unreliable after reconfigurations
+        // (ex: responsive switch). Prefer vérifier aussi l'élément média
+        // (getMediaElement().paused) comme fallback, et enfin l'état local `isPlaying`.
+        const mediaEl =
+          typeof wavesurferRef.current.getMediaElement === "function"
+            ? (wavesurferRef.current.getMediaElement() as HTMLMediaElement | null)
+            : null;
 
-      }
+        const playingViaMedia = !!mediaEl && !mediaEl.paused;
+        const playingViaWs =
+          typeof (wavesurferRef.current as any).isPlaying === "function"
+            ? (wavesurferRef.current as any).isPlaying()
+            : false;
 
-      if (wavesurferRef.current) {
+        wasPlayingRef.current = Boolean(playingViaWs || playingViaMedia || isPlaying);
+
         const currentTime = wavesurferRef.current.getCurrentTime();
         setDragTime(currentTime);
-        wasPlayingRef.current = wavesurferRef.current.isPlaying();
+
         if (wasPlayingRef.current) {
-          wavesurferRef.current.pause();
+          try {
+            wavesurferRef.current.pause();
+          } catch (err) {
+            // Ne pas casser si pause échoue
+          }
         }
       }
     };
