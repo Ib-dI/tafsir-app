@@ -383,7 +383,7 @@ export const audiosTafsir = [
       {
         id: "al-baqarah-23",
         title: "Al-Baqarah - Partie 23",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/AlBaqarah-part23.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Baqarah-part23_compressed.ogg",
         timings: [
           { id: 204, startTime: 29.62, endTime: 224.51 },
           { id: 205, startTime: 224.51, endTime: 268.74 },
