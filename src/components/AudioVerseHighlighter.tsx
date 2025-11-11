@@ -95,6 +95,15 @@ const [hasManualNavigation, setHasManualNavigation] = useState(false);
   const rafIdRef = useRef<number | null>(null);
   const finishHandledRef = useRef(false);
 
+  // Type-guard pour vérifier la présence de isPlaying sans utiliser `any`
+  const hasIsPlaying = (obj: unknown): obj is { isPlaying: () => boolean } => {
+    return (
+      typeof obj === "object" &&
+      obj !== null &&
+      typeof (obj as { [key: string]: unknown })["isPlaying"] === "function"
+    );
+  };
+
   const [playSuccessSound] = useSound("/sounds/success.m4a", { volume: 0.5 });
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -795,10 +804,9 @@ useEffect(() => {
             : null;
 
         const playingViaMedia = !!mediaEl && !mediaEl.paused;
-        const playingViaWs =
-          typeof (wavesurferRef.current as any).isPlaying === "function"
-            ? (wavesurferRef.current as any).isPlaying()
-            : false;
+        const playingViaWs = hasIsPlaying(wavesurferRef.current)
+          ? wavesurferRef.current.isPlaying()
+          : false;
 
         wasPlayingRef.current = Boolean(playingViaWs || playingViaMedia || isPlaying);
 
@@ -810,6 +818,7 @@ useEffect(() => {
             wavesurferRef.current.pause();
           } catch (err) {
             // Ne pas casser si pause échoue
+            console.log(err)
           }
         }
       }
@@ -908,7 +917,7 @@ useEffect(() => {
             wavesurferRef.current.setVolume(0);
             await new Promise(resolve => setTimeout(resolve, 100));
             
-            if (wavesurferRef.current && !wavesurferRef.current.isPlaying()) {
+            if (wavesurferRef.current && hasIsPlaying(wavesurferRef.current) && !wavesurferRef.current.isPlaying()) {
               // Démarrer la lecture avec volume à 0
               await wavesurferRef.current.play();
               
