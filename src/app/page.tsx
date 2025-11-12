@@ -85,9 +85,9 @@ export default function HomePage() {
           variants={itemVariants}
           className="mx-auto mb-8 max-w-2xl text-lg text-gray-700 sm:text-xl"
         >
-          Découvrez une nouvelle façon d&apos;étudier le Coran grâce à notre
+          Étudier le sens des versets du Coran grâce à notre
           plateforme intuitive, synchronisant les audios de Tafsir en Shi-Maoré
-          avec le texte sacré.
+          avec le Coran.
         </motion.p>
 
         {/* Bouton d'appel à l'action - déplacé ici */}
