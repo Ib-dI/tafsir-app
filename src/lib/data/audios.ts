@@ -3332,7 +3332,7 @@ export const audiosTafsir = [
         title: "Al-Jathiyah - Partie 1",
         url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Jathiyah-part1_compressed.ogg",
         timings: [
-          { id: 1, startTime: 77.96, endTime: 95.88 },
+          { id: 1, startTime: 78.06, endTime: 95.88 },
           { id: 2, startTime: 95.88, endTime: 148.22 },
           { id: 3, startTime: 148.22, endTime: 214.75 },
           { id: 4, startTime: 214.75, endTime: 280.37 },
