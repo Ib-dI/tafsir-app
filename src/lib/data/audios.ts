@@ -3412,6 +3412,7 @@ export const audiosTafsir = [
       },
       {
         id: "muhammad-2",
+        title: "Muhammad - Partie 2",
         url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Mouhammad-part2.ogg",
         timings: [
           { id: 13, startTime: 75.34, endTime: 163.93 },
