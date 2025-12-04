@@ -3411,7 +3411,7 @@ export const audiosTafsir = [
       {
         id: "az-zukhruf-2",
         title: "Az-Zukhruf - Partie 2",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Az-Zukhuruf-part2.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Az-Zukhuruf-part2_v2.ogg",
         timings: [
           { id: 18, startTime: 39.06, endTime: 180.14 },
           { id: 19, startTime: 180.14, endTime: 333.84 },
