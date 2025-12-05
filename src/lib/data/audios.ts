@@ -3154,7 +3154,7 @@ export const audiosTafsir = [
       {
         id: "an-nur-4",
         title: "An-Nur - Partie 4",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nur-part4.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nur-part4-c.ogg",
         timings: [
           { id: 27, startTime: 74.61, endTime: 274.16 },
           { id: 28, startTime: 274.16, endTime: 458.10 },
@@ -3732,7 +3732,7 @@ export const audiosTafsir = [
       {
         id: "al-ahqaf-4",
         title: "Al-Ahqaf - Partie 4",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ahqaf-part4.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ahqaf-part4-c.ogg",
         timings: [
           { id: 29, startTime: 73.23, endTime: 322.94 },
           { id: 30, startTime: 322.94, endTime: 420.19 },
