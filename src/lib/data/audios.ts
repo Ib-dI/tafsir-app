@@ -3167,13 +3167,17 @@ export const audiosTafsir = [
       //   id: "an-nur-5",
       //   title: "An-Nur - Partie 5",
       //   url: "",
-      //   timings: [],
+      //   timings: [
+      // 
+      // ],
       // },
       // {
       //   id: "an-nur-6",
       //   title: "An-Nur - Partie 6",
       //   url: "",
-      //   timings: [],
+      //   timings: [
+      // 
+      // ],
       // },
       // {
       //   id: "an-nur-7",
