@@ -3154,7 +3154,7 @@ export const audiosTafsir = [
       {
         id: "an-nur-4",
         title: "An-Nur - Partie 4",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nur-part4-c.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nur-part4-c-2.ogg",
         timings: [
           { id: 27, startTime: 74.61, endTime: 274.16 },
           { id: 28, startTime: 274.16, endTime: 458.10 },
