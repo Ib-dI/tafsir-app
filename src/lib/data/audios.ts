@@ -3163,28 +3163,52 @@ export const audiosTafsir = [
           { id: 31, startTime: 877.80, endTime: 1438.91 },
         ],
       },
-      // {
-      //   id: "an-nur-5",
-      //   title: "An-Nur - Partie 5",
-      //   url: "",
-      //   timings: [
-      // 
-      // ],
-      // },
-      // {
-      //   id: "an-nur-6",
-      //   title: "An-Nur - Partie 6",
-      //   url: "",
-      //   timings: [
-      // 
-      // ],
-      // },
-      // {
-      //   id: "an-nur-7",
-      //   title: "An-Nur - Partie 7",
-      //   url: "",
-      //   timings: [],
-      // },
+      {
+        id: "an-nur-5",
+        title: "An-Nur - Partie 5",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nur-part5.ogg",
+        timings: [
+          { id: 32, startTime: 152.29, endTime: 381.07 },
+          { id: 33, startTime: 381.07, endTime: 798.28 },
+          { id: 34, startTime: 798.28, endTime: 884.29 },
+          { id: 35, startTime: 884.29, endTime: 1358.20 },
+        ],
+      },
+      {
+        id: "an-nur-6",
+        title: "An-Nur - Partie 6",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nur-part6.ogg",
+        timings: [
+          { id: 36, startTime: 43.55, endTime: 182.00 },
+          { id: 37, startTime: 182.00, endTime: 326.92 },
+          { id: 38, startTime: 326.92, endTime: 398.86 },
+          { id: 39, startTime: 398.86, endTime: 583.40 },
+          { id: 40, startTime: 583.40, endTime: 766.52 },
+          { id: 41, startTime: 766.52, endTime: 881.18 },
+          { id: 42, startTime: 881.18, endTime: 924.49 },
+          { id: 43, startTime: 924.49, endTime: 1141.37 },
+          { id: 44, startTime: 1141.37, endTime: 1214.27 },
+        ],
+      },
+      {
+        id: "an-nur-7",
+        title: "An-Nur - Partie 7",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nur-part7.ogg",
+        timings: [
+          { id: 45, startTime: 57.54, endTime: 157.88 },
+          { id: 46, startTime: 157.88, endTime: 236.79 },
+          { id: 47, startTime: 236.79, endTime: 301.43 },
+          { id: 48, startTime: 301.43, endTime: 360.07 },
+          { id: 49, startTime: 360.07, endTime: 417.31 },
+          { id: 50, startTime: 417.31, endTime: 514.26 },
+          { id: 51, startTime: 514.26, endTime: 613.14 },
+          { id: 52, startTime: 613.14, endTime: 688.08 },
+          { id: 53, startTime: 688.08, endTime: 851.00 },
+          { id: 54, startTime: 851.00, endTime: 1021.33 },
+          { id: 55, startTime: 1021.33, endTime: 1374.99 },
+          { id: 56, startTime: 1374.99, endTime: 1444.66 },
+        ],
+      },
       // {
       //   id: "an-nur-8",
       //   title: "An-Nur - Partie 8",
