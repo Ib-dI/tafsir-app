@@ -1266,7 +1266,7 @@ export const audiosTafsir = [
       {
         id: "an-nisa-24",
         title: "An-Nisa - Partie 24",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part24.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nisa-part24-v2.ogg",
         timings: [
           { id: 172, startTime: 46.67, endTime: 111.83 },
           { id: 173, startTime: 111.83, endTime: 234.21 },
@@ -2780,6 +2780,84 @@ export const audiosTafsir = [
         ],
       },
     ],
+  },
+  {
+    id: 20,
+    name_simple: "Ta-Ha",
+    parts: [
+      {
+        id: "ta-ha-1",
+        title: "Ta-Ha - Partie 1",
+        url: "",
+        timings: [],
+      },
+      {
+        id: "ta-ha-2",
+        title: "Ta-Ha - Partie 2",
+        url: "",
+        timings: [],
+      },
+      {
+        id: "ta-ha-3",
+        title: "Ta-Ha - Partie 3",
+        url: "",
+        timings: [],
+      },
+      {
+        id: "ta-ha-4",
+        title: "Ta-Ha - Partie 4",
+        url: "",
+        timings: [],
+      },
+      {
+        id: "ta-ha-5",
+        title: "Ta-Ha - Partie 5",
+        url: "",
+        timings: [],
+      },
+      // {
+      //   id: "ta-ha-6",
+      //   title: "Ta-Ha - Partie 6",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ta-ha-7",
+      //   title: "Ta-Ha - Partie 7",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ta-ha-8",
+      //   title: "Ta-Ha - Partie 8",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ta-ha-9",
+      //   title: "Ta-Ha - Partie 9",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ta-ha-10",
+      //   title: "Ta-Ha - Partie 10",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ta-ha-11",
+      //   title: "Ta-Ha - Partie 11",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ta-ha-12",
+      //   title: "Ta-Ha - Partie 12",
+      //   url: "",
+      //   timings: [],
+      // },
+    ],
   },  
   {
     id: 22,
@@ -3209,24 +3287,28 @@ export const audiosTafsir = [
           { id: 56, startTime: 1374.99, endTime: 1444.66 },
         ],
       },
-      // {
-      //   id: "an-nur-8",
-      //   title: "An-Nur - Partie 8",
-      //   url: "",
-      //   timings: [],
-      // },
-      // {
-      //   id: "an-nur-9",
-      //   title: "An-Nur - Partie 9",
-      //   url: "",
-      //   timings: [],
-      // },
-      // {
-      //   id: "an-nur-10",
-      //   title: "An-Nur - Partie 10",
-      //   url: "",
-      //   timings: [],
-      // },
+      {
+        id: "an-nur-8",
+        title: "An-Nur - Partie 8",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nur-part8.ogg",
+        timings: [
+          { id: 57, startTime: 48.96, endTime: 140.62 },
+          { id: 58, startTime: 140.62, endTime: 469.58 },
+          { id: 59, startTime: 469.58, endTime: 575.64 },
+          { id: 60, startTime: 575.64, endTime: 804.36 },
+          { id: 61, startTime: 804.36, endTime: 1287.71 },
+        ],
+      },
+      {
+        id: "an-nur-9",
+        title: "An-Nur - Partie 9",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/An-Nur-part9.ogg",
+        timings: [
+          { id: 62, startTime: 101.26, endTime: 427.46 },
+          { id: 63, startTime: 427.46, endTime: 606.04 },
+          { id: 64, startTime: 606.04, endTime: 745.87 },
+        ],
+      },
     ],
   },
   {
@@ -3884,7 +3966,7 @@ export const audiosTafsir = [
       {
         id: "al-fath-3",
         title: "Al-Fath - Partie 3",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Fath-part3.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Fath-part3-c.ogg",
         timings: [
           { id: 16, startTime: 67.93, endTime: 224.10 },
           { id: 17, startTime: 224.10, endTime: 377.81 },
