@@ -2097,7 +2097,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-15",
         title: "Al-A‘raf - Partie 15",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part15-c.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part15-co.ogg",
         timings: [
           { id: 163, startTime: 56.01, endTime: 327.04 },
           { id: 164, startTime: 327.13, endTime: 535.86 },
@@ -2112,7 +2112,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-16",
         title: "Al-A‘raf - Partie 16",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part16-c.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part16-co.ogg",
         timings: [
           { id: 171, startTime: 61.15, endTime: 250.8 },
           { id: 172, startTime: 250.8, endTime: 444.11 },
@@ -2127,7 +2127,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-17",
         title: "Al-A‘raf - Partie 17",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part17-c.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part17-co.ogg",
         timings: [
           { id: 179, startTime: 56.95, endTime: 189.95 },
           { id: 180, startTime: 189.95, endTime: 314.39 },
@@ -2143,7 +2143,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-18",
         title: "Al-A‘raf - Partie 18",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part18-c.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part18-co.ogg",
         timings: [
           { id: 187, startTime: 39.77, endTime: 186.9 },
           { id: 188, startTime: 186.9, endTime: 410.66 },
@@ -2160,7 +2160,7 @@ export const audiosTafsir = [
       {
         id: "al-araf-19",
         title: "Al-A‘raf - Partie 19",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part19-c.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-A%E2%80%98raf-part19-co.ogg",
         timings: [
           { id: 197, startTime: 82.28, endTime: 110.69 },
           { id: 198, startTime: 110.69, endTime: 220.41 },
