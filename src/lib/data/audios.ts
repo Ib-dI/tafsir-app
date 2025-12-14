@@ -3816,7 +3816,7 @@ export const audiosTafsir = [
       {
         id: "ghafir-6",
         title: "Ghafir - Partie 6",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ghafir-part6.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ghafir-part6-c.ogg",
         timings: [
           { id: 56, startTime: 65.26, endTime: 252.98 },
           { id: 57, startTime: 252.98, endTime: 339.13 },
