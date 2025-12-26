@@ -3887,12 +3887,22 @@ export const audiosTafsir = [
           { id: 20, startTime: 1315.98, endTime: 1424.25 },
         ],
       },
-      // {
-      //   id: "al-ahzab-3",
-      //   title: "Al-Ahzab - Partie 3",
-      //   url: "",
-      //   timings: [],
-      // },
+      {
+        id: "al-ahzab-3",
+        title: "Al-Ahzab - Partie 3",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ahzab-part3.ogg",
+        timings: [
+          { id: 20, startTime: 39.51, endTime: 112.88 },
+          { id: 21, startTime: 112.88, endTime: 250.49 },
+          { id: 22, startTime: 250.49, endTime: 378.65 },
+          { id: 23, startTime: 378.65, endTime: 517.43 },
+          { id: 24, startTime: 517.43, endTime: 581.18 },
+          { id: 25, startTime: 581.18, endTime: 667.63 },
+          { id: 26, startTime: 667.63, endTime: 1001.50 },
+          { id: 27, startTime: 1001.50, endTime: 1147.96 },
+          { id: 28, startTime: 1147.96, endTime: 1257.71 },
+        ],
+      },
       // {
       //   id: "al-ahzab-4",
       //   title: "Al-Ahzab - Partie 4",
