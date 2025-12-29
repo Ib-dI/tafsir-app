@@ -2267,7 +2267,7 @@ export const audiosTafsir = [
       {
         id: "al-anfal-6",
         title: "Al-Anfal - Partie 6",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Anfal-part6.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Anfal-part6-cf.ogg",
         timings: [
           { id: 49, startTime: 29.60, endTime: 116.39 },
           { id: 50, startTime: 116.39, endTime: 169.58 },
