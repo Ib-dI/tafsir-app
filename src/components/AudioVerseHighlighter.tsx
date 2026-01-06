@@ -1003,7 +1003,6 @@ useEffect(() => {
     >
       {/* Loader de restauration de progression */}
       <ProgressRestorationLoader isRestoring={isRestoringProgress} />
-      
       <ProgressIndicator
       loadProgress={loadProgress}
       clearProgressManually={clearProgressManually}
@@ -1142,7 +1141,7 @@ useEffect(() => {
         )}
         
         {/* Titre du chapitre */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -1154,13 +1153,13 @@ useEffect(() => {
           className="pointer-events-none absolute -bottom-7 left-1/2 z-10 w-fit -translate-x-1/2 -translate-y-1/2 rounded-sm bg-yellow-50/40 px-4 text-sm font-medium text-nowrap text-red-800 uppercase shadow"
         >
           {infoSourate[0]}. {infoSourate[2]}
-        </motion.div>
+        </motion.div> */}
       </div>
       
       {/* Section des versets */}
       <div
         ref={versesRef}
-        className="relative z-20 mt-5 flex-1 overflow-y-auto rounded-lg border border-gray-200 p-2"
+        className="relative z-20 mt-1 flex-1 overflow-y-auto rounded-lg border border-gray-200 p-2"
         style={{ minHeight: 0 }}
       >
         {/* Skeleton loader pendant le chargement initial */}

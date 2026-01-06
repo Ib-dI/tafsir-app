@@ -1,6 +1,7 @@
+import { VerseHighlight } from "@/types/types";
 import { motion } from "framer-motion";
 import React from "react";
-import { VerseHighlight } from "@/types/types";
+import { useMediaQuery } from "./UseMediaQuery";
 
 // Fonction pour convertir un nombre en chiffres arabes
 export const toArabicNumerals = (n: number): string => {
@@ -27,17 +28,18 @@ const VerseItem = React.memo(
     seekToVerse: (verse: VerseHighlight) => void;
   }) => {
     const isActive = verse.id === currentVerseId;
+    const isMobile = useMediaQuery("(max-width: 768px)");
 
     return (
       <motion.div
         key={`verse-${verse.id}`}
         id={`verse-${verse.id}`}
         onClick={() => !verse.noAudio && seekToVerse(verse)}
-        className={`my-1 cursor-pointer rounded-lg p-3 ${
+        className={`my-1 cursor-pointer rounded-2xl p-3 ${
           !verse.noAudio ? "hover:bg-gray-50" : ""
         } ${
           verse.noAudio
-            ? "border-[0.7px] border-l-4 border-blue-200 bg-gray-50/50"
+            ? "border-[0.7px] border-x-2 md:border-x-4 border-blue-200 bg-gray-50/50"
             : ""
         }`}
         animate={{
@@ -53,7 +55,11 @@ const VerseItem = React.memo(
               : "rgba(0, 0, 0, 0)",
           borderWidth: isActive && audioUrl ? "0.7px" : "0px",
           borderLeftWidth:
-            verse.noAudio || (isActive && audioUrl) ? "4px" : "0px",
+            verse.noAudio || (isActive && audioUrl) 
+              ? isMobile ? "2px" : "3px" : "0px",
+          borderRightWidth:
+            verse.noAudio || (isActive && audioUrl) 
+              ? isMobile ? "2px" : "3px" : "0px",
           boxShadow:
             isActive && audioUrl
               ? "0 0 10px 5px rgba(255, 193, 7, 0.5)"

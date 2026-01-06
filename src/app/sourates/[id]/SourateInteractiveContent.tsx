@@ -2,7 +2,7 @@
 
 // Importez les instances pré-initialisées depuis votre fichier src/lib/firebase.ts
 import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
-import HeaderRight from "@/components/HeaderRight"; 
+import HeaderRight from "@/components/HeaderRight";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   Select,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { auth, db } from "@/lib/firebase";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AnimatedBackButton from "./AnimatedBackButton";
 
@@ -30,21 +31,21 @@ import {
 
 import { SourateInteractiveContentProps, TafsirAudioPart } from "@/types/types";
 
-
 export default function SourateInteractiveContent({
   verses: initialVerses,
   audioParts: initialAudioParts,
   infoSourate,
   chapterId,
 }: SourateInteractiveContentProps) {
+  const router = useRouter();
   // Modification: Initialize audioParts state first
   const [audioParts] = useState(() => {
     // Créer un Map pour suivre toutes les occurrences des versets
     const verseOccurrencesMap = new Map<number, number>();
-    
+
     // Parcourir toutes les parties audio pour compter les occurrences
-    initialAudioParts.forEach(part => {
-      part.timings.forEach(timing => {
+    initialAudioParts.forEach((part) => {
+      part.timings.forEach((timing) => {
         const currentCount = verseOccurrencesMap.get(timing.id) || 0;
         verseOccurrencesMap.set(timing.id, currentCount + 1);
       });
@@ -83,31 +84,40 @@ export default function SourateInteractiveContent({
     return initialAudioParts;
   });
 
-  const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(null);
+  const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
+    null,
+  );
   const [userId, setUserId] = useState<string | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [completedPartIds, setCompletedPartIds] = useState<Set<string>>(new Set());
+  const [completedPartIds, setCompletedPartIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   const buttonRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
-  const [navigateToPartFunction, setNavigateToPartFunction] = useState<((partIndex: number) => void) | null>(null);
+  const [navigateToPartFunction, setNavigateToPartFunction] = useState<
+    ((partIndex: number) => void) | null
+  >(null);
 
   // ✅ CALLBACK pour recevoir la fonction d'AudioVerseHighlighter
-const handleNavigateToPart = useCallback((navigateFunction: (partIndex: number) => void) => {
-  console.log('📞 Fonction navigateToPart reçue d\'AudioVerseHighlighter');
-  setNavigateToPartFunction(() => navigateFunction);
-}, []);
+  const handleNavigateToPart = useCallback(
+    (navigateFunction: (partIndex: number) => void) => {
+      // console.log("📞 Fonction navigateToPart reçue d'AudioVerseHighlighter");
+      setNavigateToPartFunction(() => navigateFunction);
+    },
+    [],
+  );
 
   // Vérifier si on est sur mobile
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    
-    return () => window.removeEventListener('resize', checkIsMobile);
+    window.addEventListener("resize", checkIsMobile);
+
+    return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
   // Initialise selectedPart lorsque le composant est monté ou que les parties audio changent
@@ -255,19 +265,25 @@ const handleNavigateToPart = useCallback((navigateFunction: (partIndex: number) 
   );
 
   // Fonction de changement de partie - VERSION CORRIGÉE
- const handlePartChange = useCallback((newPartIndex: number) => {
-  console.log('🔄 SourateInteractiveContent handlePartChange appelé:', newPartIndex);
-  
-  if (navigateToPartFunction) {
-    // ✅ Utiliser la fonction optimisée d'AudioVerseHighlighter
-    navigateToPartFunction(newPartIndex);
-  } else {
-    // Fallback vers la méthode standard
-    if (newPartIndex >= 0 && newPartIndex < audioParts.length) {
-      setSelectedPart(audioParts[newPartIndex]);
-    }
-  }
-}, [navigateToPartFunction, audioParts, setSelectedPart]);
+  const handlePartChange = useCallback(
+    (newPartIndex: number) => {
+      console.log(
+        "🔄 SourateInteractiveContent handlePartChange appelé:",
+        newPartIndex,
+      );
+
+      if (navigateToPartFunction) {
+        // ✅ Utiliser la fonction optimisée d'AudioVerseHighlighter
+        navigateToPartFunction(newPartIndex);
+      } else {
+        // Fallback vers la méthode standard
+        if (newPartIndex >= 0 && newPartIndex < audioParts.length) {
+          setSelectedPart(audioParts[newPartIndex]);
+        }
+      }
+    },
+    [navigateToPartFunction, audioParts, setSelectedPart],
+  );
 
   // Modification principale : versesToDisplay pour gérer les multiples occurrences
   const versesToDisplay = selectedPart
@@ -291,18 +307,21 @@ const handleNavigateToPart = useCallback((navigateFunction: (partIndex: number) 
             }));
         } else {
           // 🔑 Grouper par verse.id
-          const verseMap = new Map<number, {
-            id: number;
-            text: string;
-            translation: string;
-            transliteration: string;
-            noAudio: boolean;
-            verset: string;
-            occurrences: { startTime: number; endTime: number }[];
-          }>();
+          const verseMap = new Map<
+            number,
+            {
+              id: number;
+              text: string;
+              translation: string;
+              transliteration: string;
+              noAudio: boolean;
+              verset: string;
+              occurrences: { startTime: number; endTime: number }[];
+            }
+          >();
 
           selectedPart.timings.forEach((timing) => {
-            const originalVerse = initialVerses.find(v => v.id === timing.id);
+            const originalVerse = initialVerses.find((v) => v.id === timing.id);
             if (!originalVerse) {
               console.warn(`Verset ${timing.id} non trouvé dans initialVerses`);
               return;
@@ -386,20 +405,11 @@ const handleNavigateToPart = useCallback((navigateFunction: (partIndex: number) 
     () => versesToDisplay.filter(Boolean),
     [selectedPart, initialVerses],
   );
-  
+
   const memoizedInfoSourate = useMemo(
     () => infoSourate.map(String),
     [infoSourate],
   );
-
-  if (!isAuthReady || !db || !userId) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 text-blue-600">
-        <LoadingSpinner size="lg" color="blue" text="
-        Initialisation de la connexion..." />
-      </div>
-    );
-  }
 
   // Définition des couleurs pour HeaderRight
   const headerColors = {
@@ -410,269 +420,408 @@ const handleNavigateToPart = useCallback((navigateFunction: (partIndex: number) 
     textSecondary: "#6b7280", // text-gray-500
   };
 
+  // Nombre total de chapitres (coran complet)
+  const TOTAL_CHAPTERS = 114;
+
+  // Indique s'il existe un chapitre précédent/suivant
+  const hasPreviousChapter = chapterId > 1;
+  const hasNextChapter = chapterId < TOTAL_CHAPTERS;
+
+  // Navigation entre chapitres depuis le header premium
+  const goToPreviousChapter = useCallback(() => {
+    if (!hasPreviousChapter) return;
+    const prevChapterId = chapterId - 1;
+    router.push(`/sourates/${prevChapterId}`);
+  }, [chapterId, hasPreviousChapter, router]);
+
+  const goToNextChapter = useCallback(() => {
+    if (!hasNextChapter) return;
+    const nextChapterId = chapterId + 1;
+    router.push(`/sourates/${nextChapterId}`);
+  }, [chapterId, hasNextChapter, router]);
+
+  const chapterNumber = Number(infoSourate[0]);
+  const chapterName = String(infoSourate[1] ?? "");
+  const chapterTranslation = String(infoSourate[2] ?? "");
+
   return (
     <div className="container mx-auto">
-      {/* HeaderRight pour la version mobile - affiché en haut de la page */}
-      <div className="flex items-center h-10 justify-between mb-4">
-        {/* AnimatedBackButton à gauche */}
-        <div className="flex-shrink-0">
-          <AnimatedBackButton />
+      {!isAuthReady || !db || !userId ? (
+        <div className="flex min-h-screen items-center justify-center bg-gray-50 text-blue-600">
+          <LoadingSpinner
+            size="lg"
+            color="blue"
+            text="
+        Initialisation de la connexion..."
+          />
         </div>
-        
-        {/* HeaderRight à droite - version mobile uniquement */}
-        {isMobile && audioParts.length > 1 && (
-          <div className="flex-shrink-0 -mt-4">
-            <HeaderRight
-              audioParts={audioParts}
-              currentPartIndex={currentPartIndex}
-              setCurrentPartIndex={handlePartChange}
-              completedPartIds={completedPartIds}
-              colors={headerColors}
-              onNextPart={handleNextPart}
-              onPreviousPart={handlePreviousPart}
-            />
-          </div>
-        )}
-      </div>
-      
-      {/* Barre de sélection des parties audio - Version Desktop */}
-      {!isMobile && audioParts.length > 1 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            type: "spring",
-            stiffness: 100,
-            damping: 10,
-            delay: 0.3,
-          }}
-          className="mb-2 flex flex-row items-center justify-center gap-2 rounded-lg bg-gray-50 p-1 md:p-2 shadow-inner"
-        >
-          {/* Flèche Gauche */}
-          <motion.button
-            onClick={handlePreviousPart}
-            disabled={!canGoPrevious}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className={`rounded-full p-2 transition-colors duration-200 ${
-              canGoPrevious
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "cursor-not-allowed bg-gray-300 text-gray-500"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2.5"
-              stroke="currentColor"
-              className="h-4 w-4 md:h-6 md:w-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-          </motion.button>
+      ) : (
+        <>
+          {/* Header premium avec navigation entre chapitres */}
+          <div className="mb-2 flex flex-col gap-2">
+            <div className="hidden sm:inline">
+              {/* AnimatedBackButton à gauche */}
+              <AnimatedBackButton />
+            </div>
 
-          {/* Select universel */}
-          <div className="flex w-full flex-grow items-center justify-center gap-2">
-            <Select
-              value={selectedPart?.id || ""}
-              onValueChange={(value) => {
-                const part = audioParts.find((p) => p.id === value);
-                if (part) {
-                  const partIndex = audioParts.findIndex((p) => p.id === value);
-                  handlePartChange(partIndex);
-                }
+            {/* Barre de navigation chapitres - UI premium */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 120,
+                damping: 12,
+                delay: 0.15,
               }}
+              className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-orange-400 via-yellow-300 to-amber-400 p-[1px] shadow-xs"
             >
-              <SelectTrigger className="w-full max-w-[220px] md:max-w-[260px]">
-                <SelectValue placeholder="Sélectionner une partie" />
-              </SelectTrigger>
-              <SelectContent className="font-sans">
-                {audioParts.map((part, index) => {
-                  // Compter les versets uniques et les occurrences multiples
-                  const uniqueVerses = new Set(part.timings.map(t => t.id));
-                  const totalOccurrences = part.timings.length;
-                  const hasMultipleOccurrences = totalOccurrences > uniqueVerses.size;
-                  
-                  return (
-                    <SelectItem
-                      key={part.id}
-                      value={part.id}
-                      className={
-                        part.id === "remaining-verses"
-                          ? "font-medium text-blue-600"
-                          : ""
-                      }
-                    >
-                      <span className="flex items-center gap-2">
-                        {part.id === "remaining-verses" ? (
-                          <>
-                            {part.title} ({part.timings.length})
-                            <span className="text-xs text-blue-500">
-                              (sans audio)
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            {part.title || `Partie ${index + 1}`}
-                            {hasMultipleOccurrences && (
-                              <span className="text-xs text-purple-600 bg-purple-100 px-1 rounded">
-                                +occurrences
-                              </span>
-                            )}
-                            {completedPartIds.has(part.id) && (
-                              <span className="z-10 inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-green-500 shadow">
-                                <svg
-                                  width="8"
-                                  height="8"
-                                  viewBox="0 0 20 20"
-                                  fill="none"
-                                >
-                                  <path
-                                    d="M5 10.5L8.5 14L15 7"
-                                    stroke="white"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </>
-                        )}
+              <div className="flex w-full items-center justify-between rounded-2xl bg-white/95 px-2 py-1.5 backdrop-blur md:px-4 md:py-2">
+                {/* Bouton chapitre précédent */}
+                <button
+                  onClick={goToPreviousChapter}
+                  disabled={!hasPreviousChapter}
+                  className={`inline-flex items-center gap-1.5 border border-orange-300 rounded-full px-3 py-1.5 text-xs font-medium transition-all md:px-4 md:py-2 md:text-sm ${
+                    hasPreviousChapter
+                      ? "bg-orange-100 text-orange-800 hover:-translate-x-0.5 hover:bg-orange-200"
+                      : "cursor-not-allowed bg-orange-50 text-orange-300"
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-4 w-4 md:h-5 md:w-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 19.5L8.25 12l7.5-7.5"
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Chapitre précédent</span>
+                  <span className="sm:hidden">Préc.</span>
+                </button>
+
+                {/* Nom du chapitre centré */}
+                <div className="flex flex-col items-center text-center">
+                  <span className="text-[11px] tracking-[0.18em] text-gray-700 uppercase">
+                    Chapitre {chapterNumber}
+                  </span>
+                  <div className="flex items-center justify-center gap-1 md:flex-col md:gap-0">
+                    <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-sm font-semibold text-transparent md:text-base">
+                      {chapterName || `Sourate ${chapterNumber}`}
+                    </span>
+                    {isMobile && (
+                      <span className="text-gray-500 md:text-xs">|</span>
+                    )}
+                    {chapterTranslation && (
+                      <span className="text-red-800 md:text-xs">
+                        {chapterTranslation}
                       </span>
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+                    )}
+                  </div>
+                </div>
+
+                {/* Bouton chapitre suivant */}
+                <button
+                  onClick={goToNextChapter}
+                  disabled={!hasNextChapter}
+                  className={`inline-flex items-center gap-1.5 border border-amber-300 rounded-full px-3 py-1.5 text-xs font-medium transition-all md:px-4 md:py-2 md:text-sm ${
+                    hasNextChapter
+                      ? "bg-amber-100 text-amber-800 hover:translate-x-0.5 hover:bg-amber-200"
+                      : "cursor-not-allowed bg-amber-50 text-amber-300"
+                  }`}
+                >
+                  <span className="hidden sm:inline">Chapitre suivant</span>
+                  <span className="sm:hidden">Suiv.</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-4 w-4 md:h-5 md:w-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </motion.div>
           </div>
 
-          {/* Flèche Droite */}
-          <motion.button
-            onClick={handleNextPart}
-            disabled={!canGoNext}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className={`rounded-full p-2 transition-colors duration-200 ${
-              canGoNext
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "cursor-not-allowed bg-gray-300 text-gray-500"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2.5"
-              stroke="currentColor"
-              className="h-4 w-4 md:h-6 md:w-6"
+          {/* Barre de sélection des parties audio - Version Desktop */}
+          {!isMobile && audioParts.length > 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 10,
+                delay: 0.3,
+              }}
+              className="mb-2 flex flex-row items-center justify-center gap-2 rounded-lg bg-gray-50 p-1 shadow-inner md:p-2"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </motion.button>
-        </motion.div>
-      )}
-
-      {/* Affichage de l'ID utilisateur pour débogage */}
-      {isAuthReady && !userId && (
-        <div className="mb-2 text-center text-xs text-red-500">
-          Erreur : Impossible d&#39;obtenir l&#39;ID utilisateur. Progression
-          non sauvegardée. Vérifiez votre configuration Firebase et vos règles
-          de sécurité.
-        </div>
-      )}
-
-      {/* Pastille de complétion */}
-      {selectedPart && selectedPart.id !== "remaining-verses" && (
-        <div className="mb-2 flex justify-center">
-          <span
-            className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
-              completedPartIds.has(selectedPart.id)
-                ? "bg-green-100 text-green-800"
-                : "bg-gray-200 text-gray-600"
-            }`}
-          >
-            {completedPartIds.has(selectedPart.id) ? (
-              <>
+              {/* Flèche Gauche */}
+              <motion.button
+                onClick={handlePreviousPart}
+                disabled={!canGoPrevious}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className={`rounded-full p-2 transition-colors duration-200 ${
+                  canGoPrevious
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    : "cursor-not-allowed bg-gray-300 text-gray-500"
+                }`}
+              >
                 <svg
-                  className="mr-1 h-4 w-4 text-green-500"
+                  xmlns="http://www.w3.org/2000/svg"
                   fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
                   viewBox="0 0 24 24"
+                  strokeWidth="2.5"
+                  stroke="currentColor"
+                  className="h-4 w-4 md:h-6 md:w-6"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
+                    d="M15.75 19.5L8.25 12l7.5-7.5"
                   />
                 </svg>
-                Partie complétée
-              </>
-            ) : (
-              <>
-                <svg
-                  className="mr-1 h-4 w-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                </svg>
-                Partie non complétée
-              </>
-            )}
-          </span>
-        </div>
-      )}
+              </motion.button>
 
-      {/* Le composant AudioVerseHighlighter */}
-      <div className="container mx-auto">
-        <AudioVerseHighlighter
-          key={selectedPart?.id}
-          audioUrl={currentAudioUrl}
-          currentChapterId={chapterId}
-          verses={memoizedVersesToDisplay}
-          infoSourate={memoizedInfoSourate}
-          onAudioFinished={handleAudioFinished}
-          currentPartIndex={currentPartIndex}
-          totalParts={audioParts.length}
-          onPartChange={handlePartChange}
-          onNavigateToPart={handleNavigateToPart}
-        >
-          <div className="sticky top-[-8px] md:top-[-10px] z-20 flex w-full items-center justify-center border-b border-gray-100 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-6 text-center text-gray-800 shadow backdrop-blur-lg md:min-h-[3.8rem] md:text-5xl">
-            <h1 className="font-sura absolute z-30 flex h-full w-full items-center justify-center">
-              <div className="mx-auto flex h-[90%] min-h-0 w-fit max-w-3xl items-center justify-center rounded-lg md:rounded-2xl bg-white/90 px-3 py-3 shadow md:px-8">
-                <span
-                  className="bg-clip-text text-4xl leading-normal font-medium text-gray-800 md:text-5xl"
-                  style={{
-                    textShadow: "0 2px 6px rgba(0,0,0,0.18)",
+              {/* Select universel */}
+              <div className="flex w-full flex-grow items-center justify-center gap-2">
+                <Select
+                  value={selectedPart?.id || ""}
+                  onValueChange={(value) => {
+                    const part = audioParts.find((p) => p.id === value);
+                    if (part) {
+                      const partIndex = audioParts.findIndex(
+                        (p) => p.id === value,
+                      );
+                      handlePartChange(partIndex);
+                    }
                   }}
                 >
-                  {`surah${Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}${Number(infoSourate[0])}`}surah-icon
+                  <SelectTrigger className="w-full max-w-[220px] md:max-w-[260px]">
+                    <SelectValue placeholder="Sélectionner une partie" />
+                  </SelectTrigger>
+                  <SelectContent className="font-sans">
+                    {audioParts.map((part, index) => {
+                      // Compter les versets uniques et les occurrences multiples
+                      const uniqueVerses = new Set(
+                        part.timings.map((t) => t.id),
+                      );
+                      const totalOccurrences = part.timings.length;
+                      const hasMultipleOccurrences =
+                        totalOccurrences > uniqueVerses.size;
+
+                      return (
+                        <SelectItem
+                          key={part.id}
+                          value={part.id}
+                          className={
+                            part.id === "remaining-verses"
+                              ? "font-medium text-blue-600"
+                              : ""
+                          }
+                        >
+                          <span className="flex items-center gap-2">
+                            {part.id === "remaining-verses" ? (
+                              <>
+                                {part.title} ({part.timings.length})
+                                <span className="text-xs text-blue-500">
+                                  (sans audio)
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                {part.title || `Partie ${index + 1}`}
+                                {hasMultipleOccurrences && (
+                                  <span className="rounded bg-purple-100 px-1 text-xs text-purple-600">
+                                    +occurrences
+                                  </span>
+                                )}
+                                {completedPartIds.has(part.id) && (
+                                  <span className="z-10 inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-green-500 shadow">
+                                    <svg
+                                      width="8"
+                                      height="8"
+                                      viewBox="0 0 20 20"
+                                      fill="none"
+                                    >
+                                      <path
+                                        d="M5 10.5L8.5 14L15 7"
+                                        stroke="white"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                    </svg>
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Flèche Droite */}
+              <motion.button
+                onClick={handleNextPart}
+                disabled={!canGoNext}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className={`rounded-full p-2 transition-colors duration-200 ${
+                  canGoNext
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    : "cursor-not-allowed bg-gray-300 text-gray-500"
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2.5"
+                  stroke="currentColor"
+                  className="h-4 w-4 md:h-6 md:w-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                  />
+                </svg>
+              </motion.button>
+            </motion.div>
+          )}
+          <div className="flex items-center justify-between py-1">
+            {/* Pastille de complétion */}
+            {selectedPart && selectedPart.id !== "remaining-verses" && (
+              <div className="flex w-full items-center justify-center">
+                <span
+                  className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
+                    completedPartIds.has(selectedPart.id)
+                      ? "bg-green-100 text-green-800"
+                      : "bg-gray-200 text-gray-600"
+                  }`}
+                >
+                  {completedPartIds.has(selectedPart.id) ? (
+                    <>
+                      <svg
+                        className="mr-1 h-4 w-4 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      Partie complétée
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="mr-1 h-4 w-4 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                        />
+                      </svg>
+                      Partie non complétée
+                    </>
+                  )}
                 </span>
               </div>
-            </h1>
+            )}
+            <div className="flex items-center justify-center">
+              {/* Navigation des parties audio - version mobile uniquement */}
+              {isMobile && audioParts.length > 1 && (
+                <div className="flex w-full items-center">
+                  <HeaderRight
+                    audioParts={audioParts}
+                    currentPartIndex={currentPartIndex}
+                    setCurrentPartIndex={handlePartChange}
+                    completedPartIds={completedPartIds}
+                    colors={headerColors}
+                    onNextPart={handleNextPart}
+                    onPreviousPart={handlePreviousPart}
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        </AudioVerseHighlighter>
-      </div>
+
+          {/* Affichage de l'ID utilisateur pour débogage */}
+          {isAuthReady && !userId && (
+            <div className="mb-2 text-center text-xs text-red-500">
+              Erreur : Impossible d&#39;obtenir l&#39;ID utilisateur.
+              Progression non sauvegardée. Vérifiez votre configuration Firebase
+              et vos règles de sécurité.
+            </div>
+          )}
+
+          {/* Le composant AudioVerseHighlighter */}
+          <div className="container mx-auto">
+            <AudioVerseHighlighter
+              key={selectedPart?.id}
+              audioUrl={currentAudioUrl}
+              currentChapterId={chapterId}
+              totalChapters={TOTAL_CHAPTERS}
+              verses={memoizedVersesToDisplay}
+              infoSourate={memoizedInfoSourate}
+              onAudioFinished={handleAudioFinished}
+              hasNextChapter={hasNextChapter}
+              hasPreviousChapter={hasPreviousChapter}
+              currentPartIndex={currentPartIndex}
+              totalParts={audioParts.length}
+              onPartChange={handlePartChange}
+              onNavigateToPart={handleNavigateToPart}
+            >
+              <div className="sticky top-[-8px] z-20 flex w-full items-center justify-center border-b border-gray-100 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-2 text-center text-gray-800 shadow backdrop-blur h-[2.7rem] md:top-[-10px] md:h-[3.8rem] md:text-5xl">
+                <div className="font-sura absolute z-30 flex h-full w-full items-center justify-center">
+                  <div className="mx-auto flex h-[90%] min-h-0 w-fit max-w-3xl items-center justify-center rounded-lg bg-white/90 px-3 py-3 shadow md:rounded-2xl md:px-5">
+                    <h1
+                      className="bg-clip-text text-4xl leading-normal font-medium text-gray-800 md:text-5xl"
+                      style={{
+                        textShadow: "0 2px 6px rgba(0,0,0,0.18)",
+                      }}
+                    >
+                      {`surah${Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}${Number(infoSourate[0])}`}
+                      surah-icon
+                    </h1>
+                  </div>
+                </div>
+              </div>
+            </AudioVerseHighlighter>
+          </div>
+        </>
+      )}
     </div>
   );
 }

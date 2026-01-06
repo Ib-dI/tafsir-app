@@ -22,7 +22,7 @@ export default function AnimatedBackButton() {
         <motion.button
           whileHover={{ scale: 1.05, backgroundColor: "#BFDBFE" }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 rounded-full bg-blue-100 px-4 py-2 text-blue-700 shadow-sm transition-colors duration-200 hover:bg-blue-200"
+          className="flex items-center gap-2 rounded-full bg-blue-100 md:px-4 px-3 py-2 text-blue-700 shadow-sm transition-colors duration-200 hover:bg-blue-200"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
