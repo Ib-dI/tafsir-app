@@ -8,7 +8,7 @@
  * - Utilise font-display: swap dans globals.css pour un rendu fluide
  */
 
-const DEFAULT_LOCALE = 'fr';
+const DEFAULT_LOCALE = 'fr' as const;
 
 // Seulement la police la plus critique et la plus légère (woff2)
 // Les polices TTF sont lourdes et ralentissent le chargement initial
@@ -17,6 +17,8 @@ const CRITICAL_FONTS = {
     { type: 'font/woff2', location: '/fonts/UthmanicHafs1Ver18.woff2' },
   ],
 } as const;
+
+type SupportedLocale = keyof typeof CRITICAL_FONTS;
 
 interface FontPreloaderProps {
   locale?: string;
@@ -27,7 +29,8 @@ interface FontPreloaderProps {
  * Les autres polices se chargent à la demande via font-display: swap
  */
 const FontPreloader: React.FC<FontPreloaderProps> = ({ locale = DEFAULT_LOCALE }) => {
-  const toBePreLoadedFonts = CRITICAL_FONTS[locale] || CRITICAL_FONTS[DEFAULT_LOCALE];
+  const validLocale = (locale in CRITICAL_FONTS ? locale : DEFAULT_LOCALE) as SupportedLocale;
+  const toBePreLoadedFonts = CRITICAL_FONTS[validLocale];
 
   return (
     <>
