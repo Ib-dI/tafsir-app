@@ -31,6 +31,14 @@ export default function RootLayout({
     <html suppressHydrationWarning lang="fr">
       <head>
         <link rel="icon" href="/fingerprint.webp" type="image/webp" />
+        {/* Précharge uniquement la police critique Uthmanic (woff2, la plus légère) */}
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          href="/fonts/UthmanicHafs1Ver18.woff2"
+          crossOrigin="anonymous"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-zinc-200 antialiased`}
