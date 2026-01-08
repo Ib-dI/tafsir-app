@@ -1102,8 +1102,14 @@ useEffect(() => {
               {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </button>
 
-            <div className="spacing-[0.86px] font-mono text-xs whitespace-nowrap text-gray-600 md:text-sm">
-              {infoSourate[0]} {infoSourate[1]}
+            <div className="flex items-center text-gray-600 gap-2">
+              <span
+                className="font-sura -mt-1 text-xl"
+              >surah{Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}{infoSourate[0]}</span>
+              <span>|</span>
+              <div className="spacing-[0.86px] font-mono text-xs whitespace-nowrap md:text-sm">
+                {infoSourate[0]}.{infoSourate[1]}
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
