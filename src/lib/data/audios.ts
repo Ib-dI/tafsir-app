@@ -3100,6 +3100,70 @@ export const audiosTafsir = [
     ],
   },
   {
+    id: 13,
+    name_simple: "Ar-Ra'd",
+    parts: [
+      {
+        id: "ar-rad-1",
+        title: "Ar-Ra'd - Partie 1",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ar-Ra'd-part1.ogg",
+        timings: [
+          { id: 1, startTime: 113.25, endTime: 217.22 },
+          { id: 2, startTime: 217.22, endTime: 474.58 },
+          { id: 3, startTime: 474.58, endTime: 660.38 },
+          { id: 4, startTime: 660.38, endTime: 954.30 },
+          { id: 5, startTime: 954.30, endTime: 1132.25 },
+          { id: 6, startTime: 1132.25, endTime: 1336.02 },
+        ],
+      },
+      {
+        id: "ar-rad-2",
+        title: "Ar-Ra'd - Partie 2",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ar-Ra'd-part2.ogg",
+        timings: [
+          { id: 7, startTime: 34.95, endTime: 158.34 },
+          { id: 8, startTime: 158.34, endTime: 272.19 },
+          { id: 9, startTime: 272.19, endTime: 305.36 },
+          { id: 10, startTime: 305.36, endTime: 430.09 },
+          { id: 11, startTime: 430.09, endTime: 801.70 },
+          { id: 13, startTime: 801.70, endTime: 1064.10 },
+          { id: 14, startTime: 1064.10, endTime: 1211.51 },
+          { id: 15, startTime: 1211.51, endTime: 1344.95 },
+        ],
+      },
+      // {
+      //   id: "ar-rad-3",
+      //   title: "Ar-Ra'd - Partie 3",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ar-rad-4",
+      //   title: "Ar-Ra'd - Partie 4",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ar-rad-5",
+      //   title: "Ar-Ra'd - Partie 5",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ar-rad-6",
+      //   title: "Ar-Ra'd - Partie 6",
+      //   url: "",
+      //   timings: [],
+      // },
+      // {
+      //   id: "ar-rad-7",
+      //   title: "Ar-Ra'd - Partie 7",
+      //   url: "",
+      //   timings: [],
+      // },
+    ],
+  },  
+  {
     id: 18,
     name_simple: "Al-Kahf",
     parts: [
