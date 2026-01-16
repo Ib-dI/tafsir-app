@@ -4125,13 +4125,13 @@ export const audiosTafsir = [
       {
         id: "al-furqan-6",
         title: "Al-Furqan - Partie 6",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Furqan-part6-c.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Furqan-part6-cf.ogg",
         timings: [
           { id: 68, startTime: 44.98, endTime: 141.64 },
           { id: 69, startTime: 141.64, endTime: 174.87 },
           { id: 70, startTime: 174.87, endTime: 296.58 },
-          { id: 71, startTime: 296.58, endTime: 388.82 },
-          { id: 72, startTime: 388.82, endTime: 452.12 },
+          { id: 71, startTime: 296.58, endTime: 345.57 },
+          { id: 72, startTime: 345.57, endTime: 452.12 },
           { id: 73, startTime: 452.12, endTime: 532.42 },
           { id: 74, startTime: 532.42, endTime: 673.70 },
           { id: 75, startTime: 673.70, endTime: 729.61 },
