@@ -3188,12 +3188,23 @@ export const audiosTafsir = [
     id: 14,
     name_simple: "Ibrahim",
     parts: [
-      // {
-      //   id: "ibrahim-1",
-      //   title: "Ibrahim - Partie 1",
-      //   url: "",
-      //   timings: [],
-      // },
+      {
+        id: "ibrahim-1",
+        title: "Ibrahim - Partie 1",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ibrahim-part1.ogg",
+        timings: [
+          { id: 1, startTime: 75.79, endTime: 199.88 },
+          { id: 2, startTime: 199.88, endTime: 268.22 },
+          { id: 3, startTime: 268.22, endTime: 362.86 },
+          { id: 4, startTime: 362.86, endTime: 466.11 },
+          { id: 5, startTime: 466.11, endTime: 626.27 },
+          { id: 6, startTime: 626.27, endTime: 807.52 },
+          { id: 7, startTime: 807.52, endTime: 905.48 },
+          { id: 8, startTime: 905.48, endTime: 1032.14 },
+          { id: 9, startTime: 1032.14, endTime: 1180.06 },
+          { id: 10, startTime: 1180.06, endTime: 1435.10 },
+        ],
+      },
       // {
       //   id: "ibrahim-2",
       //   title: "Ibrahim - Partie 2",
