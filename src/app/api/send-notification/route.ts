@@ -13,23 +13,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Récupérer tous les tokens
-    const tokens = await getAllFCMTokens();
-
-    if (tokens.length === 0) {
-      return NextResponse.json(
-        { error: 'Aucun utilisateur inscrit aux notifications' },
-        { status: 404 }
-      );
-    }
-
-    // Préparer la requête Firebase
     const serverKey = process.env.FIREBASE_SERVER_KEY;
 
     if (!serverKey) {
       return NextResponse.json(
         { error: 'FIREBASE_SERVER_KEY non configurée' },
         { status: 500 }
+      );
+    }
+
+    // Récupérer tous les tokens (après validation : pas d’appel I/O si la clé manque)
+    const tokens = await getAllFCMTokens();
+
+    if (tokens.length === 0) {
+      return NextResponse.json(
+        { error: 'Aucun utilisateur inscrit aux notifications' },
+        { status: 404 }
       );
     }
 

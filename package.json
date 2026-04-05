@@ -2,6 +2,7 @@
   "name": "tafsir-app",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "next dev --turbopack",
     "dev-ht": "next dev --experimental-https",
@@ -12,7 +13,6 @@
   "dependencies": {
     "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.3",
-    "axios": "^1.10.0",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

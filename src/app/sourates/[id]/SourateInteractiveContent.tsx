@@ -1,7 +1,6 @@
 "use client";
 
 // Importez les instances pré-initialisées depuis votre fichier src/lib/firebase.ts
-import AudioVerseHighlighter from "@/components/AudioVerseHighlighter";
 import HeaderRight from "@/components/HeaderRight";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {
@@ -14,6 +13,7 @@ import {
 import { auth, db } from "@/lib/firebase";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AnimatedBackButton from "./AnimatedBackButton";
 
@@ -30,6 +30,51 @@ import {
 } from "firebase/firestore";
 
 import { SourateInteractiveContentProps, TafsirAudioPart } from "@/types/types";
+import type { Verse } from "@/types/types";
+import { useMediaQuery } from "@/components/UseMediaQuery";
+
+const AudioVerseHighlighter = dynamic(
+  () => import("@/components/AudioVerseHighlighter"),
+  {
+    loading: () => (
+      <div className="flex min-h-[40vh] w-full items-center justify-center py-12">
+        <LoadingSpinner
+          size="lg"
+          color="blue"
+          text="Chargement du lecteur audio…"
+          className="gap-4"
+        />
+      </div>
+    ),
+  },
+);
+
+function buildAudioParts(
+  initialAudioParts: TafsirAudioPart[],
+  initialVerses: Verse[],
+): TafsirAudioPart[] {
+  const coveredVerseIds = new Set(
+    initialAudioParts.flatMap((part) => part.timings.map((t) => t.id)),
+  );
+  const remainingVerses = initialVerses.filter(
+    (verse) => !coveredVerseIds.has(verse.id),
+  );
+  if (remainingVerses.length > 0) {
+    const newPart: TafsirAudioPart = {
+      id: "remaining-verses",
+      title: `Partie ${initialAudioParts.length + 1}`,
+      url: "",
+      timings: remainingVerses.map((verse) => ({
+        id: verse.id,
+        startTime: 0,
+        endTime: 0,
+        occurrence: 1,
+      })),
+    };
+    return [...initialAudioParts, newPart];
+  }
+  return initialAudioParts;
+}
 
 export default function SourateInteractiveContent({
   verses: initialVerses,
@@ -38,94 +83,31 @@ export default function SourateInteractiveContent({
   chapterId,
 }: SourateInteractiveContentProps) {
   const router = useRouter();
-  // Modification: Initialize audioParts state first
-  const [audioParts] = useState(() => {
-    // Créer un Map pour suivre toutes les occurrences des versets
-    const verseOccurrencesMap = new Map<number, number>();
-
-    // Parcourir toutes les parties audio pour compter les occurrences
-    initialAudioParts.forEach((part) => {
-      part.timings.forEach((timing) => {
-        const currentCount = verseOccurrencesMap.get(timing.id) || 0;
-        verseOccurrencesMap.set(timing.id, currentCount + 1);
-      });
-    });
-
-    // Créer un Set avec tous les IDs de versets déjà couverts
-    const coveredVerseIds = new Set(
-      initialAudioParts.flatMap((part) =>
-        part.timings.map((timing) => timing.id),
-      ),
-    );
-
-    // Trouver les versets qui ne sont pas dans les parties existantes
-    const remainingVerses = initialVerses.filter(
-      (verse) => !coveredVerseIds.has(verse.id),
-    );
-
-    // Si on trouve des versets restants, créer une nouvelle partie
-    if (remainingVerses.length > 0) {
-      const newPart = {
-        id: "remaining-verses",
-        title: `Partie ${initialAudioParts.length + 1}`,
-        url: "", // pas d'audio
-        timings: remainingVerses.map((verse) => ({
-          id: verse.id,
-          startTime: 0,
-          endTime: 0,
-          occurrence: 1,
-        })),
-      };
-
-      // Retourner le tableau avec la nouvelle partie ajoutée
-      return [...initialAudioParts, newPart];
-    }
-
-    return initialAudioParts;
-  });
+  const [audioParts] = useState(() =>
+    buildAudioParts(initialAudioParts, initialVerses),
+  );
 
   const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
-    null,
+    () => buildAudioParts(initialAudioParts, initialVerses)[0] ?? null,
   );
   const [userId, setUserId] = useState<string | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 767px)");
   const [completedPartIds, setCompletedPartIds] = useState<Set<string>>(
     new Set(),
   );
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [isVerseContainerAtTop, setIsVerseContainerAtTop] = useState(true);
 
   const buttonRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
-  const [navigateToPartFunction, setNavigateToPartFunction] = useState<
-    ((partIndex: number) => void) | null
-  >(null);
+  const navigateToPartRef = useRef<((partIndex: number) => void) | null>(null);
 
-  // ✅ CALLBACK pour recevoir la fonction d'AudioVerseHighlighter
   const handleNavigateToPart = useCallback(
     (navigateFunction: (partIndex: number) => void) => {
-      // console.log("📞 Fonction navigateToPart reçue d'AudioVerseHighlighter");
-      setNavigateToPartFunction(() => navigateFunction);
+      navigateToPartRef.current = navigateFunction;
     },
     [],
   );
-
-  // Vérifier si on est sur mobile
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkIsMobile();
-    window.addEventListener("resize", checkIsMobile);
-
-    return () => window.removeEventListener("resize", checkIsMobile);
-  }, []);
-
-  // Initialise selectedPart lorsque le composant est monté ou que les parties audio changent
-  useEffect(() => {
-    if (audioParts.length > 0 && !selectedPart) {
-      setSelectedPart(audioParts[0]);
-    }
-  }, [audioParts, selectedPart]);
 
   // Défilement vers le haut de la page lorsque la partie sélectionnée change
   useEffect(() => {
@@ -224,7 +206,7 @@ export default function SourateInteractiveContent({
     );
 
     return () => unsubscribe();
-  }, [isAuthReady, db, userId, chapterId]);
+  }, [isAuthReady, userId, chapterId]);
 
   // Fonction pour marquer une partie comme complétée
   const markPartAsCompleted = useCallback(
@@ -261,28 +243,33 @@ export default function SourateInteractiveContent({
         console.error("Error marking part as completed:", error);
       }
     },
-    [db, userId],
+    [userId],
   );
 
-  // Fonction de changement de partie - VERSION CORRIGÉE
-  const handlePartChange = useCallback(
+  // Setter pur — passé comme onPartChange à AudioVerseHighlighter.
+  // Ne passe PAS par navigateToPartRef pour éviter la récursion :
+  // navigateToPart (AVH) → onPartChange → setPartByIndex → setSelectedPart ✓
+  const setPartByIndex = useCallback(
     (newPartIndex: number) => {
-      console.log(
-        "🔄 SourateInteractiveContent handlePartChange appelé:",
-        newPartIndex,
-      );
-
-      if (navigateToPartFunction) {
-        // ✅ Utiliser la fonction optimisée d'AudioVerseHighlighter
-        navigateToPartFunction(newPartIndex);
-      } else {
-        // Fallback vers la méthode standard
-        if (newPartIndex >= 0 && newPartIndex < audioParts.length) {
-          setSelectedPart(audioParts[newPartIndex]);
-        }
+      if (newPartIndex >= 0 && newPartIndex < audioParts.length) {
+        setSelectedPart(audioParts[newPartIndex]);
       }
     },
-    [navigateToPartFunction, audioParts, setSelectedPart],
+    [audioParts],
+  );
+
+  // Handler complet pour les boutons/select du parent.
+  // Passe par navigateToPartRef si disponible (pour que AVH fasse son cleanup
+  // hasManualNavigation + clearProgress), sinon bascule sur setPartByIndex.
+  const handlePartChange = useCallback(
+    (newPartIndex: number) => {
+      if (navigateToPartRef.current) {
+        navigateToPartRef.current(newPartIndex);
+      } else {
+        setPartByIndex(newPartIndex);
+      }
+    },
+    [setPartByIndex],
   );
 
   // Modification principale : versesToDisplay pour gérer les multiples occurrences
@@ -307,6 +294,7 @@ export default function SourateInteractiveContent({
             }));
         } else {
           // 🔑 Grouper par verse.id
+          const verseById = new Map(initialVerses.map((v) => [v.id, v]));
           const verseMap = new Map<
             number,
             {
@@ -321,7 +309,7 @@ export default function SourateInteractiveContent({
           >();
 
           selectedPart.timings.forEach((timing) => {
-            const originalVerse = initialVerses.find((v) => v.id === timing.id);
+            const originalVerse = verseById.get(timing.id);
             if (!originalVerse) {
               console.warn(`Verset ${timing.id} non trouvé dans initialVerses`);
               return;
@@ -378,32 +366,19 @@ export default function SourateInteractiveContent({
     }
   }, [canGoPrevious, currentPartIndex, handlePartChange]);
 
-  // Callback de fin d'audio modifié
+  // Appelé par AVH à la fin de l'audio — marque uniquement la complétion.
+  // La navigation vers la partie suivante est gérée par le handler `finish`
+  // interne d'AVH (via onPartChange = setPartByIndex).
   const handleAudioFinished = useCallback(() => {
     if (!selectedPart) return;
-
-    // Marquer comme complété si ce n'est pas déjà fait
     if (!completedPartIds.has(selectedPart.id)) {
       markPartAsCompleted(chapterId, selectedPart.id);
     }
-
-    // Passer à la suite
-    const currentIndex = audioParts.findIndex((p) => p.id === selectedPart.id);
-    if (currentIndex !== -1 && currentIndex < audioParts.length - 1) {
-      handlePartChange(currentIndex + 1);
-    }
-  }, [
-    selectedPart,
-    chapterId,
-    completedPartIds,
-    audioParts,
-    markPartAsCompleted,
-    handlePartChange,
-  ]);
+  }, [selectedPart, chapterId, completedPartIds, markPartAsCompleted]);
 
   const memoizedVersesToDisplay = useMemo(
     () => versesToDisplay.filter(Boolean),
-    [selectedPart, initialVerses],
+    [versesToDisplay],
   );
 
   const memoizedInfoSourate = useMemo(
@@ -800,10 +775,12 @@ export default function SourateInteractiveContent({
               hasPreviousChapter={hasPreviousChapter}
               currentPartIndex={currentPartIndex}
               totalParts={audioParts.length}
-              onPartChange={handlePartChange}
+              onPartChange={setPartByIndex}
               onNavigateToPart={handleNavigateToPart}
+              onPlayingChange={setIsAudioPlaying}
+              onAtTopChange={setIsVerseContainerAtTop}
             >
-              <div className="sticky top-[-8px] z-20 flex w-full items-center justify-center border-b border-gray-100 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-2 text-center text-gray-800 shadow backdrop-blur h-[2.7rem] md:top-[-10px] md:h-[3.8rem] md:text-5xl">
+              <div className={`sticky top-[-8px] z-20 flex w-full items-center justify-center border-b border-gray-100 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-2 text-center text-gray-800 shadow backdrop-blur h-[2.7rem] md:top-[-10px] md:h-[3.8rem] md:text-5xl transition-all duration-300 ${(isAudioPlaying || !isVerseContainerAtTop) ? "opacity-0 pointer-events-none -translate-y-full" : "opacity-100 translate-y-0"}`}>
                 <div className="font-sura absolute z-30 flex h-full w-full items-center justify-center">
                   <div className="mx-auto flex h-[90%] min-h-0 w-fit max-w-3xl items-center justify-center rounded-lg bg-white/90 px-3 py-3 shadow md:rounded-2xl md:px-5">
                     <h1

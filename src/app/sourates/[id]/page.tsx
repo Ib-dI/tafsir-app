@@ -12,14 +12,6 @@ export default async function Sourate({ params }: SouratePageProps) {
   const { id } = resolvedParams; // Accède directement à l'ID
   const chapterId = Number(id); // Convertir l'ID de la sourate en nombre
   const data = await getSimpleChapterVerses(id); // Récupère tous les versets
-  const verses = data?.verses || [];
-  const infoSourate = data
-    ? [data.id, data.transliteration, data.translation]
-    : [0, ""];
-
-  // Trouve toutes les données audio pour cette sourate
-  const currentAudioTafsir = audiosTafsir.find((a) => a.id === chapterId);
-  const audioParts = currentAudioTafsir?.parts || [];
 
   if (!data) {
     return (
@@ -28,6 +20,13 @@ export default async function Sourate({ params }: SouratePageProps) {
       </div>
     );
   }
+
+  const verses = data.verses || [];
+  const infoSourate = [data.id, data.transliteration, data.translation];
+
+  // Trouve toutes les données audio pour cette sourate
+  const currentAudioTafsir = audiosTafsir.find((a) => a.id === chapterId);
+  const audioParts = currentAudioTafsir?.parts || [];
 
   return (
     <div className="container mx-auto mt-1 bg-white p-2 md:p-4">

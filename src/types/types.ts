@@ -57,6 +57,8 @@ export type AudioVerseHighlighterProps = {
   totalParts: number;
   onPartChange?: (partIndex: number) => void;
   onNavigateToPart?: (navigateFunction: (partIndex: number) => void) => void;
+  onPlayingChange?: (isPlaying: boolean) => void;
+  onAtTopChange?: (isAtTop: boolean) => void;
 };
 
 export interface ProgressData {

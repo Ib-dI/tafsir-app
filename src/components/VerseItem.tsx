@@ -1,7 +1,6 @@
 import { VerseHighlight } from "@/types/types";
 import { motion } from "framer-motion";
 import React from "react";
-import { useMediaQuery } from "./UseMediaQuery";
 
 // Fonction pour convertir un nombre en chiffres arabes
 export const toArabicNumerals = (n: number): string => {
@@ -20,22 +19,23 @@ const VerseItem = React.memo(
     currentVerseId,
     audioUrl,
     seekToVerse,
+    isMobile,
   }: {
     verse: VerseHighlight;
     currentVerseId: number | null;
     currentOccurrence: number | null;
     audioUrl: string;
     seekToVerse: (verse: VerseHighlight) => void;
+    isMobile: boolean;
   }) => {
     const isActive = verse.id === currentVerseId;
-    const isMobile = useMediaQuery("(max-width: 768px)");
 
     return (
       <motion.div
         key={`verse-${verse.id}`}
         id={`verse-${verse.id}`}
         onClick={() => !verse.noAudio && seekToVerse(verse)}
-        className={`my-1 cursor-pointer rounded-2xl p-3 ${
+        className={`my-1 cursor-pointer rounded-2xl p-3 [content-visibility:auto] [contain-intrinsic-size:auto_120px] ${
           !verse.noAudio ? "hover:bg-gray-50" : ""
         } ${
           verse.noAudio

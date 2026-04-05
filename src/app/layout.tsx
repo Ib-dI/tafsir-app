@@ -41,14 +41,14 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-zinc-200 antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-gray-50 antialiased`}
       >
-        <div className="mx-auto flex min-h-screen max-w-[900px] flex-col bg-white font-sans text-sm">
+        <div className="mx-auto flex min-h-screen max-w-[900px] flex-col bg-gray-50 font-sans text-sm">
           <Header />
           {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
           <Suspense
             fallback={
-              <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
+                <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
                 <LoadingSpinner
                   size="xl"
                   color="blue"

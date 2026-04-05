@@ -28,8 +28,33 @@ import ProgressIndicator from "./ProgressIndicator";
 import ProgressRestorationLoader from "./ProgressRestorationLoader";
 import SuccessCard from "./SuccessCard";
 
-// Clé pour le localStorage
-const PROGRESS_KEY = 'audioVerseProgress';
+/** Clé versionnée pour éviter les collisions de schéma (client-localstorage-schema). */
+const PROGRESS_KEY = "audioVerseProgress:v1";
+const PROGRESS_KEY_LEGACY = "audioVerseProgress";
+
+function readStoredProgressJson(): string | null {
+  try {
+    const current = localStorage.getItem(PROGRESS_KEY);
+    if (current) return current;
+    const legacy = localStorage.getItem(PROGRESS_KEY_LEGACY);
+    if (legacy) {
+      localStorage.setItem(PROGRESS_KEY, legacy);
+      localStorage.removeItem(PROGRESS_KEY_LEGACY);
+    }
+    return legacy;
+  } catch {
+    return null;
+  }
+}
+
+function clearStoredProgressKeys() {
+  try {
+    localStorage.removeItem(PROGRESS_KEY);
+    localStorage.removeItem(PROGRESS_KEY_LEGACY);
+  } catch {
+    /* quota / privé */
+  }
+}
 
 VerseItem.displayName = "VerseItem";
 
@@ -49,6 +74,8 @@ const AudioVerseHighlighter = ({
   totalParts,
   onPartChange,
   onNavigateToPart,
+  onPlayingChange,
+  onAtTopChange,
 }: AudioVerseHighlighterProps & {
   currentChapterId: number;
   totalChapters?: number;
@@ -59,6 +86,10 @@ const AudioVerseHighlighter = ({
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+
+  useEffect(() => {
+    onPlayingChange?.(isPlaying);
+  }, [isPlaying, onPlayingChange]);
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
@@ -132,6 +163,9 @@ const [hasManualNavigation, setHasManualNavigation] = useState(false);
       };
       
       localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressData));
+      if (localStorage.getItem(PROGRESS_KEY_LEGACY)) {
+        localStorage.removeItem(PROGRESS_KEY_LEGACY);
+      }
 
     } catch (error) {
       console.warn('Erreur lors de la sauvegarde de la progression:', error);
@@ -141,7 +175,7 @@ const [hasManualNavigation, setHasManualNavigation] = useState(false);
   // Fonction pour charger la progression
   const loadProgress = useCallback((): ProgressData | null => {
     try {
-      const saved = localStorage.getItem(PROGRESS_KEY);
+      const saved = readStoredProgressJson();
       if (!saved) return null;
       
       const progressData: ProgressData = JSON.parse(saved);
@@ -165,7 +199,7 @@ const [hasManualNavigation, setHasManualNavigation] = useState(false);
   // Fonction pour effacer la progression
   const clearProgress = useCallback(() => {
     try {
-      localStorage.removeItem(PROGRESS_KEY);
+      clearStoredProgressKeys();
     } catch (error) {
       console.warn('Erreur lors de la suppression de la progression:', error);
     }
@@ -189,7 +223,7 @@ useEffect(() => {
     if (onNavigateToPart) {
       onNavigateToPart(navigateToPart);
     }
-  }, [onNavigateToPart]);
+  }, [onNavigateToPart, navigateToPart]);
 
   // Gestion de la restauration de progression lors du changement de partie
   // ✅ EFFET DE RESTAURATION CORRIGÉ (remplacez l'effet actuel)
@@ -273,14 +307,14 @@ useEffect(() => {
       const seekPosition = pendingRestoration.time / duration;
       wavesurferRef.current.seekTo(seekPosition);
       setCurrentTime(pendingRestoration.time);
-      updateCurrentVerse(pendingRestoration.time);
-      
+      updateCurrentVerseRef.current(pendingRestoration.time);
+
       console.log('✅ Position audio restaurée:', pendingRestoration.time);
     }
-    
+
     setPendingRestoration(null);
   }
-}, [pendingRestoration, updateCurrentVerse]);
+}, [pendingRestoration]);
   
   
 
@@ -410,6 +444,36 @@ useEffect(() => {
     finishHandledRef.current = false;
   };
 
+  // ── Refs useLatest : mises à jour dans le corps du rendu pour éviter les
+  //    closures périmées dans les handlers WaveSurfer/touch, sans déclencher
+  //    de réinitialisation de WaveSurfer à chaque changement de valeur.
+  const isDraggingRef = useRef(isDragging);
+  isDraggingRef.current = isDragging;
+
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
+
+  const pendingRestorationLatestRef = useRef(pendingRestoration);
+  pendingRestorationLatestRef.current = pendingRestoration;
+
+  const onAudioFinishedRef = useRef(onAudioFinished);
+  onAudioFinishedRef.current = onAudioFinished;
+
+  const onPartChangeRef = useRef(onPartChange);
+  onPartChangeRef.current = onPartChange;
+
+  const totalPartsRef = useRef(totalParts);
+  totalPartsRef.current = totalParts;
+
+  const clearProgressRef = useRef(clearProgress);
+  clearProgressRef.current = clearProgress;
+
+  const isMobileWsRef = useRef(isMobile);
+  isMobileWsRef.current = isMobile;
+
+  const updateCurrentVerseRef = useRef(updateCurrentVerse);
+  updateCurrentVerseRef.current = updateCurrentVerse;
+
   // Initialisation de WaveSurfer
   useEffect(() => {
     if (!audioUrl) {
@@ -454,8 +518,8 @@ useEffect(() => {
       cursorWidth: 3,
       height: 40,
       barGap: 2,
-      interact: !isMobile,
-      dragToSeek: !isMobile,
+      interact: !isMobileWsRef.current,
+      dragToSeek: !isMobileWsRef.current,
       hideScrollbar: true,
       normalize: true,
     });
@@ -474,22 +538,23 @@ useEffect(() => {
       
       // Restaurer la progression
       const progress = loadProgress();
-      const shouldRestore = pendingRestoration || (progress && progress.currentPartIndex === currentPartIndex);
-      
+      const pending = pendingRestorationLatestRef.current;
+      const shouldRestore = pending || (progress && progress.currentPartIndex === currentPartIndex);
+
       if (shouldRestore) {
-        const timeToRestore = pendingRestoration ? pendingRestoration.time : progress?.currentTime;
-        const duration = wavesurfer.getDuration();
-        
-        if (timeToRestore && timeToRestore > 0 && timeToRestore < duration - 2) {
-          const seekPosition = timeToRestore / duration;
+        const timeToRestore = pending ? pending.time : progress?.currentTime;
+        const dur = wavesurfer.getDuration();
+
+        if (timeToRestore && timeToRestore > 0 && timeToRestore < dur - 2) {
+          const seekPosition = timeToRestore / dur;
           wavesurfer.seekTo(seekPosition);
           setCurrentTime(timeToRestore);
-          updateCurrentVerse(timeToRestore);
+          updateCurrentVerseRef.current(timeToRestore);
         }
       }
-      
+
       // Réinitialiser pendingRestoration après utilisation
-      if (pendingRestoration) {
+      if (pending) {
         setPendingRestoration(null);
       }
     });
@@ -505,20 +570,20 @@ useEffect(() => {
     });
 
     // Gestionnaires d'événements pour desktop
-    if (!isMobile) {
+    if (!isMobileWsRef.current) {
       wavesurfer.on("interaction", () => {
         setIsDragging(true);
       });
 
       wavesurfer.on("seeking", (time: number) => {
         setCurrentTime(time);
-        updateCurrentVerse(time);
+        updateCurrentVerseRef.current(time);
 
         setTimeout(() => {
           setIsDragging(false);
           const currentTime = wavesurfer.getCurrentTime();
           setCurrentTime(currentTime);
-          updateCurrentVerse(currentTime);
+          updateCurrentVerseRef.current(currentTime);
         }, 10);
       });
 
@@ -526,7 +591,7 @@ useEffect(() => {
         setTimeout(() => {
           const currentTime = wavesurfer.getCurrentTime();
           setCurrentTime(currentTime);
-          updateCurrentVerse(currentTime);
+          updateCurrentVerseRef.current(currentTime);
         }, 10);
       });
     }
@@ -535,14 +600,14 @@ useEffect(() => {
     wavesurfer.on("audioprocess", () => {
       const time = wavesurfer.getCurrentTime();
       setCurrentTime(time);
-      updateCurrentVerse(time);
+      updateCurrentVerseRef.current(time);
     });
 
     wavesurfer.on("timeupdate", () => {
-      if (!isDragging) {
+      if (!isDraggingRef.current) {
         const time = wavesurfer.getCurrentTime();
         setCurrentTime(time);
-        updateCurrentVerse(time);
+        updateCurrentVerseRef.current(time);
       }
     });
 
@@ -550,29 +615,27 @@ useEffect(() => {
     wavesurfer.on("pause", () => setIsPlaying(false));
 
     wavesurfer.on("finish", () => {
-
-
       if (!finishHandledRef.current) {
         finishHandledRef.current = true;
         setIsPlaying(false);
         setCurrentVerseId(null);
         setCurrentOccurrence(null);
-        setHasAudioFinished(true);
 
-        onAudioFinished?.();
+        const tp = totalPartsRef.current;
+        const isLastPart = !tp || currentPartIndex >= tp - 1;
 
-        
-        // Navigation automatique vers la partie suivante si disponible
-        if (totalParts && currentPartIndex < totalParts - 1) {
+        // Marquer la complétion dans le parent (Firebase) pour toutes les parties
+        onAudioFinishedRef.current?.();
 
-          // Effacer la progression avant la navigation
-          clearProgress();
+        if (isLastPart) {
+          // Dernière partie : afficher la modal de complétion du chapitre
+          setHasAudioFinished(true);
+        } else {
+          // Partie intermédiaire : passer à la suivante sans modal
+          clearProgressRef.current();
           setTimeout(() => {
-            if (onPartChange) {
-
-              onPartChange(currentPartIndex + 1);
-            }
-          }, 1500); // Délai de 1.5s pour permettre l'affichage de l'overlay
+            onPartChangeRef.current?.(currentPartIndex + 1);
+          }, 500);
         }
       }
     });
@@ -589,7 +652,7 @@ useEffect(() => {
       }
       wavesurferRef.current = null;
     };
-  }, [audioUrl, loadProgress, currentPartIndex, updateCurrentVerse]);
+  }, [audioUrl, loadProgress, currentPartIndex]);
 
   // Effet séparé pour adapter l'interactivité
 useEffect(() => {
@@ -620,26 +683,52 @@ useEffect(() => {
     }
   }, [hasAudioFinished, showCompletionOverlay, launchConfetti, playSuccessSound]);
 
+  // Fonction pour rejouer le chapitre
+  const replayChapter = () => {
+    if (wavesurferRef.current) {
+      wavesurferRef.current.seekTo(0);
+      wavesurferRef.current.play();
+      clearStoredProgressKeys();
+
+      setHasAudioFinished(false);
+      setShowCompletionOverlay(false);
+      setCompletionVisible(false);
+      finishHandledRef.current = false;
+      setCurrentVerseId(null);
+      setCurrentOccurrence(null);
+    }
+  };
+
+  // Refs useLatest pour les callbacks du keyboard handler
+  const closeOverlayRef = useRef(closeOverlay);
+  closeOverlayRef.current = closeOverlay;
+  const goToPreviousChapterRef = useRef(goToPreviousChapter);
+  goToPreviousChapterRef.current = goToPreviousChapter;
+  const goToNextChapterRef = useRef(goToNextChapter);
+  goToNextChapterRef.current = goToNextChapter;
+  const replayChapterRef = useRef(replayChapter);
+  replayChapterRef.current = replayChapter;
+
   // Gestion de la navigation au clavier
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (completionVisible) {
         switch (e.key) {
           case "Escape":
-            closeOverlay();
+            closeOverlayRef.current();
             break;
           case "ArrowLeft":
             if (hasPreviousChapter) {
-              goToPreviousChapter();
+              goToPreviousChapterRef.current();
             }
             break;
           case "ArrowRight":
             if (hasNextChapter) {
-              goToNextChapter();
+              goToNextChapterRef.current();
             }
             break;
           case "Enter":
-            replayChapter();
+            replayChapterRef.current();
             break;
         }
       }
@@ -744,21 +833,6 @@ useEffect(() => {
     }
   };
 
-  // Fonction pour rejouer le chapitre
-  const replayChapter = () => {
-    if (wavesurferRef.current) {
-      wavesurferRef.current.seekTo(0);
-      wavesurferRef.current.play();
-      localStorage.removeItem(PROGRESS_KEY);
-
-      setHasAudioFinished(false);
-      setShowCompletionOverlay(false);
-      setCompletionVisible(false);
-      finishHandledRef.current = false;
-      setCurrentVerseId(null);
-      setCurrentOccurrence(null);
-    }
-  };
 
   // Fonction pour formater le temps
   const formatTime = (time: number) => {
@@ -808,7 +882,7 @@ useEffect(() => {
           ? wavesurferRef.current.isPlaying()
           : false;
 
-        wasPlayingRef.current = Boolean(playingViaWs || playingViaMedia || isPlaying);
+        wasPlayingRef.current = Boolean(playingViaWs || playingViaMedia || isPlayingRef.current);
 
         const currentTime = wavesurferRef.current.getCurrentTime();
         setDragTime(currentTime);
@@ -989,10 +1063,10 @@ useEffect(() => {
         cancelAnimationFrame(rafIdRef.current);
       }
 
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchmove", handleTouchMove);
-      container.removeEventListener("touchend", handleTouchEnd);
-      container.removeEventListener("touchcancel", handleTouchCancel);
+      container.removeEventListener("touchstart", handleTouchStart, eventOptions);
+      container.removeEventListener("touchmove", handleTouchMove, eventOptions);
+      container.removeEventListener("touchend", handleTouchEnd, eventOptions);
+      container.removeEventListener("touchcancel", handleTouchCancel, eventOptions);
     };
   }, [isMobile, updateCurrentVerse]);
 
@@ -1167,6 +1241,7 @@ useEffect(() => {
         ref={versesRef}
         className="relative z-20 mt-1 flex-1 overflow-y-auto rounded-lg border border-gray-200 p-2"
         style={{ minHeight: 0 }}
+        onScroll={(e) => onAtTopChange?.((e.currentTarget.scrollTop) < 10)}
       >
         {/* Skeleton loader pendant le chargement initial */}
         {isLoading && !children && (
@@ -1194,6 +1269,7 @@ useEffect(() => {
             currentOccurrence={currentOccurrence}
             audioUrl={audioUrl}
             seekToVerse={seekToVerse}
+            isMobile={isMobile}
           />
         ))}
       </div>
