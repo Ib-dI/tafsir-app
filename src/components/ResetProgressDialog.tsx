@@ -6,34 +6,45 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface ResetProgressDialogProps {
-  chapterName: string;
+  name: string;
   onConfirm: () => void;
-  trigger: ReactNode;
+  trigger?: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function ResetProgressDialog({
-  chapterName,
+  name,
   onConfirm,
   trigger,
+  open: controlledOpen,
+  onOpenChange: onControlledOpenChange,
 }: ResetProgressDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled
+    ? (v: boolean) => onControlledOpenChange?.(v)
+    : setInternalOpen;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const clonedTrigger = React.isValidElement(trigger)
-    ? React.cloneElement(
-        trigger as React.ReactElement<{ onClick?: (e: React.MouseEvent) => void }>,
-        {
-          onClick: (e: React.MouseEvent) => {
-            e.stopPropagation();
-            setOpen(true);
+  const clonedTrigger =
+    !isControlled && React.isValidElement(trigger)
+      ? React.cloneElement(
+          trigger as React.ReactElement<{ onClick?: (e: React.MouseEvent) => void }>,
+          {
+            onClick: (e: React.MouseEvent) => {
+              e.stopPropagation();
+              setOpen(true);
+            },
           },
-        },
-      )
-    : trigger;
+        )
+      : trigger;
 
   const handleConfirm = () => {
     setOpen(false);
@@ -97,7 +108,7 @@ export default function ResetProgressDialog({
                   className="mb-7 text-sm leading-relaxed text-gray-500"
                 >
                   La progression de{" "}
-                  <span className="font-semibold text-gray-700">{chapterName}</span>{" "}
+                  <span className="font-semibold text-gray-700">{name}</span>{" "}
                   sera réinitialisée. Vous pourrez recommencer depuis le début.
                 </motion.p>
 
@@ -130,7 +141,7 @@ export default function ResetProgressDialog({
 
   return (
     <>
-      {clonedTrigger}
+      {!isControlled && clonedTrigger}
       {mounted && createPortal(modal, document.body)}
     </>
   );

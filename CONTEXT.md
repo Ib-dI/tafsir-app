@@ -17,5 +17,14 @@ Un chapitre dont au moins une partie audio est complétée (`completedParts >= 1
 ### Chapitre terminé (Fully Completed Chapter)
 Un chapitre dont toutes les parties audio sont complétées (`completedParts === totalAudioParts`). Affiché avec le style visuel vert (emerald) dans la liste.
 
-### Réinitialisation (Reset)
-Action qui supprime tous les documents `progress` d'un chapitre pour un utilisateur donné. Disponible dès `completedParts >= 1`. Requiert une confirmation explicite (AlertDialog). Coupe l'audio en cours et remet `finishHandledRef` à `false` pour permettre une re-complétion normale.
+### Réinitialisation chapitre (Chapter Reset)
+Action qui supprime tous les documents `progress` d'un chapitre pour un utilisateur donné. Disponible dès `completedParts >= 1`. Requiert une confirmation explicite. Coupe l'audio en cours et remet `finishHandledRef` à `false` pour permettre une re-complétion normale.
+
+### Réinitialisation par partie (Per-Part Reset)
+Action qui supprime un seul document `progress/${partId}`. Déclenché par long-press (600ms) sur la pastille "Partie complétée" ou sur une partie complétée dans le sélecteur mobile (HeaderRight). Ouvre `ResetProgressDialog` avec le nom de la partie. Si la partie en cours est réinitialisée, coupe l'audio et remet `finishHandledRef` à `false`.
+
+### Long-press
+Maintien de 600ms sur un élément interactif. Implémenté via le hook `useLongPress` (`src/hooks/useLongPress.ts`) avec `requestAnimationFrame` pour l'animation de progression (0→100). Relâcher avant la fin annule sans déclencher le callback. Feedback visuel : anneau SVG sur la pastille, assombrissement du bouton dans les sélecteurs.
+
+### SelectItem personnalisé (Custom SelectItem)
+Pour les parties complétées dans le Select desktop (`SelectContent`), le `SelectItem` Radix est **entièrement remplacé** par un `div` personnalisé. Nécessaire car Radix UI intercepte `onPointerDown` et sélectionne l'item avant qu'un long-press puisse être détecté. Les parties non complétées conservent le `SelectItem` standard.

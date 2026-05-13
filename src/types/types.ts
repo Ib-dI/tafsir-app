@@ -93,4 +93,5 @@ export interface HeaderRightProps {
   };
   onNextPart?: () => void;
   onPreviousPart?: () => void;
+  onResetPart?: (partId: string) => void;
 }

@@ -56,13 +56,36 @@ Props :
 
 ## SelectItem custom pour parties complétées
 
-Dans `SourateInteractiveContent`, les `SelectItem` des parties complétées sont remplacés par une version qui applique `useLongPress` sur un wrapper `div`.
+Dans `SourateInteractiveContent`, les `SelectItem` des parties complétées sont **entièrement remplacés** par un `div` personnalisé directement dans `SelectContent`. Le `SelectItem` Radix est retiré pour les parties complétées car il intercepte `onPointerDown` et sélectionne l'item avant que le long-press puisse être détecté. Les parties non complétées conservent le `SelectItem` standard.
 
-- `onMouseDown` / `onTouchStart` démarre le timer
-- Au déclenchement : `e.preventDefault()` pour bloquer la sélection Radix + ouvre `ResetProgressDialog`
-- Hint visible sur l'item : `"⟳ Maintenir"` en `text-xs text-gray-400` à droite du ✓
+Structure du `div` personnalisé :
+- Stylé pour imiter l'apparence d'un `SelectItem` (même padding, hover, cursor, focus visible)
+- `onClick` → `handlePartChange(index)` (navigation normale)
+- `useLongPress` via `onPointerDown` / `onPointerUp` → ouvre `ResetProgressDialog`
+- Fond s'assombrit pendant le hold (via `pressing` state du hook : `bg-green-200` quand pressing)
+- Hint : `"⟳ Maintenir"` en `text-xs text-gray-400` à droite du ✓
 
-**Attention** : Radix Select intercepte les événements. Le long-press doit être appliqué via un `div` wrapper dans le `SelectItem` avec `onPointerDown`/`onPointerUp` plutôt que `onMouseDown` pour compatibilité Radix.
+## Long-press dans HeaderRight (mobile)
+
+Dans la modal de sélection des parties de `HeaderRight`, les boutons des parties complétées supportent également le long-press.
+
+**Modifications de `HeaderRight.tsx`** :
+- Import `useLongPress` et `ResetProgressDialog`
+- Nouvelle prop : `onResetPart?: (partId: string) => void` dans `HeaderRightProps`
+- État local : `dialogPart: { id: string; name: string } | null`
+
+Sur les boutons de parties complétées dans la liste de la modal :
+- `useLongPress` appliqué sur le bouton
+- Long-press → `setDialogPart({ id: part.id, name: part.title || \`Partie ${idx + 1}\` })`
+- Un seul `ResetProgressDialog` contrôlé rendu en dehors de la liste :
+  - `open={dialogPart !== null}`
+  - `onOpenChange={(o) => { if (!o) setDialogPart(null); }}`
+  - `name={dialogPart?.name ?? ""}`
+  - `onConfirm={() => { if (dialogPart) { onResetPart?.(dialogPart.id); setDialogPart(null); } }}`
+- Feedback visuel : `pressing` assombrit le fond du bouton en cours de long-press
+- Hint : `"⟳ Maintenir"` affiché à droite du ✓ pour les parties complétées
+
+**`SourateInteractiveContent`** : passe `onResetPart={resetPartProgress}` à `HeaderRight`.
 
 ## Logique `resetPartProgress`
 
@@ -88,7 +111,22 @@ Un seul `deleteDoc` — pas de query nécessaire, le `partId` est l'ID du docume
 
 ## Mise à jour `ResetProgressDialog`
 
-Renommer la prop `chapterName` → `name` pour usage générique (chapitre ET partie). Mettre à jour les deux callsites (`SouratesClient` et `SourateInteractiveContent`).
+Renommer la prop `chapterName` → `name` pour usage générique (chapitre ET partie).
+
+Ajouter un **mode contrôlé** optionnel pour les callsites qui ne peuvent pas passer un trigger (ex. HeaderRight) :
+```ts
+interface ResetProgressDialogProps {
+  name: string;
+  onConfirm: () => void;
+  trigger?: ReactNode;       // optionnel en mode contrôlé
+  open?: boolean;            // contrôlé de l'extérieur si fourni
+  onOpenChange?: (open: boolean) => void;
+}
+```
+- Quand `open` est fourni : le composant utilise `open`/`onOpenChange` directement, le `trigger` n'est pas rendu
+- Quand `open` n'est pas fourni : comportement actuel (trigger + state interne)
+
+Mettre à jour les callsites : `SouratesClient` et `SourateInteractiveContent` (reset chapitre — utilisent le mode trigger).
 
 ## Flux de données
 

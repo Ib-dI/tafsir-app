@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 // Importez les instances pré-initialisées depuis votre fichier src/lib/firebase.ts
 import HeaderRight from "@/components/HeaderRight";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -36,6 +37,8 @@ import type { Verse } from "@/types/types";
 import { RotateCcw } from "lucide-react";
 import ResetProgressDialog from "@/components/ResetProgressDialog";
 import { useMediaQuery } from "@/components/UseMediaQuery";
+import LongPressPartBadge from "@/components/LongPressPartBadge";
+import { useLongPress } from "@/hooks/useLongPress";
 
 const AudioVerseHighlighter = dynamic(
   () => import("@/components/AudioVerseHighlighter"),
@@ -78,6 +81,65 @@ function buildAudioParts(
     return [...initialAudioParts, newPart];
   }
   return initialAudioParts;
+}
+
+interface CompletedSelectItemProps {
+  part: TafsirAudioPart;
+  index: number;
+  hasMultipleOccurrences: boolean;
+  onSelect: () => void;
+  onResetRequest: () => void;
+}
+
+function CompletedSelectItem({
+  part,
+  index,
+  hasMultipleOccurrences,
+  onSelect,
+  onResetRequest,
+}: CompletedSelectItemProps) {
+  const firedRef = useRef(false);
+  const { handlers, pressing } = useLongPress(() => {
+    firedRef.current = true;
+    onResetRequest();
+  }, 600);
+
+  return (
+    <div
+      {...handlers}
+      onClick={() => {
+        if (firedRef.current) {
+          firedRef.current = false;
+          return;
+        }
+        onSelect();
+      }}
+      className={`relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none transition-colors ${
+        pressing ? "bg-green-200" : "hover:bg-green-50"
+      }`}
+    >
+      <span className="flex items-center gap-2">
+        {part.title || `Partie ${index + 1}`}
+        {hasMultipleOccurrences && (
+          <span className="rounded bg-purple-100 px-1 text-xs text-purple-600">
+            +occurrences
+          </span>
+        )}
+        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-green-500 shadow">
+          <svg width="8" height="8" viewBox="0 0 20 20" fill="none">
+            <path
+              d="M5 10.5L8.5 14L15 7"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+        <span className="text-xs text-gray-400">⟳ Maintenir</span>
+      </span>
+    </div>
+  );
 }
 
 export default function SourateInteractiveContent({
@@ -127,6 +189,30 @@ export default function SourateInteractiveContent({
     const snapshot = await getDocs(q);
     await Promise.all(snapshot.docs.map((d) => deleteDoc(d.ref)));
   }, [userId, chapterId]);
+
+  const resetPartProgress = useCallback(
+    async (partId: string) => {
+      const isCurrentPart = selectedPart?.id === partId;
+      if (isCurrentPart) {
+        audioControlsRef.current?.pause();
+        audioControlsRef.current?.resetFinishState();
+      }
+      if (!db || !userId) return;
+      const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+      if (!projectId) return;
+      await deleteDoc(
+        doc(db, `artifacts/${projectId}/users/${userId}/progress/${partId}`),
+      );
+    },
+    [selectedPart, userId],
+  );
+
+  const [resetDialogPart, setResetDialogPart] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
 
   const handleNavigateToPart = useCallback(
     (navigateFunction: (partIndex: number) => void) => {
@@ -530,7 +616,7 @@ export default function SourateInteractiveContent({
                   </div>
                   {completedAudioPartsCount >= 1 && (
                     <ResetProgressDialog
-                      chapterName={chapterName || `Sourate ${chapterNumber}`}
+                      name={chapterName || `Sourate ${chapterNumber}`}
                       onConfirm={resetChapterProgress}
                       trigger={
                         <button
@@ -622,27 +708,49 @@ export default function SourateInteractiveContent({
                 <Select
                   value={selectedPart?.id || ""}
                   onValueChange={(value) => {
-                    const part = audioParts.find((p) => p.id === value);
-                    if (part) {
-                      const partIndex = audioParts.findIndex(
-                        (p) => p.id === value,
-                      );
-                      handlePartChange(partIndex);
-                    }
+                    const partIndex = audioParts.findIndex((p) => p.id === value);
+                    if (partIndex !== -1) handlePartChange(partIndex);
                   }}
+                  open={isSelectOpen}
+                  onOpenChange={setIsSelectOpen}
                 >
                   <SelectTrigger className="w-full max-w-[220px] md:max-w-[260px]">
                     <SelectValue placeholder="Sélectionner une partie" />
                   </SelectTrigger>
                   <SelectContent className="font-sans">
                     {audioParts.map((part, index) => {
-                      // Compter les versets uniques et les occurrences multiples
-                      const uniqueVerses = new Set(
-                        part.timings.map((t) => t.id),
-                      );
-                      const totalOccurrences = part.timings.length;
-                      const hasMultipleOccurrences =
-                        totalOccurrences > uniqueVerses.size;
+                      const uniqueVerses = new Set(part.timings.map((t) => t.id));
+                      const hasMultipleOccurrences = part.timings.length > uniqueVerses.size;
+                      const isCompleted =
+                        part.id !== "remaining-verses" &&
+                        completedPartIds.has(part.id);
+
+                      if (isCompleted) {
+                        return (
+                          <React.Fragment key={part.id}>
+                            {/* Hidden SelectItem so Radix tracks the value for SelectTrigger display */}
+                            <SelectItem value={part.id} className="hidden">
+                              {part.title || `Partie ${index + 1}`}
+                            </SelectItem>
+                            <CompletedSelectItem
+                              part={part}
+                              index={index}
+                              hasMultipleOccurrences={hasMultipleOccurrences}
+                              onSelect={() => {
+                                handlePartChange(index);
+                                setIsSelectOpen(false);
+                              }}
+                              onResetRequest={() => {
+                                setIsSelectOpen(false);
+                                setResetDialogPart({
+                                  id: part.id,
+                                  name: part.title || `Partie ${index + 1}`,
+                                });
+                              }}
+                            />
+                          </React.Fragment>
+                        );
+                      }
 
                       return (
                         <SelectItem
@@ -670,24 +778,6 @@ export default function SourateInteractiveContent({
                                     +occurrences
                                   </span>
                                 )}
-                                {completedPartIds.has(part.id) && (
-                                  <span className="z-10 inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-green-500 shadow">
-                                    <svg
-                                      width="8"
-                                      height="8"
-                                      viewBox="0 0 20 20"
-                                      fill="none"
-                                    >
-                                      <path
-                                        d="M5 10.5L8.5 14L15 7"
-                                        stroke="white"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                    </svg>
-                                  </span>
-                                )}
                               </>
                             )}
                           </span>
@@ -696,6 +786,16 @@ export default function SourateInteractiveContent({
                     })}
                   </SelectContent>
                 </Select>
+                {resetDialogPart && (
+                  <ResetProgressDialog
+                    name={resetDialogPart.name}
+                    onConfirm={() => resetPartProgress(resetDialogPart.id)}
+                    open={true}
+                    onOpenChange={(o) => {
+                      if (!o) setResetDialogPart(null);
+                    }}
+                  />
+                )}
               </div>
 
               {/* Flèche Droite */}
@@ -731,52 +831,11 @@ export default function SourateInteractiveContent({
             {/* Pastille de complétion */}
             {selectedPart && selectedPart.id !== "remaining-verses" && (
               <div className="flex w-full items-center justify-center">
-                <span
-                  className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
-                    completedPartIds.has(selectedPart.id)
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-200 text-gray-600"
-                  }`}
-                >
-                  {completedPartIds.has(selectedPart.id) ? (
-                    <>
-                      <svg
-                        className="mr-1 h-4 w-4 text-green-500"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      Partie complétée
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="mr-1 h-4 w-4 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          fill="none"
-                        />
-                      </svg>
-                      Partie non complétée
-                    </>
-                  )}
-                </span>
+                <LongPressPartBadge
+                  isCompleted={completedPartIds.has(selectedPart.id)}
+                  partName={selectedPart.title || `Partie ${currentPartIndex + 1}`}
+                  onReset={() => resetPartProgress(selectedPart.id)}
+                />
               </div>
             )}
             <div className="flex items-center justify-center">
@@ -791,6 +850,7 @@ export default function SourateInteractiveContent({
                     colors={headerColors}
                     onNextPart={handleNextPart}
                     onPreviousPart={handlePreviousPart}
+                    onResetPart={resetPartProgress}
                   />
                 </div>
               )}

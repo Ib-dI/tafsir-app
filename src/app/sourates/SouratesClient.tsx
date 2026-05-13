@@ -284,7 +284,7 @@ export default function SouratesClient({
 
   return (
     <div className="container mx-auto mt-8 w-full rounded-lg bg-white p-4 shadow-lg">
-      <h1 className="text-600 text-balance mx-auto mb-8 max-w-[600px] text-center text-4xl font-bold !leading-[1.0] tracking-tighter text-gray-900 lg:max-w-[800px] lg:text-6xl">
+      <h1 className="text-600 text-balance mx-auto mb-8 max-w-[600px] text-center text-4xl font-bold leading-none! tracking-tighter text-gray-900 lg:max-w-[800px] lg:text-6xl">
         📑Chapitres du Coran 📖
       </h1>
 
@@ -362,17 +362,17 @@ export default function SouratesClient({
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <span>{`${sourateIdsWithAudio.size} sourates avec audio`}</span>
+              <span className="tabular-nums">{`${sourateIdsWithAudio.size} sourates avec audio`}</span>
             </div>
             <div className="h-4 w-px bg-gray-300" />
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-rose-500" />
-              <span>{`${favoriteChapters.size} favoris`}</span>
+              <span className="tabular-nums">{`${favoriteChapters.size} favoris`}</span>
             </div>
             <div className="h-4 w-px bg-gray-300" />
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-gray-400" />
-              <span>{`${chapters.length - sourateIdsWithAudio.size} sans audio`}</span>
+              <span className="tabular-nums">{`${chapters.length - sourateIdsWithAudio.size} sans audio`}</span>
             </div>
           </div>
         </motion.div>
@@ -451,12 +451,12 @@ export default function SouratesClient({
                     <div className="absolute right-2 bottom-2 z-20 flex items-center gap-1.5">
                       {completedParts >= 1 && (
                         <ResetProgressDialog
-                          chapterName={chapter.transliteration}
+                          name={chapter.transliteration}
                           onConfirm={() => resetChapterProgress(chapter.id)}
                           trigger={
                             <button
                               title="Réinitialiser la progression"
-                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 ${
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium shadow-xs transition-all duration-200 hover:scale-105 active:scale-95 ${
                                 isFullyCompleted
                                   ? "border border-red-200 bg-white text-red-500 hover:bg-red-50 hover:text-red-600"
                                   : "border border-red-200 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700"
@@ -471,7 +471,7 @@ export default function SouratesClient({
                       <div
                         className={`h-1.5 w-20 overflow-hidden rounded-full border border-white shadow-inner ${
                           isFullyCompleted
-                            ? "bg-gradient-to-r from-emerald-100 via-emerald-50 to-amber-100"
+                            ? "bg-linear-to-r from-emerald-100 via-emerald-50 to-amber-100"
                             : "bg-gray-200"
                         }`}
                       >
@@ -496,9 +496,9 @@ export default function SouratesClient({
                     </div>
                   )}
 
-                  <div className="flex flex-grow items-center justify-between gap-2">
+                  <div className="flex grow items-center justify-between gap-2">
                     <div
-                      className={`flex h-8 w-8 -mb-4 flex-shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${
+                      className={`flex h-8 w-8 -mb-4 shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${
                         isFullyCompleted
                           ? "bg-white text-emerald-700 border border-emerald-300"
                           : "bg-blue-100 text-blue-500"
@@ -506,7 +506,7 @@ export default function SouratesClient({
                     >
                       {`${chapter.id < 10 ? "0" : ""}${chapter.id}`}
                     </div>
-                    <div className="flex min-w-0 flex-grow flex-col">
+                    <div className="flex min-w-0 grow flex-col">
                       <div className="flex items-center gap-2">
                         <strong
                           className={`text-md truncate ${isFullyCompleted ? "text-emerald-900" : "text-gray-800"}`}

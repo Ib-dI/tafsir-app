@@ -3,20 +3,96 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, List, Check, X } from 'lucide-react';
 import { HeaderRightProps } from "@/types/types";
+import type { TafsirAudioPart } from "@/types/types";
+import { useLongPress } from "@/hooks/useLongPress";
+import ResetProgressDialog from "./ResetProgressDialog";
 
+interface CompletedPartButtonProps {
+  part: TafsirAudioPart;
+  idx: number;
+  isCurrentPart: boolean;
+  hasMultipleOccurrences: boolean;
+  onSelect: () => void;
+  onResetRequest: (id: string, name: string) => void;
+}
 
-const HeaderRight: React.FC<HeaderRightProps> = ({ 
-  audioParts, 
-  currentPartIndex, 
-  setCurrentPartIndex, 
+function CompletedPartButton({
+  part,
+  idx,
+  isCurrentPart,
+  hasMultipleOccurrences,
+  onSelect,
+  onResetRequest,
+}: CompletedPartButtonProps) {
+  const firedRef = useRef(false);
+  const { handlers, pressing } = useLongPress(() => {
+    firedRef.current = true;
+    onResetRequest(part.id, part.title || `Partie ${idx + 1}`);
+  }, 600);
+
+  return (
+    <button
+      data-part-index={idx}
+      {...handlers}
+      onClick={() => {
+        if (firedRef.current) {
+          firedRef.current = false;
+          return;
+        }
+        onSelect();
+      }}
+      className={`w-full py-4 px-6 flex flex-row items-center transition-all duration-200 border-b border-gray-100 ${
+        pressing
+          ? "bg-green-100 border-l-4 border-l-transparent"
+          : isCurrentPart
+          ? "bg-blue-50 border-l-4 border-l-blue-500"
+          : "bg-white hover:bg-gray-50 border-l-4 border-l-transparent"
+      }`}
+    >
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+        isCurrentPart ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600"
+      }`}>
+        {idx + 1}
+      </div>
+      <div className="flex-1 ml-4 text-left">
+        <div className="flex items-center gap-2 mb-1">
+          <span className={`font-medium ${isCurrentPart ? "text-blue-700" : "text-gray-800"}`}>
+            {part.title || `Partie ${idx + 1}`}
+          </span>
+          {hasMultipleOccurrences && (
+            <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium">
+              +occurrences
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-green-100 border-2 border-green-300 flex items-center justify-center" aria-label="Partie complétée">
+          <Check size={12} className="text-green-600" strokeWidth={2.5} />
+        </div>
+        <span className="text-xs text-gray-400">⟳ Maintenir</span>
+        {isCurrentPart && (
+          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" aria-label="Partie actuelle" />
+        )}
+      </div>
+    </button>
+  );
+}
+
+const HeaderRight: React.FC<HeaderRightProps> = ({
+  audioParts,
+  currentPartIndex,
+  setCurrentPartIndex,
   completedPartIds,
   colors,
   onNextPart,
   onPreviousPart,
+  onResetPart,
 }) => {
   const [isPartSelectorVisible, setIsPartSelectorVisible] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [dialogPart, setDialogPart] = useState<{ id: string; name: string } | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const startTouchY = useRef<number>(0);
@@ -265,81 +341,68 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                 const uniqueVerses = new Set(part.timings.map(t => t.id));
                 const totalOccurrences = part.timings.length;
                 const hasMultipleOccurrences = totalOccurrences > uniqueVerses.size;
-                const isCompleted = completedPartIds.has(part.id);
+                const isCompleted = completedPartIds.has(part.id) && part.id !== "remaining-verses";
                 const isCurrentPart = idx === currentPartIndex;
-                
+
+                if (isCompleted) {
+                  return (
+                    <CompletedPartButton
+                      key={part.id}
+                      part={part}
+                      idx={idx}
+                      isCurrentPart={isCurrentPart}
+                      hasMultipleOccurrences={hasMultipleOccurrences}
+                      onSelect={() => handlePartSelection(idx)}
+                      onResetRequest={(id, name) => {
+                        setIsPartSelectorVisible(false);
+                        setDialogPart({ id, name });
+                      }}
+                    />
+                  );
+                }
+
                 return (
                   <button
                     key={part && part.id ? String(part.id) : String(idx)}
                     data-part-index={idx}
                     onClick={() => handlePartSelection(idx)}
                     className={`w-full py-4 px-6 flex flex-row items-center transition-all duration-200 ${
-                      isCurrentPart 
-                        ? 'bg-blue-50 border-l-4 border-l-blue-500' 
+                      isCurrentPart
+                        ? 'bg-blue-50 border-l-4 border-l-blue-500'
                         : 'bg-white hover:bg-gray-50 border-l-4 border-l-transparent'
                     } ${idx !== audioParts.length - 1 ? 'border-b border-gray-100' : ''}`}
                     aria-label={`Sélectionner ${part.title}`}
                     aria-current={isCurrentPart ? 'page' : undefined}
                   >
-                    {/* Numéro de partie */}
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                      isCurrentPart 
-                        ? 'bg-blue-500 text-white' 
-                        : 'bg-gray-100 text-gray-600'
+                      isCurrentPart ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
                     }`}>
                       {idx + 1}
                     </div>
-                    
-                    {/* Contenu principal */}
                     <div className="flex-1 ml-4 text-left">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={`font-medium ${
-                          isCurrentPart ? 'text-blue-700' : 'text-gray-800'
-                        }`}>
+                        <span className={`font-medium ${isCurrentPart ? 'text-blue-700' : 'text-gray-800'}`}>
                           {part.id === "remaining-verses" ? (
-                            <>
-                              {part.title} ({part.timings.length})
-                            </>
+                            <>{part.title} ({part.timings.length})</>
                           ) : (
                             part.title || `Partie ${idx + 1}`
                           )}
                         </span>
-                        
                         {hasMultipleOccurrences && part.id !== "remaining-verses" && (
-                          <span 
-                            className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium"
-                            aria-label="Contient des occurrences multiples"
-                          >
+                          <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium" aria-label="Contient des occurrences multiples">
                             +occurrences
                           </span>
                         )}
                       </div>
-                      
                       {part.id === "remaining-verses" && (
-                        <span 
-                          className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium"
-                          aria-label="Partie sans audio"
-                        >
+                        <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium" aria-label="Partie sans audio">
                           sans audio
                         </span>
                       )}
                     </div>
-                    
-                    {/* Icônes de statut */}
                     <div className="flex items-center gap-3">
-                      {isCompleted && part.id !== "remaining-verses" && (
-                        <div 
-                          className="w-6 h-6 rounded-full bg-green-100 border-2 border-green-300 flex items-center justify-center"
-                          aria-label="Partie complétée"
-                        >
-                          <Check size={12} className="text-green-600" strokeWidth={2.5} />
-                        </div>
-                      )}
                       {isCurrentPart && (
-                        <div 
-                          className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"
-                          aria-label="Partie actuelle"
-                        />
+                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" aria-label="Partie actuelle" />
                       )}
                     </div>
                   </button>
@@ -348,6 +411,20 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {dialogPart && (
+        <ResetProgressDialog
+          name={dialogPart.name}
+          onConfirm={() => {
+            onResetPart?.(dialogPart.id);
+            setDialogPart(null);
+          }}
+          open={true}
+          onOpenChange={(o) => {
+            if (!o) setDialogPart(null);
+          }}
+        />
       )}
     </>
   );
