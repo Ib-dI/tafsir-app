@@ -21,7 +21,9 @@ import AnimatedBackButton from "./AnimatedBackButton";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import {
   collection,
+  deleteDoc,
   doc,
+  getDocs,
   onSnapshot,
   query,
   serverTimestamp,
@@ -29,8 +31,10 @@ import {
   where,
 } from "firebase/firestore";
 
-import { SourateInteractiveContentProps, TafsirAudioPart } from "@/types/types";
+import { SourateInteractiveContentProps, TafsirAudioPart, AudioControls } from "@/types/types";
 import type { Verse } from "@/types/types";
+import { RotateCcw } from "lucide-react";
+import ResetProgressDialog from "@/components/ResetProgressDialog";
 import { useMediaQuery } from "@/components/UseMediaQuery";
 
 const AudioVerseHighlighter = dynamic(
@@ -101,6 +105,28 @@ export default function SourateInteractiveContent({
 
   const buttonRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
   const navigateToPartRef = useRef<((partIndex: number) => void) | null>(null);
+  const audioControlsRef = useRef<AudioControls | null>(null);
+
+  const handleRegisterAudioControls = useCallback((controls: AudioControls) => {
+    audioControlsRef.current = controls;
+  }, []);
+
+  const resetChapterProgress = useCallback(async () => {
+    audioControlsRef.current?.pause();
+    audioControlsRef.current?.resetFinishState();
+
+    if (!db || !userId) return;
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    if (!projectId) return;
+
+    const progressRef = collection(
+      db,
+      `artifacts/${projectId}/users/${userId}/progress`,
+    );
+    const q = query(progressRef, where("chapterId", "==", chapterId));
+    const snapshot = await getDocs(q);
+    await Promise.all(snapshot.docs.map((d) => deleteDoc(d.ref)));
+  }, [userId, chapterId]);
 
   const handleNavigateToPart = useCallback(
     (navigateFunction: (partIndex: number) => void) => {
@@ -353,6 +379,10 @@ export default function SourateInteractiveContent({
   const canGoNext =
     currentPartIndex !== -1 && currentPartIndex < audioParts.length - 1;
 
+  const completedAudioPartsCount = audioParts.filter(
+    (p) => p.id !== "remaining-verses" && completedPartIds.has(p.id),
+  ).length;
+
   // Fonctions de navigation CORRIGÉES
   const handleNextPart = useCallback(() => {
     if (canGoNext) {
@@ -498,6 +528,21 @@ export default function SourateInteractiveContent({
                       </span>
                     )}
                   </div>
+                  {completedAudioPartsCount >= 1 && (
+                    <ResetProgressDialog
+                      chapterName={chapterName || `Sourate ${chapterNumber}`}
+                      onConfirm={resetChapterProgress}
+                      trigger={
+                        <button
+                          title="Réinitialiser la progression"
+                          className="mt-1 inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-100 px-2 py-0.5 text-xs font-medium text-red-600 shadow-sm transition-all duration-200 hover:scale-105 hover:bg-red-200 hover:text-red-700 active:scale-95"
+                        >
+                          <RotateCcw className="h-2.5 w-2.5" />
+                          <span>Réviser</span>
+                        </button>
+                      }
+                    />
+                  )}
                 </div>
 
                 {/* Bouton chapitre suivant */}
@@ -779,6 +824,7 @@ export default function SourateInteractiveContent({
               onNavigateToPart={handleNavigateToPart}
               onPlayingChange={setIsAudioPlaying}
               onAtTopChange={setIsVerseContainerAtTop}
+              onRegisterAudioControls={handleRegisterAudioControls}
             >
               <div className={`sticky top-[-8px] z-20 flex w-full items-center justify-center border-b border-gray-100 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-2 text-center text-gray-800 shadow backdrop-blur h-[2.7rem] md:top-[-10px] md:h-[3.8rem] md:text-5xl transition-all duration-300 ${(isAudioPlaying || !isVerseContainerAtTop) ? "opacity-0 pointer-events-none -translate-y-full" : "opacity-100 translate-y-0"}`}>
                 <div className="font-sura absolute z-30 flex h-full w-full items-center justify-center">

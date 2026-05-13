@@ -76,6 +76,7 @@ const AudioVerseHighlighter = ({
   onNavigateToPart,
   onPlayingChange,
   onAtTopChange,
+  onRegisterAudioControls,
 }: AudioVerseHighlighterProps & {
   currentChapterId: number;
   totalChapters?: number;
@@ -224,6 +225,18 @@ useEffect(() => {
       onNavigateToPart(navigateToPart);
     }
   }, [onNavigateToPart, navigateToPart]);
+
+useEffect(() => {
+  if (onRegisterAudioControls) {
+    onRegisterAudioControls({
+      pause: () => wavesurferRef.current?.pause(),
+      resetFinishState: () => {
+        finishHandledRef.current = false;
+        setHasAudioFinished(false);
+      },
+    });
+  }
+}, [onRegisterAudioControls]);
 
   // Gestion de la restauration de progression lors du changement de partie
   // ✅ EFFET DE RESTAURATION CORRIGÉ (remplacez l'effet actuel)

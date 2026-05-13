@@ -5,9 +5,10 @@ import QuickAccessBanner from "@/components/QuickAccessBanner";
 import { auth, db } from "@/lib/firebase";
 import type { SimpleChapterIndexEntry } from "@/lib/quranSimpleApi";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
-import { collection, onSnapshot, doc, setDoc, deleteDoc } from "firebase/firestore";
+import { collection, onSnapshot, doc, setDoc, deleteDoc, getDocs, query, where } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
-import { AudioLines, Search, Heart } from "lucide-react";
+import ResetProgressDialog from "@/components/ResetProgressDialog";
+import { AudioLines, RotateCcw, Search, Heart } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -259,6 +260,20 @@ export default function SouratesClient({
     }
   };
 
+  const resetChapterProgress = async (targetChapterId: number) => {
+    if (!db || !userId) return;
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    if (!projectId) return;
+
+    const progressRef = collection(
+      db,
+      `artifacts/${projectId}/users/${userId}/progress`,
+    );
+    const q = query(progressRef, where("chapterId", "==", targetChapterId));
+    const snapshot = await getDocs(q);
+    await Promise.all(snapshot.docs.map((d) => deleteDoc(d.ref)));
+  };
+
   if (chaptersLoadError) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 text-red-600">
@@ -431,9 +446,28 @@ export default function SouratesClient({
                     />
                   </button>
 
-                  {/* Barre de progression */}
+                  {/* Barre de progression + reset */}
                   {totalParts > 0 && (
-                    <div className="absolute right-2 bottom-2 z-20 flex items-center">
+                    <div className="absolute right-2 bottom-2 z-20 flex items-center gap-1.5">
+                      {completedParts >= 1 && (
+                        <ResetProgressDialog
+                          chapterName={chapter.transliteration}
+                          onConfirm={() => resetChapterProgress(chapter.id)}
+                          trigger={
+                            <button
+                              title="Réinitialiser la progression"
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 ${
+                                isFullyCompleted
+                                  ? "border border-red-200 bg-white text-red-500 hover:bg-red-50 hover:text-red-600"
+                                  : "border border-red-200 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700"
+                              }`}
+                            >
+                              <RotateCcw size={10} />
+                              <span>Réviser</span>
+                            </button>
+                          }
+                        />
+                      )}
                       <div
                         className={`h-1.5 w-20 overflow-hidden rounded-full border border-white shadow-inner ${
                           isFullyCompleted

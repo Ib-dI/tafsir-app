@@ -59,6 +59,7 @@ export type AudioVerseHighlighterProps = {
   onNavigateToPart?: (navigateFunction: (partIndex: number) => void) => void;
   onPlayingChange?: (isPlaying: boolean) => void;
   onAtTopChange?: (isAtTop: boolean) => void;
+  onRegisterAudioControls?: (controls: AudioControls) => void;
 };
 
 export interface ProgressData {
@@ -70,6 +71,11 @@ export interface ProgressData {
   currentPartIndex: number;
   totalParts: number;
 }
+
+export type AudioControls = {
+  pause: () => void;
+  resetFinishState: () => void;
+};
 
 // Types et interfaces partagés HeaderRight
 export interface HeaderRightProps {
