@@ -1,6 +1,7 @@
 "use client";
 
 import { audiosTafsir } from "@/lib/data/audios";
+import Image from "next/image"
 import QuickAccessBanner from "@/components/QuickAccessBanner";
 import { auth, db } from "@/lib/firebase";
 import type { SimpleChapterIndexEntry } from "@/lib/quranSimpleApi";
@@ -284,9 +285,56 @@ export default function SouratesClient({
 
   return (
     <div className="container mx-auto mt-8 w-full rounded-lg bg-white p-4 shadow-lg">
-      <h1 className="text-600 text-balance mx-auto mb-8 max-w-[600px] text-center text-4xl font-bold leading-none! tracking-tighter text-gray-900 lg:max-w-[800px] lg:text-6xl">
-        📑Chapitres du Coran 📖
-      </h1>
+      <div className="mx-auto mb-8 flex w-fit items-start justify-center">
+  {/* Icône gauche */}
+  <div className=" shrink-0">
+    <Image
+      src="/coran.png"
+      alt="Coran fermé"
+      width={30}
+      height={30}
+      className="sm:hidden"
+    />
+
+    <Image
+      src="/coran.png"
+      alt="Coran fermé"
+      width={50}
+      height={50}
+      className="hidden sm:block"
+    />
+  </div>
+
+  {/* Titre */}
+  <h1 className="leading-[0.95] tracking-tight font-extrabold text-center text-gray-800 text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+    
+    <span className="block w-fit -mr-2">
+      Chapitres
+    </span>
+
+    <span className="flex items-end justify-center gap-1 -ml-4">
+      <span>du Coran</span>
+
+      <div className="mb-1 shrink-0">
+        <Image
+          src="/coran_ouvert.png"
+          alt="Coran ouvert"
+          width={45}
+          height={45}
+          className="sm:hidden"
+        />
+
+        <Image
+          src="/coran_ouvert.png"
+          alt="Coran ouvert"
+          width={80}
+          height={80}
+          className="hidden sm:block"
+        />
+      </div>
+    </span>
+  </h1>
+      </div>
 
       <QuickAccessBanner chapters={chapters} />
 
@@ -520,7 +568,7 @@ export default function SouratesClient({
                       <p
                         className={`truncate text-sm ${isFullyCompleted ? "text-emerald-800" : "text-gray-700"}`}
                       >
-                        <span className="inline-block max-w-[110px] truncate overflow-hidden align-bottom font-semibold whitespace-nowrap">
+                        <span className="inline-block max-w-27.5 truncate overflow-hidden align-bottom font-semibold whitespace-nowrap">
                           {chapter.translation}
                         </span>
                         <span className="font-mono text-xs">
@@ -572,7 +620,7 @@ export default function SouratesClient({
                         </div>
                       )
                     ) : (
-                      <div className="h-[18px]"></div>
+                      <div className="h-4.5"></div>
                     )}
                   </div>
                 </motion.li>
