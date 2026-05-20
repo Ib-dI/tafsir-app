@@ -6070,7 +6070,7 @@ export const audiosTafsir = [
       {
         id: "as-saffat-6",
         title: "As-Saffat - Partie 6",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/As-Saffat-part6.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/As-Saffat-part6-c.ogg",
         timings: [
           { id: 127, startTime: 93.11, endTime: 108.30 },
           { id: 128, startTime: 108.30, endTime: 124.34 },
