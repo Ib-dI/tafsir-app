@@ -1,5 +1,5 @@
 // Mettre à jour cette liste à chaque fois qu'un nouvel audio est ajouté (du plus récent au plus ancien)
-export const recentlyAddedIds: number[] = [27, 37, 26, 19, 17, 30, 21, 42];
+export const recentlyAddedIds: number[] = [29, 27, 37, 26, 19, 17, 30, 21, 42];
 
 export const audiosTafsir = [
   {
@@ -5557,7 +5557,7 @@ export const audiosTafsir = [
       {
         id: "al-ankabut-1",
         title: "Al-Ankabut - Partie 1",
-        url: "",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ankabut-part1.ogg",
         timings: [
           { id: 1, startTime: 61.40, endTime: 76.17 },
           { id: 2, startTime: 76.17, endTime: 165.30 },
@@ -5575,7 +5575,7 @@ export const audiosTafsir = [
       {
         id: "al-ankabut-2",
         title: "Al-Ankabut - Partie 2",
-        url: "",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ankabut-part2.ogg",
         timings: [
           { id: 12, startTime: 93.56, endTime: 211.55 },
           { id: 13, startTime: 211.55, endTime: 394.05 },
@@ -5594,7 +5594,7 @@ export const audiosTafsir = [
       {
         id: "al-ankabut-3",
         title: "Al-Ankabut - Partie 3",
-        url: "",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ankabut-part3.ogg",
         timings: [
           { id: 24, startTime: 58.08, endTime: 141.89 },
           { id: 25, startTime: 141.89, endTime: 345.89 },
@@ -5613,7 +5613,7 @@ export const audiosTafsir = [
       {
         id: "al-ankabut-4",
         title: "Al-Ankabut - Partie 4",
-        url: "",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ankabut-part4.ogg",
         timings: [
           { id: 36, startTime: 73.05, endTime: 181.77 },
           { id: 37, startTime: 181.77, endTime: 226.90 },
@@ -5631,7 +5631,7 @@ export const audiosTafsir = [
       {
         id: "al-ankabut-5",
         title: "Al-Ankabut - Partie 5",
-        url: "",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ankabut-part5.ogg",
         timings: [
           { id: 47, startTime: 39.02, endTime: 150.25 },
           { id: 48, startTime: 150.25, endTime: 257.51 },
@@ -5654,7 +5654,7 @@ export const audiosTafsir = [
       {
         id: "al-ankabut-6",
         title: "Al-Ankabut - Partie 6",
-        url: "",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ankabut-part6.ogg",
         timings: [
           { id: 60, startTime: 40.29, endTime: 106.14 },
           { id: 61, startTime: 106.14, endTime: 158.87 },
