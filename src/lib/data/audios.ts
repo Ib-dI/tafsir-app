@@ -1,5 +1,5 @@
 // Mettre à jour cette liste à chaque fois qu'un nouvel audio est ajouté (du plus récent au plus ancien)
-export const recentlyAddedIds: number[] = [29, 27, 37, 26, 19, 17, 30, 21, 42];
+export const recentlyAddedIds: number[] = [35, 29, 27, 37, 26, 19, 17, 30, 21, 42];
 
 export const audiosTafsir = [
   {
@@ -6018,6 +6018,92 @@ export const audiosTafsir = [
           { id: 71, startTime: 1131.62, endTime: 1185.32 },
           { id: 72, startTime: 1185.32, endTime: 1319.46 },
           { id: 73, startTime: 1319.46, endTime: 1457.00 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 35,
+    name_simple: "Fatir",
+    parts: [
+      {
+        id: "fatir-1",
+        title: "Fatir - Partie 1",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Fatir-part1.ogg",
+        timings: [
+          { id: 1, startTime: 62.40, endTime: 427.11 },
+          { id: 2, startTime: 427.11, endTime: 603.97 },
+          { id: 3, startTime: 603.97, endTime: 840.32 },
+          { id: 4, startTime: 840.32, endTime: 913.93 },
+          { id: 5, startTime: 913.93, endTime: 1055.57 },
+          { id: 6, startTime: 1055.57, endTime: 1155.09 },
+          { id: 7, startTime: 1155.09, endTime: 1263.06 },
+          { id: 8, startTime: 1263.06, endTime: 1466.40 },
+        ],
+      },
+      {
+        id: "fatir-2",
+        title: "Fatir - Partie 2",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Fatir-part2.ogg",
+        timings: [
+          { id: 9, startTime: 43.79, endTime: 202.94 },
+          { id: 10, startTime: 202.94, endTime: 486.59 },
+          { id: 11, startTime: 486.59, endTime: 761.02 },
+          { id: 12, startTime: 761.02, endTime: 1032.59 },
+          { id: 13, startTime: 1032.59, endTime: 1244.01 },
+          { id: 14, startTime: 1244.01, endTime: 1380.21 },
+        ],
+      },
+      {
+        id: "fatir-3",
+        title: "Fatir - Partie 3",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Fatir-part3.ogg",
+        timings: [
+          { id: 15, startTime: 46.24, endTime: 154.38 },
+          { id: 16, startTime: 154.38, endTime: 174.80 },
+          { id: 17, startTime: 174.80, endTime: 218.21 },
+          { id: 18, startTime: 218.21, endTime: 489.20 },
+          { id: 19, startTime: 489.20, endTime: 522.74 },
+          { id: 20, startTime: 522.74, endTime: 541.50 },
+          { id: 21, startTime: 541.50, endTime: 579.10 },
+          { id: 22, startTime: 579.10, endTime: 726.96 },
+          { id: 23, startTime: 726.96, endTime: 749.12 },
+          { id: 24, startTime: 749.12, endTime: 830.54 },
+          { id: 25, startTime: 830.54, endTime: 960.18 },
+          { id: 26, startTime: 960.18, endTime: 996.74 },
+          { id: 27, startTime: 996.74, endTime: 1207.02 },
+          { id: 28, startTime: 1207.02, endTime: 1416.58 },
+        ],
+      },
+      {
+        id: "fatir-4",
+        title: "Fatir - Partie 4",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Fatir-part4.ogg",
+        timings: [
+          { id: 29, startTime: 41.08, endTime: 105.46 },
+          { id: 30, startTime: 105.46, endTime: 172.63 },
+          { id: 31, startTime: 172.63, endTime: 297.08 },
+          { id: 32, startTime: 297.08, endTime: 559.75 },
+          { id: 33, startTime: 559.75, endTime: 713.19 },
+          { id: 34, startTime: 713.19, endTime: 811.71 },
+          { id: 35, startTime: 811.71, endTime: 898.97 },
+          { id: 36, startTime: 898.97, endTime: 1127.93 },
+          { id: 37, startTime: 979.56, endTime: 1127.93 },
+          { id: 38, startTime: 1127.93, endTime: 1175.22 },
+          { id: 39, startTime: 1175.22, endTime: 1333.85 },
+        ],
+      },
+      {
+        id: "fatir-5",
+        title: "Fatir - Partie 5",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Fatir-part5.ogg",
+        timings: [
+          { id: 40, startTime: 45.65, endTime: 264.48 },
+          { id: 41, startTime: 264.48, endTime: 363.03 },
+          { id: 42, startTime: 363.03, endTime: 476.46 },
+          { id: 43, startTime: 476.46, endTime: 655.88 },
+          { id: 44, startTime: 655.88, endTime: 758.75 },
+          { id: 45, startTime: 758.75, endTime: 906.81 },
         ],
       },
     ],
