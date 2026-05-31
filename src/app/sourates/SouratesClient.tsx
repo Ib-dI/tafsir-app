@@ -9,7 +9,7 @@ import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { collection, onSnapshot, doc, setDoc, deleteDoc, getDocs, query, where } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
 import ResetProgressDialog from "@/components/ResetProgressDialog";
-import { AudioLines, RotateCcw, Search, Heart } from "lucide-react";
+import { AudioLines, Hourglass, RotateCcw, Search, Heart } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -17,9 +17,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: {
-      // staggerChildren est maintenant directement sur le composant motion.ul
-    },
+    transition: {},
   },
 };
 
@@ -49,18 +47,26 @@ export default function SouratesClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const chapters = initialChapters;
+
+  // Computed from static data — safe to do before hooks
+  const audioCount = audiosTafsir.filter(
+    (audio) => audio.parts && audio.parts.length > 0 && audio.parts[0].url,
+  ).length;
+  const allHaveAudio = audioCount >= chapters.length;
+
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [showOnlyWithAudio, setShowOnlyWithAudio] = useState<boolean>(
+    initialShowAudio && !allHaveAudio,
+  );
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState<boolean>(initialShowFavorites);
+  // Actif par défaut quand toutes les sourates ont un audio
+  const [showOnlyIncomplete, setShowOnlyIncomplete] = useState<boolean>(
+    allHaveAudio ? initialShowAudio : false,
+  );
 
-  const [showOnlyWithAudio, setShowOnlyWithAudio] =
-    useState<boolean>(initialShowAudio);
-  const [showOnlyFavorites, setShowOnlyFavorites] =
-    useState<boolean>(initialShowFavorites);
-
-  const [completedChaptersByPartId, setCompletedChaptersByPartId] = useState<
-    Set<string>
-  >(new Set());
-  
-  // État pour les favoris
+  const [completedChaptersByPartId, setCompletedChaptersByPartId] = useState<Set<string>>(
+    new Set(),
+  );
   const [favoriteChapters, setFavoriteChapters] = useState<Set<number>>(new Set());
   const [userId, setUserId] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -69,33 +75,61 @@ export default function SouratesClient({
     () =>
       new Set<number>(
         audiosTafsir
-          .filter(
-            (audio) =>
-              audio.parts && audio.parts.length > 0 && audio.parts[0].url,
-          )
+          .filter((audio) => audio.parts && audio.parts.length > 0 && audio.parts[0].url)
           .map((audio) => audio.id),
       ),
     [],
   );
 
+  const incompleteCount = useMemo(() => {
+    return audiosTafsir.filter((audio) => {
+      if (!audio.parts?.length) return false;
+      const partIds = audio.parts.map((p) => p.id);
+      const completedParts = partIds.filter((id) => completedChaptersByPartId.has(id)).length;
+      return completedParts < partIds.length;
+    }).length;
+  }, [completedChaptersByPartId]);
+
+  const completedCount = useMemo(() => {
+    return audiosTafsir.filter((audio) => {
+      if (!audio.parts?.length) return false;
+      const partIds = audio.parts.map((p) => p.id);
+      return partIds.every((id) => completedChaptersByPartId.has(id));
+    }).length;
+  }, [completedChaptersByPartId]);
+
   useEffect(() => {
-    setShowOnlyWithAudio(searchParams.get("showAudio") !== "all");
+    if (allHaveAudio) {
+      setShowOnlyWithAudio(false);
+      // Quand tout est disponible, le filtre "non complétés" est actif par défaut (sauf si désactivé manuellement)
+      setShowOnlyIncomplete(searchParams.get("showIncomplete") !== "false");
+    } else {
+      setShowOnlyWithAudio(searchParams.get("showAudio") !== "all");
+      setShowOnlyIncomplete(searchParams.get("showIncomplete") === "true");
+    }
     setShowOnlyFavorites(searchParams.get("showFavorites") === "true");
-  }, [searchParams]);
+  }, [searchParams, allHaveAudio]);
 
   const filteredChapters = useMemo(() => {
     let current = chapters;
     if (showOnlyWithAudio) {
-      current = current.filter((chapter) =>
-        sourateIdsWithAudio.has(chapter.id),
-      );
+      current = current.filter((chapter) => sourateIdsWithAudio.has(chapter.id));
+    }
+    if (showOnlyIncomplete) {
+      current = current.filter((chapter) => {
+        const audioData = audiosTafsir.find((a) => a.id === chapter.id);
+        if (!audioData?.parts?.length) return false;
+        const partIds = audioData.parts.map((p) => p.id);
+        const completedParts = partIds.filter((id) =>
+          completedChaptersByPartId.has(id),
+        ).length;
+        return completedParts < partIds.length;
+      });
     }
     if (showOnlyFavorites) {
       current = current.filter((chapter) => favoriteChapters.has(chapter.id));
     }
-    if (searchTerm === "") {
-      return current;
-    }
+    if (searchTerm === "") return current;
     const q = searchTerm.toLowerCase();
     return current.filter(
       (chapter) =>
@@ -107,10 +141,12 @@ export default function SouratesClient({
   }, [
     chapters,
     showOnlyWithAudio,
+    showOnlyIncomplete,
     showOnlyFavorites,
     searchTerm,
     favoriteChapters,
     sourateIdsWithAudio,
+    completedChaptersByPartId,
   ]);
 
   // Auth anonyme
@@ -145,44 +181,32 @@ export default function SouratesClient({
     });
   }, [userId]);
 
-  // Écoute les favoris avec gestion d'erreur améliorée
+  // Écoute les favoris
   useEffect(() => {
-    if (!db || !userId) {
-      console.log("Pas de DB ou userId pour les favoris:", { db: !!db, userId });
-      return;
-    }
-    
+    if (!db || !userId) return;
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    if (!projectId) {
-      return;
-    }
+    if (!projectId) return;
 
     const favoritesRef = collection(
       db,
       `artifacts/${projectId}/users/${userId}/favorites`,
     );
     const unsubscribe = onSnapshot(
-      favoritesRef, 
+      favoritesRef,
       (snapshot) => {
         const favorites = new Set<number>();
         snapshot.forEach((doc) => {
-          // const data = doc.data();
           const chapterId = parseInt(doc.id);
-          if (!isNaN(chapterId)) {
-            favorites.add(chapterId);
-          }
+          if (!isNaN(chapterId)) favorites.add(chapterId);
         });
         setFavoriteChapters(favorites);
       },
       (error) => {
         console.error("Erreur lors de l'écoute des favoris:", error);
-      }
+      },
     );
-    
-    return () => {
-      console.log("Nettoyage de l'écoute des favoris");
-      unsubscribe();
-    };
+
+    return () => unsubscribe();
   }, [userId]);
 
   // Défilement vers le haut de la page au montage
@@ -195,66 +219,64 @@ export default function SouratesClient({
       const inputRect = searchInputRef.current.getBoundingClientRect();
       const offset = 20;
       const scrollPosition = window.scrollY + inputRect.top - offset;
-
-      window.scrollTo({
-        top: scrollPosition,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: scrollPosition, behavior: "smooth" });
     }
   }, []);
 
-  // Fonction pour gérer le changement du filtre audio et mettre à jour l'URL
+  const updateURLParams = (params: {
+    showAudio?: string;
+    showFavorites?: string;
+    showIncomplete?: string;
+  }) => {
+    const currentParams = new URLSearchParams(searchParams.toString());
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === undefined) currentParams.delete(key);
+      else currentParams.set(key, value);
+    });
+    router.replace(`?${currentParams.toString()}`);
+  };
+
   const toggleShowOnlyWithAudio = () => {
     const newState = !showOnlyWithAudio;
     setShowOnlyWithAudio(newState);
     updateURLParams({ showAudio: newState ? undefined : "all" });
   };
 
-  // Fonction pour gérer le changement du filtre favoris et mettre à jour l'URL
   const toggleShowOnlyFavorites = () => {
     const newState = !showOnlyFavorites;
     setShowOnlyFavorites(newState);
     updateURLParams({ showFavorites: newState ? "true" : undefined });
   };
 
-  // Fonction utilitaire pour mettre à jour les paramètres d'URL
-  const updateURLParams = (params: { showAudio?: string; showFavorites?: string }) => {
-    const currentParams = new URLSearchParams(searchParams.toString());
-    
-    Object.entries(params).forEach(([key, value]) => {
-      if (value === undefined) {
-        currentParams.delete(key);
-      } else {
-        currentParams.set(key, value);
-      }
-    });
-
-    router.replace(`?${currentParams.toString()}`);
+  const toggleShowOnlyIncomplete = () => {
+    const newState = !showOnlyIncomplete;
+    setShowOnlyIncomplete(newState);
+    if (allHaveAudio) {
+      // Défaut = actif → désactiver nécessite un param explicite
+      updateURLParams({ showIncomplete: newState ? undefined : "false" });
+    } else {
+      // Défaut = inactif → activer nécessite un param explicite
+      updateURLParams({ showIncomplete: newState ? "true" : undefined });
+    }
   };
 
-  // Fonction pour basculer le statut de favori d'un chapitre
   const toggleFavorite = async (chapterId: number, event: React.MouseEvent) => {
-    event.stopPropagation(); // Empêche la navigation vers le chapitre
-    
+    event.stopPropagation();
     if (!db || !userId) return;
-    
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
     if (!projectId) return;
 
     const favoriteRef = doc(
       db,
       `artifacts/${projectId}/users/${userId}/favorites`,
-      chapterId.toString()
+      chapterId.toString(),
     );
 
     try {
       if (favoriteChapters.has(chapterId)) {
         await deleteDoc(favoriteRef);
       } else {
-        await setDoc(favoriteRef, {
-          chapterId,
-          createdAt: new Date().toISOString(),
-        });
+        await setDoc(favoriteRef, { chapterId, createdAt: new Date().toISOString() });
       }
     } catch (error) {
       console.error("Erreur lors de la mise à jour des favoris:", error);
@@ -277,63 +299,30 @@ export default function SouratesClient({
 
   if (chaptersLoadError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 text-red-600">
+      <div className="flex min-h-screen items-center justify-center bg-white text-red-600">
         Erreur lors du chargement des chapitres. Veuillez réessayer.
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto mt-8 w-full rounded-lg bg-white p-4 shadow-lg">
+    <div className="container mx-auto pt-9 w-full bg-white p-4">
       <div className="mx-auto mb-8 flex w-fit items-start justify-center">
-  {/* Icône gauche */}
-  <div className=" shrink-0">
-    <Image
-      src="/coran.png"
-      alt="Coran fermé"
-      width={30}
-      height={30}
-      className="sm:hidden"
-    />
+        <div className="shrink-0">
+          <Image src="/coran.png" alt="Coran fermé" width={30} height={30} className="sm:hidden" />
+          <Image src="/coran.png" alt="Coran fermé" width={50} height={50} className="hidden sm:block" />
+        </div>
 
-    <Image
-      src="/coran.png"
-      alt="Coran fermé"
-      width={50}
-      height={50}
-      className="hidden sm:block"
-    />
-  </div>
-
-  {/* Titre */}
-  <h1 className="leading-[0.95] tracking-tight font-extrabold text-center text-gray-800 text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
-    
-    <span className="block w-fit -mr-2">
-      Chapitres
-    </span>
-
-    <span className="flex items-end justify-center gap-1 -ml-4">
-      <span>du Coran</span>
-
-      <div className="mb-1 shrink-0">
-        <Image
-          src="/coran_ouvert.png"
-          alt="Coran ouvert"
-          width={45}
-          height={45}
-          className="sm:hidden"
-        />
-
-        <Image
-          src="/coran_ouvert.png"
-          alt="Coran ouvert"
-          width={80}
-          height={80}
-          className="hidden sm:block"
-        />
-      </div>
-    </span>
-  </h1>
+        <h1 className="leading-[0.95] tracking-tight font-extrabold text-center text-gray-800 text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+          <span className="block w-fit -mr-2">Chapitres</span>
+          <span className="flex items-end justify-center gap-1 -ml-4">
+            <span>du Coran</span>
+            <div className="mb-1 shrink-0">
+              <Image src="/coran_ouvert.png" alt="Coran ouvert" width={45} height={45} className="sm:hidden" />
+              <Image src="/coran_ouvert.png" alt="Coran ouvert" width={80} height={80} className="hidden sm:block" />
+            </div>
+          </span>
+        </h1>
       </div>
 
       <QuickAccessBanner chapters={chapters} />
@@ -362,65 +351,81 @@ export default function SouratesClient({
           </div>
         </motion.div>
 
-        {/* Filtres avec statistiques */}
+        {/* Filtres */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.3 }}
-          className="flex flex-col gap-4 bg-gray-50 p-4 rounded-xl"
+          className="flex flex-col gap-3 bg-gray-50 p-4 rounded-xl"
         >
-          {/* Boutons de filtre */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {/* Filtre Audio */}
+          {/* Chips de filtre */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {/* Avec audio — masqué quand toutes les sourates ont un audio */}
+            {!allHaveAudio && (
+              <button
+                onClick={toggleShowOnlyWithAudio}
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
+                  showOnlyWithAudio
+                    ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+                    : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300"
+                }`}
+              >
+                <AudioLines size={15} />
+                Avec audio
+              </button>
+            )}
+
+            {/* Non complétés */}
             <button
-              onClick={toggleShowOnlyWithAudio}
-              className={`relative overflow-hidden rounded-full px-5 py-2.5 font-semibold text-white transition-all duration-300 ${
-                showOnlyWithAudio
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-blue-600 hover:bg-blue-700"
+              onClick={toggleShowOnlyIncomplete}
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
+                showOnlyIncomplete
+                  ? "bg-amber-500 border-amber-500 text-white shadow-sm"
+                  : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300"
               }`}
             >
-              <span className="relative z-10 flex items-center gap-2">
-                <AudioLines size={18} />
-                {showOnlyWithAudio
-                  ? "Afficher toutes les sourates"
-                  : "Afficher les sourates avec audio"}
-              </span>
+              <Hourglass size={15} />
+              Non complétés
             </button>
 
-            {/* Filtre Favoris */}
+            {/* Favoris */}
             <button
               onClick={toggleShowOnlyFavorites}
-              className={`relative overflow-hidden rounded-full px-5 py-2.5 font-semibold text-white transition-all duration-300 ${
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
                 showOnlyFavorites
-                  ? "bg-rose-600 hover:bg-rose-700"
-                  : "bg-gray-600 hover:bg-gray-700"
+                  ? "bg-rose-500 border-rose-500 text-white shadow-sm"
+                  : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300"
               }`}
             >
-              <span className="relative z-10 flex items-center gap-2">
-                <Heart size={18} fill={showOnlyFavorites ? "white" : "none"} />
-                {showOnlyFavorites
-                  ? "Afficher toutes les sourates"
-                  : "Afficher mes favoris"}
-              </span>
+              <Heart size={15} fill={showOnlyFavorites ? "white" : "none"} />
+              Favoris
             </button>
           </div>
 
           {/* Statistiques */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <span className="tabular-nums">{`${sourateIdsWithAudio.size} sourates avec audio`}</span>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-gray-500">
+            {!allHaveAudio && (
+              <>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span>{sourateIdsWithAudio.size} avec audio</span>
+                </div>
+                <div className="h-3 w-px bg-gray-300" />
+              </>
+            )}
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-amber-400" />
+              <span>{incompleteCount} non complétés</span>
             </div>
-            <div className="h-4 w-px bg-gray-300" />
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-rose-500" />
-              <span className="tabular-nums">{`${favoriteChapters.size} favoris`}</span>
+            <div className="h-3 w-px bg-gray-300" />
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>{completedCount} complétés</span>
             </div>
-            <div className="h-4 w-px bg-gray-300" />
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-gray-400" />
-              <span className="tabular-nums">{`${chapters.length - sourateIdsWithAudio.size} sans audio`}</span>
+            <div className="h-3 w-px bg-gray-300" />
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-rose-400" />
+              <span>{favoriteChapters.size} favoris</span>
             </div>
           </div>
         </motion.div>
@@ -481,7 +486,7 @@ export default function SouratesClient({
                     className={`absolute top-0 right-2 z-20 p-1.5 rounded-full transition-all duration-200 hover:scale-110 ${
                       isFavorite
                         ? "text-rose-500 hover:text-rose-600"
-                        : `${isFullyCompleted ? "text-white": "text-gray-400"} hover:text-rose-500`
+                        : `${isFullyCompleted ? "text-white" : "text-gray-400"} hover:text-rose-500`
                     }`}
                     title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
                   >
@@ -529,9 +534,7 @@ export default function SouratesClient({
                               ? "bg-progress-gradient"
                               : "border-amber-50 bg-green-500"
                           }`}
-                          style={{
-                            width: `${progressPercent}%`,
-                          }}
+                          style={{ width: `${progressPercent}%` }}
                         />
                       </div>
                       <span
@@ -572,11 +575,8 @@ export default function SouratesClient({
                           {chapter.translation}
                         </span>
                         <span className="font-mono text-xs">
-                          {" "}
-                          -{" "}
-                          <span className="font-semibold">
-                            {chapter.total_verses}
-                          </span>{" "}
+                          {" "}-{" "}
+                          <span className="font-semibold">{chapter.total_verses}</span>{" "}
                           versets
                         </span>
                       </p>
@@ -592,31 +592,16 @@ export default function SouratesClient({
                     </div>
                   </div>
                   <div className="ml-9">
-                    {/* Affichage conditionnel des icônes audio */}
                     {sourateIdsWithAudio.has(chapter.id) ? (
                       isFullyCompleted ? (
                         <div className="flex">
-                          <AudioLines
-                            size={18}
-                            strokeWidth={2.5}
-                            className="inline-block text-emerald-600 drop-shadow-sm"
-                          />
-                          <AudioLines
-                            size={18}
-                            strokeWidth={2.5}
-                            className="text-white stroke-white drop-shadow-sm"
-                          />
+                          <AudioLines size={18} strokeWidth={2.5} className="inline-block text-emerald-600 drop-shadow-sm" />
+                          <AudioLines size={18} strokeWidth={2.5} className="text-white stroke-white drop-shadow-sm" />
                         </div>
                       ) : (
                         <div className="flex">
-                          <AudioLines
-                            size={18}
-                            className="inline-block text-blue-500"
-                          />
-                          <AudioLines
-                            size={18}
-                            className="inline-block text-gray-400"
-                          />
+                          <AudioLines size={18} className="inline-block text-blue-500" />
+                          <AudioLines size={18} className="inline-block text-gray-400" />
                         </div>
                       )
                     ) : (
@@ -636,7 +621,9 @@ export default function SouratesClient({
             >
               {showOnlyFavorites && favoriteChapters.size === 0
                 ? "Vous n'avez pas encore de sourates favorites. Cliquez sur le cœur pour en ajouter !"
-                : "Aucun chapitre ne correspond à vos critères de recherche."}
+                : showOnlyIncomplete && incompleteCount === 0
+                  ? "Félicitations ! Vous avez complété toutes les sourates disponibles."
+                  : "Aucun chapitre ne correspond à vos critères de recherche."}
             </motion.li>
           )}
         </AnimatePresence>

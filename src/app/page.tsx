@@ -43,7 +43,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-1 md:p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white p-1 md:p-4">
       {" "}
       {/* Arrière-plan plus sobre */}
       {/* Conteneur principal reprenant le style des cartes de sourates */}
@@ -52,7 +52,7 @@ export default function HomePage() {
         animate="visible"
         variants={sectionVariants} // Utilise les variants pour l'animation d'entrée globale
         transition={{ delayChildren: 0.2, staggerChildren: 0.1 }}
-        className="mt-8 mb-8 w-full max-w-4xl rounded-lg bg-white p-6 text-center shadow-lg sm:p-10" // Classes de la page sourates
+        className="mt-8 mb-8 w-full max-w-4xl rounded-lg bg-white p-6 text-center sm:p-10" // Classes de la page sourates
       >
         {/* <NotificationPermission /> */}
         {/* Titre principal */}

@@ -69,15 +69,13 @@ export default function Header() {
                 transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.1 }}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
                 <Image
                   src="/fingerprint.webp"
                   alt="logo"
                   width={40}
                   height={40}
-                  className="rounded-full relative z-10 ring-2 ring-gray-200 group-hover:ring-blue-400 transition-all duration-300"
+                  className="rounded-full ring-2 ring-gray-200 group-hover:ring-gray-400 transition-all duration-300"
                   priority
                 />
               </motion.div>
@@ -86,10 +84,9 @@ export default function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.2 }}
               >
-                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900">
+                <span className="text-2xl font-black text-gray-900">
                   Tafsir
                 </span>
-                <div className="h-1 w-0 group-hover:w-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 rounded-full" />
               </motion.div>
             </Link>
 
@@ -117,7 +114,7 @@ export default function Header() {
                           {isActive && (
                             <motion.div
                               layoutId="activeTab"
-                              className="absolute inset-0 bg-gradient-to-r from-[#f28d00] via-[#f08800] to-[#e83d13] rounded-xl shadow-sm"
+                              className="absolute inset-0 bg-[#f08800] rounded-xl shadow-sm"
                               transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             />
                           )}
@@ -182,7 +179,7 @@ export default function Header() {
                       whileTap={{ scale: 0.98 }}
                       className={`flex items-center gap-3 px-5 py-4 rounded-xl font-semibold transition-all duration-300 ${
                         isActive
-                          ? "bg-gradient-to-r from-[#f28d00] via-[#f08800] to-[#e83d13] text-white shadow-sm"
+                          ? "bg-[#f08800] text-white shadow-sm"
                           : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                       }`}
                     >
