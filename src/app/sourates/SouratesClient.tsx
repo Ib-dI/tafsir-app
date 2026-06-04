@@ -59,10 +59,7 @@ export default function SouratesClient({
     initialShowAudio && !allHaveAudio,
   );
   const [showOnlyFavorites, setShowOnlyFavorites] = useState<boolean>(initialShowFavorites);
-  // Actif par défaut quand toutes les sourates ont un audio
-  const [showOnlyIncomplete, setShowOnlyIncomplete] = useState<boolean>(
-    allHaveAudio ? initialShowAudio : false,
-  );
+  const [showOnlyIncomplete, setShowOnlyIncomplete] = useState<boolean>(false);
 
   const [completedChaptersByPartId, setCompletedChaptersByPartId] = useState<Set<string>>(
     new Set(),
@@ -101,8 +98,7 @@ export default function SouratesClient({
   useEffect(() => {
     if (allHaveAudio) {
       setShowOnlyWithAudio(false);
-      // Quand tout est disponible, le filtre "non complétés" est actif par défaut (sauf si désactivé manuellement)
-      setShowOnlyIncomplete(searchParams.get("showIncomplete") !== "false");
+      setShowOnlyIncomplete(searchParams.get("showIncomplete") === "true");
     } else {
       setShowOnlyWithAudio(searchParams.get("showAudio") !== "all");
       setShowOnlyIncomplete(searchParams.get("showIncomplete") === "true");
@@ -251,13 +247,7 @@ export default function SouratesClient({
   const toggleShowOnlyIncomplete = () => {
     const newState = !showOnlyIncomplete;
     setShowOnlyIncomplete(newState);
-    if (allHaveAudio) {
-      // Défaut = actif → désactiver nécessite un param explicite
-      updateURLParams({ showIncomplete: newState ? undefined : "false" });
-    } else {
-      // Défaut = inactif → activer nécessite un param explicite
-      updateURLParams({ showIncomplete: newState ? "true" : undefined });
-    }
+    updateURLParams({ showIncomplete: newState ? "true" : undefined });
   };
 
   const toggleFavorite = async (chapterId: number, event: React.MouseEvent) => {
