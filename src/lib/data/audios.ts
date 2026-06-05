@@ -1,5 +1,5 @@
 // Mettre à jour cette liste à chaque fois qu'un nouvel audio est ajouté (du plus récent au plus ancien)
-export const recentlyAddedIds: number[] = [10, 38, 15, 39, 35, 29, 27, 37, 26, 19, 17, 30, 21, 42];
+export const recentlyAddedIds: number[] = [34, 38, 15, 39, 35, 29, 27, 37, 26, 19, 17, 30, 21, 42];
 
 export const audiosTafsir = [
   {
