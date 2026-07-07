@@ -2774,7 +2774,7 @@ export const audiosTafsir = [
       {
         id: "hud-3",
         title: "Hud - Partie 3",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Hud-part3.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Hud-part3-c.ogg",
         timings: [
           { id: 23, startTime: 60.30, endTime: 117.99 },
           { id: 24, startTime: 117.99, endTime: 195.27 },
