@@ -3,10 +3,11 @@
 import { audiosTafsir } from "@/lib/data/audios";
 import Image from "next/image"
 import QuickAccessBanner from "@/components/QuickAccessBanner";
-import { auth, db } from "@/lib/firebase";
+import { resetChapterProgress as resetChapterProgressInFirestore } from "@/lib/data/progress";
+import { useUserId } from "@/hooks/useUserId";
+import { useAllProgress } from "@/hooks/useAllProgress";
+import { useFavorites } from "@/hooks/useFavorites";
 import type { SimpleChapterIndexEntry } from "@/lib/quranSimpleApi";
-import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
-import { collection, onSnapshot, doc, setDoc, deleteDoc, getDocs, query, where } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
 import ResetProgressDialog from "@/components/ResetProgressDialog";
 import { AudioLines, Hourglass, RotateCcw, Search, Heart } from "lucide-react";
@@ -61,11 +62,9 @@ export default function SouratesClient({
   const [showOnlyFavorites, setShowOnlyFavorites] = useState<boolean>(initialShowFavorites);
   const [showOnlyIncomplete, setShowOnlyIncomplete] = useState<boolean>(false);
 
-  const [completedChaptersByPartId, setCompletedChaptersByPartId] = useState<Set<string>>(
-    new Set(),
-  );
-  const [favoriteChapters, setFavoriteChapters] = useState<Set<number>>(new Set());
-  const [userId, setUserId] = useState<string | null>(null);
+  const { userId } = useUserId();
+  const completedChaptersByPartId = useAllProgress(userId);
+  const { favoriteChapters, toggleFavorite: persistFavoriteToggle } = useFavorites(userId);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const sourateIdsWithAudio = useMemo(
@@ -145,66 +144,6 @@ export default function SouratesClient({
     completedChaptersByPartId,
   ]);
 
-  // Auth anonyme
-  useEffect(() => {
-    if (!auth) return;
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) setUserId(user.uid);
-      else {
-        await signInAnonymously(auth);
-        setUserId(auth.currentUser?.uid ?? null);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Écoute la progression
-  useEffect(() => {
-    if (!db || !userId) return;
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    if (!projectId) return;
-    const progressRef = collection(
-      db,
-      `artifacts/${projectId}/users/${userId}/progress`,
-    );
-    return onSnapshot(progressRef, (snapshot) => {
-      const completed = new Set<string>();
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.partId) completed.add(data.partId);
-      });
-      setCompletedChaptersByPartId(completed);
-    });
-  }, [userId]);
-
-  // Écoute les favoris
-  useEffect(() => {
-    if (!db || !userId) return;
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    if (!projectId) return;
-
-    const favoritesRef = collection(
-      db,
-      `artifacts/${projectId}/users/${userId}/favorites`,
-    );
-    const unsubscribe = onSnapshot(
-      favoritesRef,
-      (snapshot) => {
-        const favorites = new Set<number>();
-        snapshot.forEach((doc) => {
-          const chapterId = parseInt(doc.id);
-          if (!isNaN(chapterId)) favorites.add(chapterId);
-        });
-        setFavoriteChapters(favorites);
-      },
-      (error) => {
-        console.error("Erreur lors de l'écoute des favoris:", error);
-      },
-    );
-
-    return () => unsubscribe();
-  }, [userId]);
-
   // Défilement vers le haut de la page au montage
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -252,39 +191,23 @@ export default function SouratesClient({
 
   const toggleFavorite = async (chapterId: number, event: React.MouseEvent) => {
     event.stopPropagation();
-    if (!db || !userId) return;
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    if (!projectId) return;
-
-    const favoriteRef = doc(
-      db,
-      `artifacts/${projectId}/users/${userId}/favorites`,
-      chapterId.toString(),
-    );
-
     try {
-      if (favoriteChapters.has(chapterId)) {
-        await deleteDoc(favoriteRef);
-      } else {
-        await setDoc(favoriteRef, { chapterId, createdAt: new Date().toISOString() });
-      }
+      await persistFavoriteToggle(chapterId);
     } catch (error) {
       console.error("Erreur lors de la mise à jour des favoris:", error);
     }
   };
 
   const resetChapterProgress = async (targetChapterId: number) => {
-    if (!db || !userId) return;
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    if (!projectId) return;
-
-    const progressRef = collection(
-      db,
-      `artifacts/${projectId}/users/${userId}/progress`,
-    );
-    const q = query(progressRef, where("chapterId", "==", targetChapterId));
-    const snapshot = await getDocs(q);
-    await Promise.all(snapshot.docs.map((d) => deleteDoc(d.ref)));
+    if (!userId) return;
+    try {
+      await resetChapterProgressInFirestore(targetChapterId, userId);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la réinitialisation de la progression du chapitre:",
+        error,
+      );
+    }
   };
 
   if (chaptersLoadError) {

@@ -11,26 +11,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { auth, db } from "@/lib/firebase";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AnimatedBackButton from "./AnimatedBackButton";
 
-// Importations Firestore spécifiques pour les opérations
-import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
+import { useUserId } from "@/hooks/useUserId";
+import { useChapterProgress } from "@/hooks/useChapterProgress";
 import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  onSnapshot,
-  query,
-  serverTimestamp,
-  setDoc,
-  where,
-} from "firebase/firestore";
+  markPartCompleted,
+  resetChapterProgress as resetChapterProgressInFirestore,
+  resetPartProgress as resetPartProgressInFirestore,
+} from "@/lib/data/progress";
 
 import { SourateInteractiveContentProps, TafsirAudioPart, AudioControls } from "@/types/types";
 import type { Verse } from "@/types/types";
@@ -156,12 +149,9 @@ export default function SourateInteractiveContent({
   const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
     () => buildAudioParts(initialAudioParts, initialVerses)[0] ?? null,
   );
-  const [userId, setUserId] = useState<string | null>(null);
-  const [isAuthReady, setIsAuthReady] = useState(false);
+  const { userId, isAuthReady } = useUserId();
   const isMobile = useMediaQuery("(max-width: 767px)");
-  const [completedPartIds, setCompletedPartIds] = useState<Set<string>>(
-    new Set(),
-  );
+  const completedPartIds = useChapterProgress(chapterId, userId);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [isVerseContainerAtTop, setIsVerseContainerAtTop] = useState(true);
 
@@ -177,17 +167,15 @@ export default function SourateInteractiveContent({
     audioControlsRef.current?.pause();
     audioControlsRef.current?.resetFinishState();
 
-    if (!db || !userId) return;
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    if (!projectId) return;
-
-    const progressRef = collection(
-      db,
-      `artifacts/${projectId}/users/${userId}/progress`,
-    );
-    const q = query(progressRef, where("chapterId", "==", chapterId));
-    const snapshot = await getDocs(q);
-    await Promise.all(snapshot.docs.map((d) => deleteDoc(d.ref)));
+    if (!userId) return;
+    try {
+      await resetChapterProgressInFirestore(chapterId, userId);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la réinitialisation de la progression du chapitre:",
+        error,
+      );
+    }
   }, [userId, chapterId]);
 
   const resetPartProgress = useCallback(
@@ -197,12 +185,12 @@ export default function SourateInteractiveContent({
         audioControlsRef.current?.pause();
         audioControlsRef.current?.resetFinishState();
       }
-      if (!db || !userId) return;
-      const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-      if (!projectId) return;
-      await deleteDoc(
-        doc(db, `artifacts/${projectId}/users/${userId}/progress/${partId}`),
-      );
+      if (!userId) return;
+      try {
+        await resetPartProgressInFirestore(partId, userId);
+      } catch (error) {
+        console.error("Erreur lors de la réinitialisation de la partie:", error);
+      }
     },
     [selectedPart, userId],
   );
@@ -241,118 +229,14 @@ export default function SourateInteractiveContent({
     }
   }, [selectedPart]);
 
-  // useEffect: Gère l'authentification et récupère l'ID utilisateur
-  useEffect(() => {
-    if (!auth) {
-      console.error(
-        "SourateInteractiveContent: ERREUR - Firebase Auth n'est pas initialisé. Vérifiez src/lib/firebase.ts et .env.local.",
-      );
-      setUserId(crypto.randomUUID());
-      setIsAuthReady(true);
-      return;
-    }
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUserId(user.uid);
-      } else {
-        console.log(
-          "SourateInteractiveContent: Aucun utilisateur Firebase. Tentative de connexion anonyme...",
-        );
-        try {
-          await signInAnonymously(auth);
-          const newUid = auth.currentUser?.uid;
-          setUserId(newUid || crypto.randomUUID());
-        } catch (error) {
-          console.error(
-            "SourateInteractiveContent: ERREUR - Erreur d'authentification anonyme Firebase:",
-            error,
-          );
-          setUserId(crypto.randomUUID());
-        }
-      }
-      setIsAuthReady(true);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  // useEffect: Écoute les changements de progression depuis Firestore
-  useEffect(() => {
-    if (!isAuthReady || !db || !userId) {
-      return;
-    }
-
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    if (!projectId) {
-      console.error(
-        "SourateInteractiveContent: ERREUR - NEXT_PUBLIC_FIREBASE_PROJECT_ID n'est pas défini. Vérifiez .env.local.",
-      );
-      return;
-    }
-
-    const progressCollectionRef = collection(
-      db,
-      `artifacts/${projectId}/users/${userId}/progress`,
-    );
-    const q = query(progressCollectionRef, where("chapterId", "==", chapterId));
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const newCompletedPartIds = new Set<string>();
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.partId) {
-            newCompletedPartIds.add(data.partId);
-          }
-        });
-        setCompletedPartIds(newCompletedPartIds);
-      },
-      (error: Error) => {
-        console.error(
-          "SourateInteractiveContent: ERREUR d'écoute de la progression Firestore:",
-          error,
-        );
-      },
-    );
-
-    return () => unsubscribe();
-  }, [isAuthReady, userId, chapterId]);
-
   // Fonction pour marquer une partie comme complétée
   const markPartAsCompleted = useCallback(
     async (completedChapterId: number, completedPartId: string) => {
-      console.log(
-        "markPartAsCompleted called",
-        completedChapterId,
-        completedPartId,
-      );
-      if (!db || !userId) {
-        console.warn(
-          "SourateInteractiveContent: AVERTISSEMENT - Firestore ou User ID non disponible. Impossible de marquer la partie comme complétée.",
-        );
-        return;
-      }
-
-      const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-      if (!projectId) {
-        console.error("Project ID not found");
-        return;
-      }
-
+      if (!userId) return;
       try {
-        const progressRef = doc(
-          db,
-          `artifacts/${projectId}/users/${userId}/progress/${completedPartId}`,
-        );
-        await setDoc(progressRef, {
-          chapterId: completedChapterId,
-          partId: completedPartId,
-          completedAt: serverTimestamp(),
-        });
+        await markPartCompleted(completedChapterId, completedPartId, userId);
       } catch (error) {
-        console.error("Error marking part as completed:", error);
+        console.error("Erreur lors du marquage de la partie comme complétée:", error);
       }
     },
     [userId],
@@ -537,7 +421,7 @@ export default function SourateInteractiveContent({
 
   return (
     <div className="container mx-auto">
-      {!isAuthReady || !db || !userId ? (
+      {!isAuthReady || !userId ? (
         <div className="flex min-h-screen items-center justify-center bg-gray-50 text-blue-600">
           <LoadingSpinner
             size="lg"
