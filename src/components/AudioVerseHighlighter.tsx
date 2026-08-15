@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useSound from "use-sound";
 import { PauseIcon } from "./icons/PauseIcon";
 import { PlayIcon } from "./icons/PlayIcon";
-import SpeedControl from "./SpeedControl";
+import SettingsDrawer from "./SettingsDrawer";
 import { useMediaQuery } from "./UseMediaQuery";
 import VerseItem, { toArabicNumerals } from "./VerseItem";
 
@@ -397,9 +397,9 @@ const AudioVerseHighlighter = ({
               <div className="font-mono text-xs whitespace-nowrap text-gray-600 md:text-sm">
                 {formatTime(audioPlayback.currentTime)} / {formatTime(audioPlayback.duration)}
               </div>
-              <SpeedControl
+              <SettingsDrawer
                 playbackRate={audioPlayback.playbackRate}
-                onChange={audioPlayback.setPlaybackRate}
+                onPlaybackRateChange={audioPlayback.setPlaybackRate}
               />
             </div>
           </div>
