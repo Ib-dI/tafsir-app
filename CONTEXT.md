@@ -11,6 +11,9 @@ Segment audio d'un chapitre, identifié par un `partId` unique. Une partie sans 
 ### Progression complétée (Completed Part)
 Une partie est "complétée" quand son audio a été écouté jusqu'à la fin. Stockée dans Firestore sous `progress/${partId}` avec `chapterId` et `completedAt`.
 
+### Position de lecture (Playback Position)
+Dernier instant écouté (en secondes) au sein d'une partie audio, sauvegardé dans `localStorage` (une seule position par chapitre, périmée après 24h). Distincte de la "Progression complétée" : la Position de lecture sert à reprendre l'écoute là où l'utilisateur s'est arrêté (y compris avant la fin d'une partie), alors que la Progression complétée marque qu'une partie a été intégralement écoutée. Gérée par `src/lib/data/playbackPosition.ts` et restaurée par `useAudioPlayback` (`src/hooks/useAudioPlayback.ts`). Effacée lors d'une navigation manuelle vers une autre partie, ou quand le chapitre est entièrement terminé.
+
 ### Chapitre avec progression (Chapter with Progress)
 Un chapitre dont au moins une partie audio est complétée (`completedParts >= 1`). Le bouton de réinitialisation est visible dès cet état, que le chapitre soit partiellement ou entièrement terminé.
 

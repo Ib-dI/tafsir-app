@@ -1,15 +1,13 @@
 "use client";
 
 import { audiosTafsir, recentlyAddedIds } from "@/lib/data/audios";
+import { loadLastPlaybackPosition } from "@/lib/data/playbackPosition";
 import type { SimpleChapterIndexEntry } from "@/lib/quranSimpleApi";
-import type { ProgressData } from "@/types/types";
+import type { PlaybackPosition } from "@/types/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, Play, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const PROGRESS_KEY = "audioVerseProgress:v1";
-const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 
 function formatTime(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -29,21 +27,12 @@ interface QuickAccessBannerProps {
 
 export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) {
   const router = useRouter();
-  const [lastListened, setLastListened] = useState<ProgressData | null>(null);
+  const [lastListened, setLastListened] = useState<PlaybackPosition | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    try {
-      const raw = localStorage.getItem(PROGRESS_KEY);
-      if (!raw) return;
-      const data: ProgressData = JSON.parse(raw);
-      if (Date.now() - data.timestamp <= TWENTY_FOUR_HOURS) {
-        setLastListened(data);
-      }
-    } catch {
-      // localStorage indisponible ou données corrompues
-    }
+    setLastListened(loadLastPlaybackPosition());
   }, []);
 
   const lastAddedAudio = audiosTafsir.find((a) => a.id === recentlyAddedIds[0]);

@@ -24,6 +24,7 @@ import {
   resetChapterProgress as resetChapterProgressInFirestore,
   resetPartProgress as resetPartProgressInFirestore,
 } from "@/lib/data/progress";
+import { clearPlaybackPosition, loadPlaybackPosition } from "@/lib/data/playbackPosition";
 
 import { SourateInteractiveContentProps, TafsirAudioPart, AudioControls } from "@/types/types";
 import type { Verse } from "@/types/types";
@@ -146,9 +147,12 @@ export default function SourateInteractiveContent({
     buildAudioParts(initialAudioParts, initialVerses),
   );
 
-  const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
-    () => buildAudioParts(initialAudioParts, initialVerses)[0] ?? null,
-  );
+  const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(() => {
+    const parts = buildAudioParts(initialAudioParts, initialVerses);
+    const savedPosition = loadPlaybackPosition(chapterId);
+    const savedPart = savedPosition ? parts[savedPosition.currentPartIndex] : undefined;
+    return savedPart ?? parts[0] ?? null;
+  });
   const { userId, isAuthReady } = useUserId();
   const isMobile = useMediaQuery("(max-width: 767px)");
   const completedPartIds = useChapterProgress(chapterId, userId);
@@ -156,7 +160,6 @@ export default function SourateInteractiveContent({
   const [isVerseContainerAtTop, setIsVerseContainerAtTop] = useState(true);
 
   const buttonRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
-  const navigateToPartRef = useRef<((partIndex: number) => void) | null>(null);
   const audioControlsRef = useRef<AudioControls | null>(null);
 
   const handleRegisterAudioControls = useCallback((controls: AudioControls) => {
@@ -202,13 +205,6 @@ export default function SourateInteractiveContent({
 
   const [isSelectOpen, setIsSelectOpen] = useState(false);
 
-  const handleNavigateToPart = useCallback(
-    (navigateFunction: (partIndex: number) => void) => {
-      navigateToPartRef.current = navigateFunction;
-    },
-    [],
-  );
-
   // Défilement vers le haut de la page lorsque la partie sélectionnée change
   useEffect(() => {
     if (selectedPart) {
@@ -242,9 +238,10 @@ export default function SourateInteractiveContent({
     [userId],
   );
 
-  // Setter pur — passé comme onPartChange à AudioVerseHighlighter.
-  // Ne passe PAS par navigateToPartRef pour éviter la récursion :
-  // navigateToPart (AVH) → onPartChange → setPartByIndex → setSelectedPart ✓
+  // Setter pur — passé comme onPartChange à AudioVerseHighlighter, utilisé
+  // pour l'avancement automatique de partie (fin de lecture). N'efface pas
+  // la position de lecture (déjà géré par AudioVerseHighlighter) — voir
+  // handlePartChange pour la navigation manuelle.
   const setPartByIndex = useCallback(
     (newPartIndex: number) => {
       if (newPartIndex >= 0 && newPartIndex < audioParts.length) {
@@ -254,16 +251,13 @@ export default function SourateInteractiveContent({
     [audioParts],
   );
 
-  // Handler complet pour les boutons/select du parent.
-  // Passe par navigateToPartRef si disponible (pour que AVH fasse son cleanup
-  // hasManualNavigation + clearProgress), sinon bascule sur setPartByIndex.
+  // Handler complet pour les boutons/select du parent : une navigation
+  // manuelle efface la position de lecture sauvegardée, pour qu'elle ne
+  // pointe pas vers une autre partie que celle choisie par l'utilisateur.
   const handlePartChange = useCallback(
     (newPartIndex: number) => {
-      if (navigateToPartRef.current) {
-        navigateToPartRef.current(newPartIndex);
-      } else {
-        setPartByIndex(newPartIndex);
-      }
+      clearPlaybackPosition();
+      setPartByIndex(newPartIndex);
     },
     [setPartByIndex],
   );
@@ -765,7 +759,6 @@ export default function SourateInteractiveContent({
               currentPartIndex={currentPartIndex}
               totalParts={audioParts.length}
               onPartChange={setPartByIndex}
-              onNavigateToPart={handleNavigateToPart}
               onPlayingChange={setIsAudioPlaying}
               onAtTopChange={setIsVerseContainerAtTop}
               onRegisterAudioControls={handleRegisterAudioControls}

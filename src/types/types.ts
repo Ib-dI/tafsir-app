@@ -56,20 +56,18 @@ export type AudioVerseHighlighterProps = {
   currentPartIndex: number;
   totalParts: number;
   onPartChange?: (partIndex: number) => void;
-  onNavigateToPart?: (navigateFunction: (partIndex: number) => void) => void;
   onPlayingChange?: (isPlaying: boolean) => void;
   onAtTopChange?: (isAtTop: boolean) => void;
   onRegisterAudioControls?: (controls: AudioControls) => void;
 };
 
-export interface ProgressData {
+export interface PlaybackPosition {
   chapterId: number;
   partId: string;
   currentTime: number;
   timestamp: number;
   audioUrl: string;
   currentPartIndex: number;
-  totalParts: number;
 }
 
 export type AudioControls = {

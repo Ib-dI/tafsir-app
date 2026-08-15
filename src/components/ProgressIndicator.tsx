@@ -1,53 +1,39 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { PlaybackPosition } from "@/types/types";
 
 interface ProgressIndicatorProps {
-    loadProgress: () => { chapterId: number; currentPartIndex: number } | null;
-    clearProgressManually: () => void;
-    currentChapterId: number ;
-    currentPartIndex: number ;
+    restoredPosition: PlaybackPosition | null;
+    resetPlaybackPosition: () => void;
     audioUrl: string | null;
-    isRestoringProgress: boolean;
     isMobile: boolean;
 }
 
-
 const ProgressIndicator = ({
-    loadProgress,
-    clearProgressManually,
-    currentChapterId,
-    currentPartIndex,
+    restoredPosition,
+    resetPlaybackPosition,
     audioUrl,
-    isRestoringProgress,
     isMobile,
 }: ProgressIndicatorProps) => {
-    const [hasSavedProgress, setHasSavedProgress] = useState(false);
-    const [savedPartIndex, setSavedPartIndex] = useState<number | null>(null);
     const [showToast, setShowToast] = useState(false);
 
     useEffect(() => {
-      const progress = loadProgress();
-      const hasProgress = !!progress && Number(progress.chapterId) === currentChapterId;
-      setHasSavedProgress(hasProgress);
-      setSavedPartIndex(progress?.currentPartIndex ?? null);
-      
-      // Afficher le toast si on a une progression sauvegardée et que l'audio est disponible
-      if (hasProgress && audioUrl && !isRestoringProgress) {
+      if (restoredPosition && audioUrl) {
         setShowToast(true);
-        
+
         // Masquer le toast après 5 secondes
         const timer = setTimeout(() => {
           setShowToast(false);
         }, 5000);
-        
+
         return () => clearTimeout(timer);
       } else {
         setShowToast(false);
       }
-    }, [loadProgress, currentChapterId, currentPartIndex, audioUrl, isRestoringProgress]);
+    }, [restoredPosition, audioUrl]);
 
-    if (!hasSavedProgress || !audioUrl || isRestoringProgress || !showToast) return null;
+    if (!restoredPosition || !audioUrl || !showToast) return null;
 
     return (
       <AnimatePresence>
@@ -62,10 +48,10 @@ const ProgressIndicator = ({
             <div className="flex items-center gap-2 bg-green-100 text-green-800 text-xs px-3 py-2 rounded-full shadow-lg border border-green-200">
               <Info className="h-3 w-3" />
               <span className="whitespace-nowrap">
-                Partie {savedPartIndex !== null ? savedPartIndex + 1 : '?'} sauvegardée
+                Partie {restoredPosition.currentPartIndex + 1} sauvegardée
               </span>
-              <button 
-                onClick={clearProgressManually}
+              <button
+                onClick={resetPlaybackPosition}
                 className="text-green-600 hover:text-green-800 text-xs underline ml-1"
                 title="Effacer la progression"
               >
