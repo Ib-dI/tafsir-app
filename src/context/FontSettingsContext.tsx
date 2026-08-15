@@ -13,6 +13,7 @@ interface FontSettingsContextValue {
   fontScaleIndex: number;
   increaseFontScale: () => void;
   decreaseFontScale: () => void;
+  resetFontScale: () => void;
 }
 
 const FontSettingsContext = createContext<FontSettingsContextValue | null>(null);
@@ -44,10 +45,11 @@ export function FontSettingsProvider({ children }: { children: ReactNode }) {
   const increaseFontScale = () =>
     setFontScaleIndex((i) => Math.min(i + 1, FONT_SCALE_STEPS_MOBILE.length - 1));
   const decreaseFontScale = () => setFontScaleIndex((i) => Math.max(i - 1, 0));
+  const resetFontScale = () => setFontScaleIndex(DEFAULT_FONT_SCALE_INDEX);
 
   return (
     <FontSettingsContext.Provider
-      value={{ fontScaleIndex, increaseFontScale, decreaseFontScale }}
+      value={{ fontScaleIndex, increaseFontScale, decreaseFontScale, resetFontScale }}
     >
       {children}
     </FontSettingsContext.Provider>
