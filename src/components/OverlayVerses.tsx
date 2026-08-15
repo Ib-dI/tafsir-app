@@ -51,7 +51,7 @@ const OverlayVerses = ({
             className="animate-fade-in mx-2 flex max-h-fit w-full max-w-2xl flex-col items-end rounded-lg border border-yellow-400 bg-yellow-50 px-4 py-3 shadow-lg"
             style={{ direction: "rtl" }}
           >
-            <div className="font-uthmanic verse-arabic-text flex items-center gap-1 text-right leading-relaxed text-gray-800">
+            <div className="verse-arabic-text flex items-center gap-1 text-right leading-relaxed text-gray-800">
               <span>
                 {currentVerse.text} {toArabicNumerals(currentVerse.id)}
               </span>

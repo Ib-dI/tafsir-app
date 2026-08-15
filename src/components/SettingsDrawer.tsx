@@ -11,7 +11,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Counter } from "@/components/ui/counter";
-import { useFontSettings, FONT_SCALE_STEPS_MOBILE } from "@/context/FontSettingsContext";
+import {
+  useFontSettings,
+  FONT_SCALE_STEPS_MOBILE,
+  type ArabicScript,
+} from "@/context/FontSettingsContext";
 import { useMediaQuery } from "./UseMediaQuery";
 
 const SPEEDS = [1, 1.25, 1.5, 1.75, 2] as const;
@@ -22,11 +26,11 @@ const PREVIEW_VERSE = {
     "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux",
 };
 
-const ARABIC_SCRIPTS = [
+const ARABIC_SCRIPTS: { id: ArabicScript | "tajweed"; label: string; enabled: boolean }[] = [
   { id: "uthmani", label: "Uthmani", enabled: true },
-  { id: "indopak", label: "IndoPak", enabled: false },
+  { id: "indopak", label: "IndoPak", enabled: true },
   { id: "tajweed", label: "Tajweed", enabled: false },
-] as const;
+];
 
 interface SettingsDrawerProps {
   playbackRate: number;
@@ -37,8 +41,14 @@ export default function SettingsDrawer({
   playbackRate,
   onPlaybackRateChange,
 }: SettingsDrawerProps) {
-  const { fontScaleIndex, increaseFontScale, decreaseFontScale, resetFontScale } =
-    useFontSettings();
+  const {
+    fontScaleIndex,
+    increaseFontScale,
+    decreaseFontScale,
+    resetFontScale,
+    arabicScript,
+    setArabicScript,
+  } = useFontSettings();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const speedIndex = SPEEDS.indexOf(playbackRate as (typeof SPEEDS)[number]);
@@ -77,7 +87,7 @@ export default function SettingsDrawer({
           <div className="rounded-2xl bg-[#3D3226]/5 p-4">
             <p className="mb-3 text-xs font-medium text-[#3D3226]/60">Aperçu :</p>
             <div
-              className="font-uthmanic verse-arabic-text mb-3 text-right leading-relaxed"
+              className="verse-arabic-text mb-3 text-right leading-relaxed"
               style={{ direction: "rtl" }}
             >
               {PREVIEW_VERSE.text}
@@ -87,21 +97,31 @@ export default function SettingsDrawer({
 
           {/* Choix du script arabe */}
           <div className="flex items-center gap-1 rounded-full bg-[#3D3226]/8 p-1">
-            {ARABIC_SCRIPTS.map((script) => (
-              <button
-                key={script.id}
-                type="button"
-                disabled={!script.enabled}
-                title={script.enabled ? undefined : "Bientôt disponible"}
-                className={`flex-1 rounded-full py-2 text-sm font-medium transition-colors ${
-                  script.enabled
-                    ? "bg-white text-[#3D3226] shadow-sm"
-                    : "cursor-not-allowed text-[#3D3226]/35"
-                }`}
-              >
-                {script.label}
-              </button>
-            ))}
+            {ARABIC_SCRIPTS.map((script) => {
+              const isSelected = script.enabled && script.id === arabicScript;
+              return (
+                <button
+                  key={script.id}
+                  type="button"
+                  disabled={!script.enabled}
+                  title={script.enabled ? undefined : "Bientôt disponible"}
+                  onClick={
+                    script.enabled
+                      ? () => setArabicScript(script.id as ArabicScript)
+                      : undefined
+                  }
+                  className={`flex-1 rounded-full py-2 text-sm font-medium transition-colors ${
+                    isSelected
+                      ? "bg-white text-[#3D3226] shadow-sm"
+                      : script.enabled
+                        ? "text-[#3D3226]/60 hover:text-[#3D3226]"
+                        : "cursor-not-allowed text-[#3D3226]/35"
+                  }`}
+                >
+                  {script.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Taille de police */}

@@ -5,6 +5,12 @@
   font-display: swap;
 }
 @font-face {
+  font-family: 'IndoPak';
+  src: url('/fonts/indopak.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
   font-family: 'Surah';
   src: url('/fonts/surah-name-v4.ttf') format('truetype');
   font-weight: 400;
@@ -42,6 +48,7 @@
 @theme {
 
   --font-uthmanic: Uthmanic;
+  --font-indopak: IndoPak;
   --font-sura: Surah;
   --font-sura-colors: SurahColors;
   --font-quran: QuranKarim114;
@@ -51,6 +58,7 @@
 
 .verse-arabic-text {
   font-size: var(--verse-arabic-font-size-mobile, 23.5px);
+  font-family: var(--verse-arabic-font-family, Uthmanic);
 }
 
 @media (min-width: 768px) {

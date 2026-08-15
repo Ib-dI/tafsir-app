@@ -86,7 +86,7 @@ const VerseItem = React.memo(
             </span>
           )}
           <div
-            className="font-uthmanic verse-arabic-text mt-2 flex items-center text-right leading-relaxed text-gray-800 md:gap-1"
+            className="verse-arabic-text mt-2 flex items-center text-right leading-relaxed text-gray-800 md:gap-1"
             style={{ direction: "rtl" }}
           >
             <span style={{ direction: "rtl" }}>
