@@ -1,6 +1,6 @@
 # Réglages taille du texte arabe + vitesse de lecture (drawer) — Plan d'implémentation
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 >
 > **Ne pas implémenter avant confirmation explicite de l'utilisateur** — ce plan a été écrit pendant que d'autres modifications étaient en cours sur le repo (`SouratesClient.tsx`, `SourateInteractiveContent.tsx` modifiés non commités, `src/lib/chapterProgress.ts` non suivi au moment de l'écriture). Vérifier `git status` avant de commencer et resynchroniser le plan si ces fichiers ont bougé entre-temps.
 
@@ -40,13 +40,13 @@
 **Files:**
 - Install: `src/components/ui/sheet.tsx`
 
-- [ ] **Step 1 : Installer via shadcn**
+- [x] **Step 1 : Installer via shadcn**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && npx shadcn@latest add sheet
 ```
 
-- [ ] **Step 2 : Vérifier le fichier créé et son API**
+- [x] **Step 2 : Vérifier le fichier créé et son API**
 
 ```bash
 cat /Users/ibrahim/Documents/Projets/tafsir-app/src/components/ui/sheet.tsx
@@ -54,7 +54,7 @@ cat /Users/ibrahim/Documents/Projets/tafsir-app/src/components/ui/sheet.tsx
 
 Confirmer que `SheetContent` accepte bien une prop `side` (`"top" | "right" | "bottom" | "left"`) et que `Sheet`, `SheetTrigger`, `SheetContent`, `SheetHeader`, `SheetTitle` sont exportés. Adapter les noms dans les tasks suivantes si l'API générée diffère.
 
-- [ ] **Step 3 : Commit**
+- [x] **Step 3 : Commit**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/ui/sheet.tsx && git commit -m "feat: install shadcn sheet component"
@@ -67,7 +67,7 @@ cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/ui/shee
 **Files:**
 - Create: `src/context/FontSettingsContext.tsx`
 
-- [ ] **Step 1 : Créer le fichier**
+- [x] **Step 1 : Créer le fichier**
 
 ```tsx
 "use client";
@@ -135,13 +135,13 @@ export function useFontSettings() {
 }
 ```
 
-- [ ] **Step 2 : Vérifier le typage**
+- [x] **Step 2 : Vérifier le typage**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && npx tsc --noEmit 2>&1 | head -20
 ```
 
-- [ ] **Step 3 : Commit**
+- [x] **Step 3 : Commit**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/context/FontSettingsContext.tsx && git commit -m "feat: add FontSettingsContext for Arabic text scale"
@@ -155,7 +155,7 @@ cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/context/FontSettin
 - Modify: `src/app/layout.tsx`
 - Modify: `src/app/globals.css`
 
-- [ ] **Step 1 : Importer et monter `FontSettingsProvider` dans `layout.tsx`**
+- [x] **Step 1 : Importer et monter `FontSettingsProvider` dans `layout.tsx`**
 
 Ajouter l'import en haut de `src/app/layout.tsx` :
 
@@ -185,7 +185,7 @@ Envelopper `<Header />` et le `<Suspense>` existants (le Provider ne rend pas de
 </FontSettingsProvider>
 ```
 
-- [ ] **Step 2 : Ajouter la classe `.verse-arabic-text` dans `globals.css`**
+- [x] **Step 2 : Ajouter la classe `.verse-arabic-text` dans `globals.css`**
 
 Ajouter après le bloc `@theme { ... }` (après la ligne `}` qui suit `--font-quran-common: QuranCommon;`, avant `@theme inline {`) :
 
@@ -203,13 +203,13 @@ Ajouter après le bloc `@theme { ... }` (après la ligne `}` qui suit `--font-qu
 
 Les valeurs `23.5px` / `30px` sont les fallbacks (= taille actuelle) utilisés avant que le `useEffect` du Provider ne s'exécute côté client.
 
-- [ ] **Step 3 : Vérifier le typage**
+- [x] **Step 3 : Vérifier le typage**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && npx tsc --noEmit 2>&1 | head -20
 ```
 
-- [ ] **Step 4 : Commit**
+- [x] **Step 4 : Commit**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/app/layout.tsx src/app/globals.css && git commit -m "feat: mount FontSettingsProvider and add verse-arabic-text CSS scale"
@@ -223,7 +223,7 @@ cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/app/layout.tsx src
 - Modify: `src/components/VerseItem.tsx`
 - Modify: `src/components/OverlayVerses.tsx`
 
-- [ ] **Step 1 : `VerseItem.tsx` ligne 90**
+- [x] **Step 1 : `VerseItem.tsx` ligne 90**
 
 Remplacer :
 
@@ -239,7 +239,7 @@ className="font-uthmanic verse-arabic-text mt-2 flex items-center text-right lea
 
 (Les classes `text-[23.5px]` et `md:text-3xl` sont retirées — la taille vient désormais de `.verse-arabic-text`.)
 
-- [ ] **Step 2 : `OverlayVerses.tsx` ligne 54**
+- [x] **Step 2 : `OverlayVerses.tsx` ligne 54**
 
 Remplacer :
 
@@ -255,13 +255,13 @@ className="font-uthmanic verse-arabic-text flex items-center gap-1 text-right le
 
 Note : l'overlay utilisait `24px` sur mobile (vs `23.5px` dans `VerseItem`) — après ce changement les deux partagent exactement la même taille pilotée par le même réglage, ce qui est l'effet recherché (c'est le même verset, juste affiché en agrandi).
 
-- [ ] **Step 3 : Vérifier le typage**
+- [x] **Step 3 : Vérifier le typage**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && npx tsc --noEmit 2>&1 | head -20
 ```
 
-- [ ] **Step 4 : Commit**
+- [x] **Step 4 : Commit**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/VerseItem.tsx src/components/OverlayVerses.tsx && git commit -m "feat: drive Arabic verse text size from font settings scale"
@@ -274,7 +274,7 @@ cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/VerseIt
 **Files:**
 - Create: `src/components/ui/counter.tsx`
 
-- [ ] **Step 1 : Créer le fichier**
+- [x] **Step 1 : Créer le fichier**
 
 ```tsx
 "use client";
@@ -323,13 +323,13 @@ export function Counter({ value, onIncrement, onDecrement, className }: CounterP
 }
 ```
 
-- [ ] **Step 2 : Vérifier le typage**
+- [x] **Step 2 : Vérifier le typage**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && npx tsc --noEmit 2>&1 | head -20
 ```
 
-- [ ] **Step 3 : Commit**
+- [x] **Step 3 : Commit**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/ui/counter.tsx && git commit -m "feat: add reusable Counter UI primitive"
@@ -342,7 +342,7 @@ cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/ui/coun
 **Files:**
 - Create: `src/components/SettingsDrawer.tsx`
 
-- [ ] **Step 1 : Créer le fichier**
+- [x] **Step 1 : Créer le fichier**
 
 ```tsx
 "use client";
@@ -434,13 +434,13 @@ export default function SettingsDrawer({
 
 Note : si `speedIndex` vaut `-1` (valeur de `playbackRate` hors du tableau `SPEEDS`, cas normalement impossible avec l'usage actuel), les deux boutons sont désactivés par sécurité plutôt que de planter.
 
-- [ ] **Step 2 : Vérifier le typage**
+- [x] **Step 2 : Vérifier le typage**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && npx tsc --noEmit 2>&1 | head -20
 ```
 
-- [ ] **Step 3 : Commit**
+- [x] **Step 3 : Commit**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/SettingsDrawer.tsx && git commit -m "feat: add SettingsDrawer with text size and playback speed controls"
@@ -454,7 +454,7 @@ cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/Setting
 - Modify: `src/components/AudioVerseHighlighter.tsx`
 - Delete: `src/components/SpeedControl.tsx`
 
-- [ ] **Step 1 : Remplacer l'import**
+- [x] **Step 1 : Remplacer l'import**
 
 Dans `src/components/AudioVerseHighlighter.tsx` ligne 11, remplacer :
 
@@ -468,7 +468,7 @@ par :
 import SettingsDrawer from "./SettingsDrawer";
 ```
 
-- [ ] **Step 2 : Remplacer l'usage (lignes ~400-403)**
+- [x] **Step 2 : Remplacer l'usage (lignes ~400-403)**
 
 Remplacer :
 
@@ -488,7 +488,7 @@ par :
 />
 ```
 
-- [ ] **Step 3 : Supprimer le fichier `SpeedControl.tsx` devenu mort**
+- [x] **Step 3 : Supprimer le fichier `SpeedControl.tsx` devenu mort**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && git rm src/components/SpeedControl.tsx
@@ -496,13 +496,13 @@ cd /Users/ibrahim/Documents/Projets/tafsir-app && git rm src/components/SpeedCon
 
 (Vérifier avant suppression qu'aucune autre référence n'est apparue entre-temps : `grep -rln "SpeedControl" src`.)
 
-- [ ] **Step 4 : Vérifier le typage**
+- [x] **Step 4 : Vérifier le typage**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && npx tsc --noEmit 2>&1 | head -20
 ```
 
-- [ ] **Step 5 : Commit**
+- [x] **Step 5 : Commit**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/AudioVerseHighlighter.tsx && git commit -m "feat: replace SpeedControl button with SettingsDrawer trigger"
@@ -512,32 +512,32 @@ cd /Users/ibrahim/Documents/Projets/tafsir-app && git add src/components/AudioVe
 
 ## Task 8 : Vérification manuelle finale
 
-- [ ] **Step 1 : Démarrer le serveur de dev**
+- [x] **Step 1 : Démarrer le serveur de dev**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && pnpm dev
 ```
 
-- [ ] **Step 2 : Tester le drawer sur une page de sourate avec audio**
+- [x] **Step 2 : Tester le drawer sur une page de sourate avec audio**
 
 1. Ouvrir une sourate ayant de l'audio (ex: `http://localhost:3000/sourates/1`)
 2. Vérifier que l'icône engrenage apparaît à l'emplacement exact où était le bouton de vitesse (à droite, à côté du temps écoulé)
 3. Cliquer l'icône — le drawer doit s'ouvrir : bottom-sheet (coins arrondis en haut) en largeur mobile, panneau latéral en largeur desktop (redimensionner la fenêtre pour vérifier les deux)
 4. Vérifier les 2 lignes : "Taille du texte" et "Vitesse de lecture", chacune avec les boutons − / valeur / +
 
-- [ ] **Step 3 : Tester le réglage de taille**
+- [x] **Step 3 : Tester le réglage de taille**
 
 1. Cliquer "+" sur "Taille du texte" plusieurs fois — le texte arabe affiché dans la liste des versets doit grossir en temps réel, y compris pendant que le drawer est ouvert
 2. Vérifier que le bouton "+" se désactive au 5e palier, "−" au 1er
 3. Rafraîchir la page (F5) — vérifier que le palier choisi est bien conservé (persistance `localStorage`)
 4. Si un verset est assez long pour déclencher l'overlay (`OverlayVerses`), vérifier qu'il affiche la même taille que la liste
 
-- [ ] **Step 4 : Tester le réglage de vitesse**
+- [x] **Step 4 : Tester le réglage de vitesse**
 
 1. Cliquer "+"/"−" sur "Vitesse de lecture" — vérifier que l'audio change effectivement de vitesse (à l'oreille) et que la valeur affichée (`x1.25`, `x1.5`, etc.) est cohérente
 2. Vérifier la désactivation aux bornes (x1 et x2)
 
-- [ ] **Step 5 : Vérifier le build de production**
+- [x] **Step 5 : Vérifier le build de production**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && pnpm build
@@ -545,7 +545,7 @@ cd /Users/ibrahim/Documents/Projets/tafsir-app && pnpm build
 
 Attendu : build sans erreurs.
 
-- [ ] **Step 6 : Commit final**
+- [x] **Step 6 : Commit final**
 
 ```bash
 cd /Users/ibrahim/Documents/Projets/tafsir-app && git add -A && git commit -m "chore: verify font size and playback speed settings drawer complete"
