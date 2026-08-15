@@ -23,7 +23,6 @@ const VerseItem = React.memo(
   }: {
     verse: VerseHighlight;
     currentVerseId: number | null;
-    currentOccurrence: number | null;
     audioUrl: string;
     seekToVerse: (verse: VerseHighlight) => void;
     isMobile: boolean;

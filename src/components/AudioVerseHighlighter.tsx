@@ -458,7 +458,6 @@ const AudioVerseHighlighter = ({
             key={`verse-${verse.id}`}
             verse={verse}
             currentVerseId={audioPlayback.currentVerseId}
-            currentOccurrence={audioPlayback.currentOccurrence}
             audioUrl={audioUrl}
             seekToVerse={audioPlayback.seekToVerse}
             isMobile={isMobile}

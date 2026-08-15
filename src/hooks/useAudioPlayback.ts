@@ -44,7 +44,6 @@ export function useAudioPlayback({
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
-  const [currentOccurrence, setCurrentOccurrence] = useState<number | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [audioError, setAudioError] = useState(false);
   const [restoredPosition, setRestoredPosition] = useState<PlaybackPosition | null>(null);
@@ -125,7 +124,6 @@ export function useAudioPlayback({
     setDuration(0);
     setAudioError(false);
     setCurrentVerseId(null);
-    setCurrentOccurrence(null);
     setDragTime(null);
     setRestoredPosition(null);
     finishHandledRef.current = false;
@@ -233,7 +231,6 @@ export function useAudioPlayback({
         finishHandledRef.current = true;
         setIsPlaying(false);
         setCurrentVerseId(null);
-        setCurrentOccurrence(null);
         onFinishedRef.current?.();
       }
     });
@@ -564,7 +561,6 @@ export function useAudioPlayback({
     audioError,
     isLoading,
     currentVerseId,
-    currentOccurrence,
     restoredPosition,
     drag: { isDragging, isTouching, dragTime },
     togglePlayPause,
