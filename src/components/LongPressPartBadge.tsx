@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ResetProgressDialog from "./ResetProgressDialog";
-import { useLongPress } from "@/hooks/useLongPress";
+import { useCompletedPartLongPress } from "@/hooks/useCompletedPartLongPress";
 
 interface LongPressPartBadgeProps {
   isCompleted: boolean;
@@ -16,10 +16,9 @@ export default function LongPressPartBadge({
   onReset,
 }: LongPressPartBadgeProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  const { handlers, pressing, progress } = useLongPress(() => {
-    setDialogOpen(true);
-  }, 600);
+  const { handlers, pressing, progress } = useCompletedPartLongPress({
+    onLongPress: () => setDialogOpen(true),
+  });
 
   if (!isCompleted) {
     return (
@@ -66,7 +65,7 @@ export default function LongPressPartBadge({
           </svg>
           Partie complétée
         </span>
-        <span className="text-xs text-gray-400">↓ Maintenir pour réviser</span>
+        <span className="text-xs text-gray-400">↑ Maintenir pour réviser</span>
       </div>
 
       <ResetProgressDialog

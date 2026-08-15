@@ -33,7 +33,7 @@ import { RotateCcw } from "lucide-react";
 import ResetProgressDialog from "@/components/ResetProgressDialog";
 import { useMediaQuery } from "@/components/UseMediaQuery";
 import LongPressPartBadge from "@/components/LongPressPartBadge";
-import { useLongPress } from "@/hooks/useLongPress";
+import { useCompletedPartLongPress } from "@/hooks/useCompletedPartLongPress";
 
 const AudioVerseHighlighter = dynamic(
   () => import("@/components/AudioVerseHighlighter"),
@@ -93,22 +93,15 @@ function CompletedSelectItem({
   onSelect,
   onResetRequest,
 }: CompletedSelectItemProps) {
-  const firedRef = useRef(false);
-  const { handlers, pressing } = useLongPress(() => {
-    firedRef.current = true;
-    onResetRequest();
-  }, 600);
+  const { handlers, pressing, onClick } = useCompletedPartLongPress({
+    onLongPress: onResetRequest,
+    onSelect,
+  });
 
   return (
     <div
       {...handlers}
-      onClick={() => {
-        if (firedRef.current) {
-          firedRef.current = false;
-          return;
-        }
-        onSelect();
-      }}
+      onClick={onClick}
       className={`relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none transition-colors ${
         pressing ? "bg-green-200" : "hover:bg-green-50"
       }`}

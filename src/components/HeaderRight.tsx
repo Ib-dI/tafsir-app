@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, List, Check, X } from 'lucide-react';
 import { HeaderRightProps } from "@/types/types";
 import type { TafsirAudioPart } from "@/types/types";
-import { useLongPress } from "@/hooks/useLongPress";
+import { useCompletedPartLongPress } from "@/hooks/useCompletedPartLongPress";
 import ResetProgressDialog from "./ResetProgressDialog";
 
 interface CompletedPartButtonProps {
@@ -24,23 +24,16 @@ function CompletedPartButton({
   onSelect,
   onResetRequest,
 }: CompletedPartButtonProps) {
-  const firedRef = useRef(false);
-  const { handlers, pressing } = useLongPress(() => {
-    firedRef.current = true;
-    onResetRequest(part.id, part.title || `Partie ${idx + 1}`);
-  }, 600);
+  const { handlers, pressing, onClick } = useCompletedPartLongPress({
+    onLongPress: () => onResetRequest(part.id, part.title || `Partie ${idx + 1}`),
+    onSelect,
+  });
 
   return (
     <button
       data-part-index={idx}
       {...handlers}
-      onClick={() => {
-        if (firedRef.current) {
-          firedRef.current = false;
-          return;
-        }
-        onSelect();
-      }}
+      onClick={onClick}
       className={`w-full py-4 px-6 flex flex-row items-center transition-all duration-200 border-b border-gray-100 ${
         pressing
           ? "bg-green-100 border-l-4 border-l-transparent"
