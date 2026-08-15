@@ -25,6 +25,7 @@ import {
   resetPartProgress as resetPartProgressInFirestore,
 } from "@/lib/data/progress";
 import { clearPlaybackPosition, loadPlaybackPosition } from "@/lib/data/playbackPosition";
+import { computeChapterProgress } from "@/lib/chapterProgress";
 
 import { SourateInteractiveContentProps, TafsirAudioPart, AudioControls } from "@/types/types";
 import type { Verse } from "@/types/types";
@@ -343,9 +344,8 @@ export default function SourateInteractiveContent({
   const canGoNext =
     currentPartIndex !== -1 && currentPartIndex < audioParts.length - 1;
 
-  const completedAudioPartsCount = audioParts.filter(
-    (p) => p.id !== "remaining-verses" && completedPartIds.has(p.id),
-  ).length;
+  const chapterProgress = computeChapterProgress(audioParts, completedPartIds);
+  const completedAudioPartsCount = chapterProgress.completedParts;
 
   // Fonctions de navigation CORRIGÉES
   const handleNextPart = useCallback(() => {
@@ -757,7 +757,7 @@ export default function SourateInteractiveContent({
               hasNextChapter={hasNextChapter}
               hasPreviousChapter={hasPreviousChapter}
               currentPartIndex={currentPartIndex}
-              totalParts={audioParts.length}
+              totalParts={chapterProgress.totalParts}
               onPartChange={setPartByIndex}
               onPlayingChange={setIsAudioPlaying}
               onAtTopChange={setIsVerseContainerAtTop}

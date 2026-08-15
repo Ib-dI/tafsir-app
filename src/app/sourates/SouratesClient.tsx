@@ -1,6 +1,7 @@
 "use client";
 
 import { audiosTafsir } from "@/lib/data/audios";
+import { computeChapterProgress } from "@/lib/chapterProgress";
 import Image from "next/image"
 import QuickAccessBanner from "@/components/QuickAccessBanner";
 import { resetChapterProgress as resetChapterProgressInFirestore } from "@/lib/data/progress";
@@ -79,19 +80,15 @@ export default function SouratesClient({
 
   const incompleteCount = useMemo(() => {
     return audiosTafsir.filter((audio) => {
-      if (!audio.parts?.length) return false;
-      const partIds = audio.parts.map((p) => p.id);
-      const completedParts = partIds.filter((id) => completedChaptersByPartId.has(id)).length;
-      return completedParts < partIds.length;
+      const progress = computeChapterProgress(audio.parts, completedChaptersByPartId);
+      return progress.totalParts > 0 && !progress.isFullyCompleted;
     }).length;
   }, [completedChaptersByPartId]);
 
   const completedCount = useMemo(() => {
-    return audiosTafsir.filter((audio) => {
-      if (!audio.parts?.length) return false;
-      const partIds = audio.parts.map((p) => p.id);
-      return partIds.every((id) => completedChaptersByPartId.has(id));
-    }).length;
+    return audiosTafsir.filter(
+      (audio) => computeChapterProgress(audio.parts, completedChaptersByPartId).isFullyCompleted,
+    ).length;
   }, [completedChaptersByPartId]);
 
   useEffect(() => {
@@ -113,12 +110,9 @@ export default function SouratesClient({
     if (showOnlyIncomplete) {
       current = current.filter((chapter) => {
         const audioData = audiosTafsir.find((a) => a.id === chapter.id);
-        if (!audioData?.parts?.length) return false;
-        const partIds = audioData.parts.map((p) => p.id);
-        const completedParts = partIds.filter((id) =>
-          completedChaptersByPartId.has(id),
-        ).length;
-        return completedParts < partIds.length;
+        if (!audioData) return false;
+        const progress = computeChapterProgress(audioData.parts, completedChaptersByPartId);
+        return progress.totalParts > 0 && !progress.isFullyCompleted;
       });
     }
     if (showOnlyFavorites) {
@@ -355,20 +349,8 @@ export default function SouratesClient({
           {filteredChapters.length > 0 ? (
             filteredChapters.map((chapter: SimpleChapterIndexEntry) => {
               const audioData = audiosTafsir.find((a) => a.id === chapter.id);
-              const partIds = audioData?.parts?.map((part) => part.id) || [];
-              const completedPartIds = new Set(
-                Array.from(completedChaptersByPartId).filter((partId) =>
-                  partIds.includes(partId),
-                ),
-              );
-              const totalParts = partIds.length;
-              const completedParts = completedPartIds.size;
-              const isFullyCompleted =
-                totalParts > 0 && completedParts === totalParts;
-              const progressPercent =
-                totalParts > 0
-                  ? Math.round((completedParts / totalParts) * 100)
-                  : 0;
+              const { totalParts, completedParts, isFullyCompleted, progressPercent } =
+                computeChapterProgress(audioData?.parts ?? [], completedChaptersByPartId);
               const isFavorite = favoriteChapters.has(chapter.id);
 
               return (
