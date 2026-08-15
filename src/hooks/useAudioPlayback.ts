@@ -147,8 +147,6 @@ export function useAudioPlayback({
       normalize: true,
     });
 
-    wavesurferRef.current = wavesurfer;
-
     wavesurfer.load(audioUrl).catch((err) => {
       if (err.name !== "AbortError") {
         setAudioError(true);
@@ -157,6 +155,14 @@ export function useAudioPlayback({
     });
 
     wavesurfer.on("ready", () => {
+      // Affecté seulement ici (pas juste après create()) : tant que
+      // wavesurferRef.current est null, les autres effets (sauvegarde
+      // debounce/périodique, etc.) savent que l'instance n'est pas encore
+      // prête et n'agissent pas dessus — sinon la sauvegarde debounce peut
+      // écraser la position restaurée par un currentTime=0 avant que la
+      // restauration ci-dessous n'ait eu lieu (getCurrentTime() vaut 0
+      // tant que l'audio n'est pas chargé).
+      wavesurferRef.current = wavesurfer;
       setDuration(wavesurfer.getDuration());
       setIsLoading(false);
 
