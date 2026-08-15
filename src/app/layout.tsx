@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 import Header from "@/components/header";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { FontSettingsProvider } from "@/context/FontSettingsContext";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
@@ -44,22 +45,24 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-gray-50/80 antialiased`}
       >
         <div className="mx-auto flex min-h-screen max-w-[900px] flex-col  font-sans text-sm">
-          <Header />
-          {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
-          <Suspense
-            fallback={
-                <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
-                <LoadingSpinner
-                  size="xl"
-                  color="blue"
-                  text="Chargement du contenu..."
-                  className="gap-4"
-                />
-              </div>
-            }
-          >
-            {children}
-          </Suspense>
+          <FontSettingsProvider>
+            <Header />
+            {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
+            <Suspense
+              fallback={
+                  <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
+                  <LoadingSpinner
+                    size="xl"
+                    color="blue"
+                    text="Chargement du contenu..."
+                    className="gap-4"
+                  />
+                </div>
+              }
+            >
+              {children}
+            </Suspense>
+          </FontSettingsProvider>
           {/* AJOUTEZ CE COMPOSANT ICI */}
           {/* <NotificationsSetup /> */}
         </div>

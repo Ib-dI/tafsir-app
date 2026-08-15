@@ -49,6 +49,16 @@
   --font-quran-common: QuranCommon;
 }
 
+.verse-arabic-text {
+  font-size: var(--verse-arabic-font-size-mobile, 23.5px);
+}
+
+@media (min-width: 768px) {
+  .verse-arabic-text {
+    font-size: var(--verse-arabic-font-size-desktop, 30px);
+  }
+}
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
