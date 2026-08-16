@@ -463,7 +463,7 @@ const AudioVerseHighlighter = ({
         {/* Section des versets */}
         <div
           ref={versesRef}
-          className="relative z-20 mt-1 flex-1 overflow-y-auto p-2"
+          className="verses-scroll relative z-20 mt-1 flex-1 overflow-y-auto p-2"
           style={{ minHeight: 0 }}
           onScroll={(e) => onAtTopChange?.(e.currentTarget.scrollTop < 10)}
         >
