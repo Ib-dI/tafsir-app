@@ -5,8 +5,14 @@
   font-display: swap;
 }
 @font-face {
+  /* indopack-v2.woff2 (ported from extractor-quran) is required, not the
+     older indopak.woff2 it replaces: the IndoPak word data
+     (src/lib/data/quran-wbw/raw/indopak-nastaleeq.json) encodes the
+     ayah-end ornament as this font's own Private Use Area codepoints
+     (e.g. U+F61E) — indopak.woff2 doesn't map them and rendered an empty
+     circle. */
   font-family: 'IndoPak';
-  src: url('/fonts/indopak.woff2') format('woff2');
+  src: url('/fonts/indopack-v2.woff2') format('woff2');
   font-weight: 400;
   font-display: swap;
 }

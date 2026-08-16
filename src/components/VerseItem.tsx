@@ -1,6 +1,9 @@
-import { cn } from "@/lib/utils";
+import { useFontSettings } from "@/context/FontSettingsContext";
 import { useWordByWord } from "@/context/WordByWordContext";
-import { VerseHighlight, VerseWord } from "@/types/types";
+import { applyOrnamentFor, isDigitalKhattFontStyle } from "@/lib/ayahMarker";
+import { wordContent } from "@/lib/arabicWordContent";
+import { cn } from "@/lib/utils";
+import { VerseHighlight } from "@/types/types";
 import { motion } from "framer-motion";
 import { Tooltip } from "radix-ui";
 import React, { type ReactNode, useState } from "react";
@@ -28,17 +31,19 @@ export const toArabicNumerals = (n: number): string => {
 // interne (`overflow-y-auto`), donc une bulle positionnée localement se fait
 // soit rogner (au-dessus du mot), soit chevaucher la translitération
 // en-dessous. Le portail échappe aux deux.
-function InteractiveWord({
-  word,
+export function InteractiveWord({
+  content,
+  translation,
   isOpen,
   onOpenChange,
 }: {
-  word: VerseWord;
+  content: ReactNode;
+  translation: string | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  if (!word.translation) {
-    return <span>{word.arabic}</span>;
+  if (!translation) {
+    return <span>{content}</span>;
   }
 
   return (
@@ -56,7 +61,7 @@ function InteractiveWord({
             isOpen ? "bg-amber-100" : "hover:bg-amber-100",
           )}
         >
-          {word.arabic}
+          {content}
         </span>
       </Tooltip.Trigger>
       <Tooltip.Portal>
@@ -67,7 +72,7 @@ function InteractiveWord({
           style={{ direction: "ltr" }}
           className="z-50 rounded-lg bg-gray-800 px-2 py-1 text-xs font-medium whitespace-nowrap text-white shadow-lg"
         >
-          {word.translation}
+          {translation}
           <Tooltip.Arrow className="fill-gray-800" />
         </Tooltip.Content>
       </Tooltip.Portal>
@@ -91,19 +96,23 @@ const VerseItem = React.memo(
   }) => {
     const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
     const { wordByWordEnabled } = useWordByWord();
+    const { arabicScript, fontStyle } = useFontSettings();
+    const applyOrnament = applyOrnamentFor(fontStyle);
+    const useDigitalKhattText =
+      arabicScript === "uthmani" && isDigitalKhattFontStyle(fontStyle);
 
     return (
       <motion.div
         key={`verse-${verse.id}`}
         id={`verse-${verse.id}`}
         onClick={() => !verse.noAudio && seekToVerse(verse)}
-        className={`my-1 cursor-pointer rounded-2xl p-3 [content-visibility:auto] [contain-intrinsic-size:auto_120px] transition-colors duration-250 ease-in-out ${
+        className={`my-1 cursor-pointer rounded-2xl p-3 transition-colors duration-250 ease-in-out [contain-intrinsic-size:auto_120px] [content-visibility:auto] ${
           !verse.noAudio ? "hover:bg-gray-50" : ""
         } ${
           verse.noAudio
-            ? "border-[0.7px] border-x-2 md:border-x-4 border-blue-200 bg-gray-50/50"
+            ? "border-[0.7px] border-x-2 border-blue-200 bg-gray-50/50 md:border-x-4"
             : isActive && audioUrl
-              ? `bg-[rgba(255,255,204,0.4)] border-[0.7px] ${isMobile ? "border-x-2" : "border-x-4"} border-[#F59E0B] shadow-[0_0_10px_5px_rgba(255,193,7,0.5)]`
+              ? `border-[0.7px] bg-[rgba(255,255,204,0.4)] ${isMobile ? "border-x-2" : "border-x-4"} border-[#F59E0B] shadow-[0_0_10px_5px_rgba(255,193,7,0.5)]`
               : "border-transparent"
         }`}
         animate={{ scale: isActive && audioUrl ? 1.02 : 1 }}
@@ -117,24 +126,38 @@ const VerseItem = React.memo(
           )}
           <div
             className="verse-arabic-text mt-2 flex items-center text-right leading-relaxed text-gray-800 md:gap-1"
+            data-script={arabicScript}
             style={{ direction: "rtl" }}
           >
             <span style={{ direction: "rtl" }}>
-              {wordByWordEnabled && verse.words.length > 0
+              {verse.words.length > 0
                 ? verse.words.flatMap((word, index) => {
+                    const content = wordContent(
+                      word,
+                      index,
+                      arabicScript,
+                      useDigitalKhattText,
+                      applyOrnament,
+                    );
                     const nodes: ReactNode[] = index > 0 ? [" "] : [];
                     nodes.push(
-                      <InteractiveWord
-                        key={index}
-                        word={word}
-                        isOpen={openWordIndex === index}
-                        onOpenChange={(open) => setOpenWordIndex(open ? index : null)}
-                      />,
+                      wordByWordEnabled ? (
+                        <InteractiveWord
+                          key={index}
+                          content={content}
+                          translation={word.translation}
+                          isOpen={openWordIndex === index}
+                          onOpenChange={(open) =>
+                            setOpenWordIndex(open ? index : null)
+                          }
+                        />
+                      ) : (
+                        <span key={index}>{content}</span>
+                      ),
                     );
                     return nodes;
                   })
-                : verse.text}{" "}
-              {toArabicNumerals(verse.id)}
+                : `${verse.text} ${toArabicNumerals(verse.id)}`}
             </span>
           </div>
           <p className="text-md mt-2 text-right font-medium text-gray-500">

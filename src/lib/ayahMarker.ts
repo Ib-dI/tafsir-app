@@ -25,6 +25,10 @@ export function isDigitalKhattFontStyle(fontStyle: ArabicFontStyle): boolean {
 }
 
 /** Which font styles need `withDigitalKhattAyahOrnament`, and the no-op for the ones that don't — the single place that knows the answer to both. */
-export function applyOrnamentFor(fontStyle: ArabicFontStyle): (text: string) => string {
-  return isDigitalKhattFontStyle(fontStyle) ? withDigitalKhattAyahOrnament : identity;
+export function applyOrnamentFor(
+  fontStyle: ArabicFontStyle,
+): (text: string) => string {
+  return isDigitalKhattFontStyle(fontStyle)
+    ? withDigitalKhattAyahOrnament
+    : identity;
 }

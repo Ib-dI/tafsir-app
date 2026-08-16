@@ -21,7 +21,9 @@ type SurahWbw = {
   verses: WbwVerse[];
 };
 
-async function getSurahWbwUncached(chapterId: number): Promise<SurahWbw | null> {
+async function getSurahWbwUncached(
+  chapterId: number,
+): Promise<SurahWbw | null> {
   const filePath = path.join(
     process.cwd(),
     "src/lib/data/quran-wbw/generated",
@@ -42,13 +44,24 @@ export const getSurahWbw = cache(getSurahWbwUncached);
 /**
  * Fusionne les versets du CDN (quranSimpleApi — transliteration conservée
  * telle quelle) avec les données mot par mot locales (texte arabe et
- * traduction Hamidullah). Le dernier "mot" de chaque verset QPC est le
- * repère de fin de verset (son chiffre arabe, ex. "١٠"), déjà rendu
- * séparément par VerseItem/OverlayVerses via toArabicNumerals — il est donc
- * exclu du texte arabe reconstruit pour ne pas le dupliquer.
+ * traduction Hamidullah).
+ *
+ * Le dernier "mot" de chaque verset QPC est le repère de fin de verset (son
+ * chiffre arabe, ex. "١٠") : `verse.words` le garde (comme extractor-quran),
+ * pour que le rendu mot par mot puisse l'afficher via le même pipeline par
+ * script que les autres mots — nécessaire pour Tajweed/DigitalKhatt, où
+ * l'ornement de fin de verset dépend du script/police actifs (voir
+ * src/lib/ayahMarker.ts). `verse.text` (le texte à plat, utilisé en repli et
+ * par OverlayVerses, qui ajoute son propre chiffre via toArabicNumerals)
+ * l'exclut pour ne pas le dupliquer.
  */
-export function mergeVersesWithWbw(cdnVerses: Verse[], surahWbw: SurahWbw | null): Verse[] {
-  const wbwByNumber = new Map((surahWbw?.verses ?? []).map((v) => [v.number, v]));
+export function mergeVersesWithWbw(
+  cdnVerses: Verse[],
+  surahWbw: SurahWbw | null,
+): Verse[] {
+  const wbwByNumber = new Map(
+    (surahWbw?.verses ?? []).map((v) => [v.number, v]),
+  );
 
   return cdnVerses.map((verse) => {
     const wbwVerse = wbwByNumber.get(verse.id);
@@ -62,7 +75,7 @@ export function mergeVersesWithWbw(cdnVerses: Verse[], surahWbw: SurahWbw | null
       ...verse,
       text: contentWords.map((word) => word.arabic).join(" "),
       translation: wbwVerse.translation ?? verse.translation,
-      words: contentWords,
+      words: wbwVerse.words,
     };
   });
 }
