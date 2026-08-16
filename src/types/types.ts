@@ -1,11 +1,26 @@
 import { ReactNode } from "react";
 
+// Types et interfaces partagés mot par mot (voir src/lib/quranWbw.ts)
+export type TajweedSegment = {
+  text: string;
+  rule: string | null;
+};
+
+export type VerseWord = {
+  arabic: string;
+  arabicIndoPak: string;
+  arabicDigitalKhatt: string;
+  tajweed: TajweedSegment[];
+  translation: string | null;
+};
+
 // Types et interfaces partagés SourateInteractiveContent
 export type Verse = {
   id: number;
   text: string;
   translation: string;
   transliteration: string;
+  words: VerseWord[];
 };
 
 export type TafsirAudioTiming = {
@@ -36,6 +51,7 @@ export type VerseHighlight = {
   verset: string;
   transliteration: string;
   translation: string;
+  words: VerseWord[];
   noAudio?: boolean;
   occurrences: { startTime: number; endTime: number }[];
 };

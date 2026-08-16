@@ -1,5 +1,6 @@
 import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapterVerses } from "@/lib/quranSimpleApi";
+import { getSurahWbw, mergeVersesWithWbw } from "@/lib/quranWbw";
 import SourateInteractiveContent from "./SourateInteractiveContent";
 
 // Définition des types des props pour un Server Component
@@ -11,7 +12,10 @@ export default async function Sourate({ params }: SouratePageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams; // Accède directement à l'ID
   const chapterId = Number(id); // Convertir l'ID de la sourate en nombre
-  const data = await getSimpleChapterVerses(id); // Récupère tous les versets
+  const [data, surahWbw] = await Promise.all([
+    getSimpleChapterVerses(id), // Récupère tous les versets (translitération)
+    getSurahWbw(chapterId), // Texte arabe mot par mot + traduction Hamidullah
+  ]);
 
   if (!data) {
     return (
@@ -21,7 +25,7 @@ export default async function Sourate({ params }: SouratePageProps) {
     );
   }
 
-  const verses = data.verses || [];
+  const verses = mergeVersesWithWbw(data.verses || [], surahWbw);
   const infoSourate = [data.id, data.transliteration, data.translation];
 
   // Trouve toutes les données audio pour cette sourate

@@ -286,6 +286,7 @@ export default function SourateInteractiveContent({
               text: string;
               translation: string;
               transliteration: string;
+              words: Verse["words"];
               noAudio: boolean;
               verset: string;
               occurrences: { startTime: number; endTime: number }[];
