@@ -47,16 +47,21 @@ function InteractiveWord({
       >
         {word.arabic}
       </span>
+      {/* Sous le mot, pas au-dessus : la carte du verset a
+          content-visibility:auto (voir plus bas), qui impose un
+          confinement de peinture — tout ce qui dépasse la boîte de la
+          carte est rogné. Une bulle au-dessus du premier mot (en haut de
+          la carte) serait donc invisible. */}
       <span
         role="tooltip"
         style={{ direction: "ltr" }}
         className={cn(
-          "pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 rounded-lg bg-gray-800 px-2 py-1 text-xs font-medium whitespace-nowrap text-white opacity-0 shadow-lg transition-opacity",
+          "pointer-events-none absolute top-full left-1/2 z-10 mt-2 -translate-x-1/2 rounded-lg bg-gray-800 px-2 py-1 text-xs font-medium whitespace-nowrap text-white opacity-0 shadow-lg transition-opacity",
           isOpen ? "opacity-100" : "group-hover:opacity-100",
         )}
       >
         {word.translation}
-        <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800" />
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-800" />
       </span>
     </span>
   );
