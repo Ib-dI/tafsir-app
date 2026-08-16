@@ -113,7 +113,7 @@ const VerseItem = React.memo(
               ? `border-[0.7px] border-x border-[#d28820] bg-[#d28820]/10 shadow-[0_0_10px_5px_rgba(210,136,32,0.25)]`
               : "border-transparent"
         }`}
-        animate={{ scale: isActive && audioUrl ? 1.02 : 1 }}
+        animate={{ scale: isActive && audioUrl ? 1.01 : 1 }}
         transition={{ type: "spring", stiffness: 250, damping: 25, mass: 1.2 }}
       >
         <div className="flex flex-col items-end justify-end gap-2">
@@ -159,10 +159,10 @@ const VerseItem = React.memo(
                 : `${verse.text} ${toArabicNumerals(verse.id)}`}
             </span>
           </div>
-          <p className="text-md mt-2 text-right font-medium text-[#3D3226]/60">
+          <p className="mt-2 text-right text-base font-medium text-[#3D3226]/60">
             {verse.transliteration}
           </p>
-          <p className="-mt-2 self-start text-[#3D3226]/85">
+          <p className="-mt-2 self-start text-base text-[#3D3226]/85">
             {verse.id}. {verse.translation}
           </p>
         </div>
