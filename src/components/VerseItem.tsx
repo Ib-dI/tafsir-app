@@ -16,68 +16,33 @@ export const toArabicNumerals = (n: number): string => {
 const VerseItem = React.memo(
   ({
     verse,
-    currentVerseId,
+    isActive,
     audioUrl,
     seekToVerse,
     isMobile,
   }: {
     verse: VerseHighlight;
-    currentVerseId: number | null;
+    isActive: boolean;
     audioUrl: string;
     seekToVerse: (verse: VerseHighlight) => void;
     isMobile: boolean;
   }) => {
-    const isActive = verse.id === currentVerseId;
-
     return (
       <motion.div
         key={`verse-${verse.id}`}
         id={`verse-${verse.id}`}
         onClick={() => !verse.noAudio && seekToVerse(verse)}
-        className={`my-1 cursor-pointer rounded-2xl p-3 [content-visibility:auto] [contain-intrinsic-size:auto_120px] ${
+        className={`my-1 cursor-pointer rounded-2xl p-3 [content-visibility:auto] [contain-intrinsic-size:auto_120px] transition-colors duration-[250ms] ease-in-out ${
           !verse.noAudio ? "hover:bg-gray-50" : ""
         } ${
           verse.noAudio
             ? "border-[0.7px] border-x-2 md:border-x-4 border-blue-200 bg-gray-50/50"
-            : ""
+            : isActive && audioUrl
+              ? `bg-[rgba(255,255,204,0.4)] border-[0.7px] ${isMobile ? "border-x-2" : "border-x-4"} border-[#F59E0B] shadow-[0_0_10px_5px_rgba(255,193,7,0.5)]`
+              : "border-transparent"
         }`}
-        animate={{
-          backgroundColor: verse.noAudio
-            ? "rgba(249, 250, 251, 0.5)"
-            : isActive && audioUrl
-              ? "rgba(255, 255, 204, 0.4)"
-              : "rgba(255, 255, 255, 0)",
-          borderColor: verse.noAudio
-            ? "rgba(186, 230, 253, 1)"
-            : isActive && audioUrl
-              ? "#F59E0B"
-              : "rgba(0, 0, 0, 0)",
-          borderWidth: isActive && audioUrl ? "0.7px" : "0px",
-          borderLeftWidth:
-            verse.noAudio || (isActive && audioUrl) 
-              ? isMobile ? "2px" : "3px" : "0px",
-          borderRightWidth:
-            verse.noAudio || (isActive && audioUrl) 
-              ? isMobile ? "2px" : "3px" : "0px",
-          boxShadow:
-            isActive && audioUrl
-              ? "0 0 10px 5px rgba(255, 193, 7, 0.5)"
-              : "none",
-          scale: isActive && audioUrl ? 1.02 : 1,
-        }}
-        transition={{
-          default: {
-            type: "tween",
-            duration: 0.25,
-            ease: "easeInOut",
-          },
-          scale: {
-            type: "spring",
-            stiffness: 250,
-            damping: 25,
-            mass: 1.2,
-          },
-        }}
+        animate={{ scale: isActive && audioUrl ? 1.02 : 1 }}
+        transition={{ type: "spring", stiffness: 250, damping: 25, mass: 1.2 }}
       >
         <div className="flex flex-col items-end justify-end gap-2">
           {verse.noAudio && (
