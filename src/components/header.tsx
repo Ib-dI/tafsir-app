@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useScroll, useTransform, Variants } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform, Variants } from "framer-motion";
 import { Home, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -195,15 +195,17 @@ export default function Header() {
       </motion.div>
 
       {/* Overlay pour fermer le menu mobile */}
-      {mobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setMobileMenuOpen(false)}
-          className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-30 top-[73px]"
-        />
-      )}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileMenuOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-30 top-[73px]"
+          />
+        )}
+      </AnimatePresence>
 
       {/* Spacer pour compenser le header fixe
       <div className="h-[73px]" /> */}
