@@ -46,7 +46,8 @@ export function useAudioPlayback({
   const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [audioError, setAudioError] = useState(false);
-  const [restoredPosition, setRestoredPosition] = useState<PlaybackPosition | null>(null);
+  const [restoredPosition, setRestoredPosition] =
+    useState<PlaybackPosition | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
   const [isTouching, setIsTouching] = useState(false);
@@ -133,9 +134,9 @@ export function useAudioPlayback({
 
     const wavesurfer = WaveSurfer.create({
       container: waveformRef.current,
-      waveColor: "#e2e8f0",
-      progressColor: "#1961fc",
-      cursorColor: "#ff611dff",
+      waveColor: "#e8dcc3",
+      progressColor: "#d28820",
+      cursorColor: "#3D3226",
       barWidth: 2,
       barRadius: 3,
       cursorWidth: 3,
@@ -302,7 +303,14 @@ export function useAudioPlayback({
       }
     }, 1500);
     return () => clearTimeout(debounceTimer);
-  }, [currentTime, isDragging, currentChapterId, partId, audioUrl, currentPartIndex]);
+  }, [
+    currentTime,
+    isDragging,
+    currentChapterId,
+    partId,
+    audioUrl,
+    currentPartIndex,
+  ]);
 
   const togglePlayPause = useCallback(() => {
     if (wavesurferRef.current && !audioError) {
@@ -381,7 +389,9 @@ export function useAudioPlayback({
         const playingViaMedia = !!mediaEl && !mediaEl.paused;
         const playingViaWs = hasIsPlaying(ws) ? ws.isPlaying() : false;
 
-        wasPlayingRef.current = Boolean(playingViaWs || playingViaMedia || isPlayingRef.current);
+        wasPlayingRef.current = Boolean(
+          playingViaWs || playingViaMedia || isPlayingRef.current,
+        );
 
         const t = ws.getCurrentTime();
         setDragTime(t);
@@ -405,7 +415,8 @@ export function useAudioPlayback({
         0,
         Math.min(containerRect.width, clientX - containerRect.left),
       );
-      const seekPosition = containerRect.width > 0 ? relativeX / containerRect.width : 0;
+      const seekPosition =
+        containerRect.width > 0 ? relativeX / containerRect.width : 0;
       const dur = ws.getDuration() || 0;
       const newTime = dur * seekPosition;
 
@@ -550,10 +561,18 @@ export function useAudioPlayback({
       if (rafIdRef.current) {
         cancelAnimationFrame(rafIdRef.current);
       }
-      container.removeEventListener("touchstart", handleTouchStart, eventOptions);
+      container.removeEventListener(
+        "touchstart",
+        handleTouchStart,
+        eventOptions,
+      );
       container.removeEventListener("touchmove", handleTouchMove, eventOptions);
       container.removeEventListener("touchend", handleTouchEnd, eventOptions);
-      container.removeEventListener("touchcancel", handleTouchCancel, eventOptions);
+      container.removeEventListener(
+        "touchcancel",
+        handleTouchCancel,
+        eventOptions,
+      );
     };
   }, [isMobile, updateCurrentVerse]);
 

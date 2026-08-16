@@ -402,7 +402,7 @@ const AudioVerseHighlighter = ({
             >
               <button
                 onClick={audioPlayback.togglePlayPause}
-                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700"
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#d28820] text-white hover:bg-[#d28820]/90"
               >
                 {audioPlayback.isPlaying ? <PauseIcon /> : <PlayIcon />}
               </button>

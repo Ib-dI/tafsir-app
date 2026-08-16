@@ -22,9 +22,9 @@ export default function LongPressPartBadge({
 
   if (!isCompleted) {
     return (
-      <span className="inline-flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm font-medium text-gray-600">
+      <span className="inline-flex items-center rounded-full bg-[#3D3226]/10 px-3 py-1 text-sm font-medium text-[#3D3226]/70">
         <svg
-          className="mr-1 h-4 w-4 text-gray-400"
+          className="mr-1 h-4 w-4 text-[#3D3226]/40"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -41,11 +41,13 @@ export default function LongPressPartBadge({
 
   return (
     <>
-      <div className="flex select-none flex-col items-center gap-1">
+      <div className="flex flex-col items-center gap-1 select-none">
         <span
           {...handlers}
           className={`inline-flex cursor-default items-center rounded-full px-3 py-1 text-sm font-medium transition-colors duration-75 ${
-            pressing ? "bg-green-200 text-green-900" : "bg-green-100 text-green-800"
+            pressing
+              ? "bg-green-200 text-green-900"
+              : "bg-green-100 text-green-800"
           }`}
           style={{
             boxShadow:
@@ -61,11 +63,17 @@ export default function LongPressPartBadge({
             strokeWidth="2"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 13l4 4L19 7"
+            />
           </svg>
           Partie complétée
         </span>
-        <span className="text-xs text-gray-400">↑ Maintenir pour réviser</span>
+        <span className="text-xs text-[#3D3226]/40">
+          ↑ Maintenir pour réviser
+        </span>
       </div>
 
       <ResetProgressDialog
