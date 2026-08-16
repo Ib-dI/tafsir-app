@@ -24,10 +24,17 @@ import {
   resetChapterProgress as resetChapterProgressInFirestore,
   resetPartProgress as resetPartProgressInFirestore,
 } from "@/lib/data/progress";
-import { clearPlaybackPosition, loadPlaybackPosition } from "@/lib/data/playbackPosition";
+import {
+  clearPlaybackPosition,
+  loadPlaybackPosition,
+} from "@/lib/data/playbackPosition";
 import { computeChapterProgress } from "@/lib/chapterProgress";
 
-import { SourateInteractiveContentProps, TafsirAudioPart, AudioControls } from "@/types/types";
+import {
+  SourateInteractiveContentProps,
+  TafsirAudioPart,
+  AudioControls,
+} from "@/types/types";
 import type { Verse } from "@/types/types";
 import { RotateCcw } from "lucide-react";
 import ResetProgressDialog from "@/components/ResetProgressDialog";
@@ -102,7 +109,7 @@ function CompletedSelectItem({
     <div
       {...handlers}
       onClick={onClick}
-      className={`relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none transition-colors ${
+      className={`relative flex w-full cursor-pointer items-center rounded-sm py-1.5 pr-8 pl-2 text-sm transition-colors outline-none select-none ${
         pressing ? "bg-green-200" : "hover:bg-green-50"
       }`}
     >
@@ -124,7 +131,7 @@ function CompletedSelectItem({
             />
           </svg>
         </span>
-        <span className="text-xs text-gray-400">⟳ Maintenir</span>
+        <span className="text-xs text-[#3D3226]/40">⟳ Maintenir</span>
       </span>
     </div>
   );
@@ -141,12 +148,16 @@ export default function SourateInteractiveContent({
     buildAudioParts(initialAudioParts, initialVerses),
   );
 
-  const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(() => {
-    const parts = buildAudioParts(initialAudioParts, initialVerses);
-    const savedPosition = loadPlaybackPosition(chapterId);
-    const savedPart = savedPosition ? parts[savedPosition.currentPartIndex] : undefined;
-    return savedPart ?? parts[0] ?? null;
-  });
+  const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
+    () => {
+      const parts = buildAudioParts(initialAudioParts, initialVerses);
+      const savedPosition = loadPlaybackPosition(chapterId);
+      const savedPart = savedPosition
+        ? parts[savedPosition.currentPartIndex]
+        : undefined;
+      return savedPart ?? parts[0] ?? null;
+    },
+  );
   const { userId, isAuthReady } = useUserId();
   const isMobile = useMediaQuery("(max-width: 767px)");
   const completedPartIds = useChapterProgress(chapterId, userId);
@@ -186,7 +197,10 @@ export default function SourateInteractiveContent({
       try {
         await resetPartProgressInFirestore(partId, userId);
       } catch (error) {
-        console.error("Erreur lors de la réinitialisation de la partie:", error);
+        console.error(
+          "Erreur lors de la réinitialisation de la partie:",
+          error,
+        );
       }
     },
     [selectedPart, userId],
@@ -226,7 +240,10 @@ export default function SourateInteractiveContent({
       try {
         await markPartCompleted(completedChapterId, completedPartId, userId);
       } catch (error) {
-        console.error("Erreur lors du marquage de la partie comme complétée:", error);
+        console.error(
+          "Erreur lors du marquage de la partie comme complétée:",
+          error,
+        );
       }
     },
     [userId],
@@ -376,11 +393,11 @@ export default function SourateInteractiveContent({
 
   // Définition des couleurs pour HeaderRight
   const headerColors = {
-    card: "#f9fafb", // bg-gray-50
-    border: "#e5e7eb", // border-gray-200
-    text: "#1f2937", // text-gray-800
-    primary: "#3b82f6", // blue-500
-    textSecondary: "#6b7280", // text-gray-500
+    card: "#F3E5C7", // sepia surface, a shade darker than the page background for contrast
+    border: "rgba(61, 50, 38, 0.15)", // #3D3226/15
+    text: "#3D3226", // ink
+    primary: "#d28820", // gold accent
+    textSecondary: "rgba(61, 50, 38, 0.5)", // #3D3226/50
   };
 
   // Nombre total de chapitres (coran complet)
@@ -444,7 +461,7 @@ export default function SourateInteractiveContent({
                 <button
                   onClick={goToPreviousChapter}
                   disabled={!hasPreviousChapter}
-                  className={`inline-flex items-center gap-1.5 border border-orange-300 rounded-full px-3 py-1.5 text-xs font-medium transition-all md:px-4 md:py-2 md:text-sm ${
+                  className={`inline-flex items-center gap-1.5 rounded-full border border-orange-300 px-3 py-1.5 text-xs font-medium transition-all md:px-4 md:py-2 md:text-sm ${
                     hasPreviousChapter
                       ? "bg-orange-100 text-orange-800 hover:-translate-x-0.5 hover:bg-orange-200"
                       : "cursor-not-allowed bg-orange-50 text-orange-300"
@@ -507,7 +524,7 @@ export default function SourateInteractiveContent({
                 <button
                   onClick={goToNextChapter}
                   disabled={!hasNextChapter}
-                  className={`inline-flex items-center gap-1.5 border border-amber-300 rounded-full px-3 py-1.5 text-xs font-medium transition-all md:px-4 md:py-2 md:text-sm ${
+                  className={`inline-flex items-center gap-1.5 rounded-full border border-amber-300 px-3 py-1.5 text-xs font-medium transition-all md:px-4 md:py-2 md:text-sm ${
                     hasNextChapter
                       ? "bg-amber-100 text-amber-800 hover:translate-x-0.5 hover:bg-amber-200"
                       : "cursor-not-allowed bg-amber-50 text-amber-300"
@@ -580,7 +597,9 @@ export default function SourateInteractiveContent({
                 <Select
                   value={selectedPart?.id || ""}
                   onValueChange={(value) => {
-                    const partIndex = audioParts.findIndex((p) => p.id === value);
+                    const partIndex = audioParts.findIndex(
+                      (p) => p.id === value,
+                    );
                     if (partIndex !== -1) handlePartChange(partIndex);
                   }}
                   open={isSelectOpen}
@@ -591,8 +610,11 @@ export default function SourateInteractiveContent({
                   </SelectTrigger>
                   <SelectContent className="font-sans">
                     {audioParts.map((part, index) => {
-                      const uniqueVerses = new Set(part.timings.map((t) => t.id));
-                      const hasMultipleOccurrences = part.timings.length > uniqueVerses.size;
+                      const uniqueVerses = new Set(
+                        part.timings.map((t) => t.id),
+                      );
+                      const hasMultipleOccurrences =
+                        part.timings.length > uniqueVerses.size;
                       const isCompleted =
                         part.id !== "remaining-verses" &&
                         completedPartIds.has(part.id);
@@ -705,7 +727,9 @@ export default function SourateInteractiveContent({
               <div className="flex w-full items-center justify-center">
                 <LongPressPartBadge
                   isCompleted={completedPartIds.has(selectedPart.id)}
-                  partName={selectedPart.title || `Partie ${currentPartIndex + 1}`}
+                  partName={
+                    selectedPart.title || `Partie ${currentPartIndex + 1}`
+                  }
                   onReset={() => resetPartProgress(selectedPart.id)}
                 />
               </div>
@@ -757,7 +781,9 @@ export default function SourateInteractiveContent({
               onAtTopChange={setIsVerseContainerAtTop}
               onRegisterAudioControls={handleRegisterAudioControls}
             >
-              <div className={`sticky top-2 z-20 flex w-full items-center justify-center border-b border-gray-100 bg-linear-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-2 text-center text-gray-800 shadow backdrop-blur h-[2.7rem] md:-top-2.5 md:h-[3.8rem] md:text-5xl transition-all duration-300 ${(isAudioPlaying || !isVerseContainerAtTop) ? "opacity-0 pointer-events-none -translate-y-full" : "opacity-100 translate-y-0"}`}>
+              <div
+                className={`sticky top-2 z-20 flex h-[2.7rem] w-full items-center justify-center border-b border-gray-100 bg-linear-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-2 text-center text-gray-800 shadow backdrop-blur transition-all duration-300 md:-top-2.5 md:h-[3.8rem] md:text-5xl ${isAudioPlaying || !isVerseContainerAtTop ? "pointer-events-none -translate-y-full opacity-0" : "translate-y-0 opacity-100"}`}
+              >
                 <div className="font-sura absolute z-30 flex h-full w-full items-center justify-center">
                   <div className="mx-auto flex h-[90%] min-h-0 w-fit max-w-3xl items-center justify-center rounded-lg bg-white/90 px-3 py-3 shadow md:rounded-2xl md:px-5">
                     <h1

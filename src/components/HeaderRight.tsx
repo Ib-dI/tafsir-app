@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, ArrowRight, List, Check, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { ArrowLeft, ArrowRight, List, Check, X } from "lucide-react";
 import { HeaderRightProps } from "@/types/types";
 import type { TafsirAudioPart } from "@/types/types";
 import { useCompletedPartLongPress } from "@/hooks/useCompletedPartLongPress";
@@ -25,7 +25,8 @@ function CompletedPartButton({
   onResetRequest,
 }: CompletedPartButtonProps) {
   const { handlers, pressing, onClick } = useCompletedPartLongPress({
-    onLongPress: () => onResetRequest(part.id, part.title || `Partie ${idx + 1}`),
+    onLongPress: () =>
+      onResetRequest(part.id, part.title || `Partie ${idx + 1}`),
     onSelect,
   });
 
@@ -34,38 +35,50 @@ function CompletedPartButton({
       data-part-index={idx}
       {...handlers}
       onClick={onClick}
-      className={`w-full py-4 px-6 flex flex-row items-center transition-all duration-200 border-b border-gray-100 ${
+      className={`flex w-full flex-row items-center border-b border-[#3D3226]/10 px-6 py-4 transition-all duration-200 ${
         pressing
-          ? "bg-green-100 border-l-4 border-l-transparent"
+          ? "border-l-4 border-l-transparent bg-green-100"
           : isCurrentPart
-          ? "bg-blue-50 border-l-4 border-l-blue-500"
-          : "bg-white hover:bg-gray-50 border-l-4 border-l-transparent"
+            ? "border-l-4 border-l-[#d28820] bg-[#d28820]/10"
+            : "border-l-4 border-l-transparent bg-[#FBF3E4] hover:bg-[#3D3226]/5"
       }`}
     >
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-        isCurrentPart ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600"
-      }`}>
+      <div
+        className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
+          isCurrentPart
+            ? "bg-[#d28820] text-white"
+            : "bg-[#3D3226]/10 text-[#3D3226]/70"
+        }`}
+      >
         {idx + 1}
       </div>
-      <div className="flex-1 ml-4 text-left">
-        <div className="flex items-center gap-2 mb-1">
-          <span className={`font-medium ${isCurrentPart ? "text-blue-700" : "text-gray-800"}`}>
+      <div className="ml-4 flex-1 text-left">
+        <div className="mb-1 flex items-center gap-2">
+          <span
+            className={`font-medium ${isCurrentPart ? "text-[#d28820]" : "text-[#3D3226]"}`}
+          >
             {part.title || `Partie ${idx + 1}`}
           </span>
           {hasMultipleOccurrences && (
-            <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium">
+            <span className="rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-600">
               +occurrences
             </span>
           )}
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-full bg-green-100 border-2 border-green-300 flex items-center justify-center" aria-label="Partie complétée">
+        <div
+          className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-green-300 bg-green-100"
+          aria-label="Partie complétée"
+        >
           <Check size={12} className="text-green-600" strokeWidth={2.5} />
         </div>
-        <span className="text-xs text-gray-400">⟳ Maintenir</span>
+        <span className="text-xs text-[#3D3226]/40">⟳ Maintenir</span>
         {isCurrentPart && (
-          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" aria-label="Partie actuelle" />
+          <div
+            className="h-2 w-2 animate-pulse rounded-full bg-[#d28820]"
+            aria-label="Partie actuelle"
+          />
         )}
       </div>
     </button>
@@ -85,15 +98,19 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
   const [isPartSelectorVisible, setIsPartSelectorVisible] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [dialogPart, setDialogPart] = useState<{ id: string; name: string } | null>(null);
+  const [dialogPart, setDialogPart] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const startTouchY = useRef<number>(0);
   const startScrollTop = useRef<number>(0);
-  
+
   // Déterminer si la partie actuelle est complétée
   const currentPart = audioParts[currentPartIndex];
-  const isCurrentPartCompleted = currentPart && completedPartIds.has(currentPart.id);
+  const isCurrentPartCompleted =
+    currentPart && completedPartIds.has(currentPart.id);
 
   // ✅ GESTIONNAIRES pour les boutons de navigation
   const handleNextPart = () => {
@@ -118,7 +135,7 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
 
   // ✅ GESTIONNAIRE pour la sélection de partie
   const handlePartSelection = (newPartIndex: number) => {
-    console.log('🔄 HeaderRight: Sélection partie:', newPartIndex);
+    console.log("🔄 HeaderRight: Sélection partie:", newPartIndex);
     setCurrentPartIndex(newPartIndex);
     setIsPartSelectorVisible(false);
   };
@@ -144,7 +161,7 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
     if (startScrollTop.current === 0 && deltaY > 0) {
       setIsDragging(true);
       setDragOffset(deltaY);
-      
+
       // Empêcher le scroll par défaut pendant le drag
       e.preventDefault();
     }
@@ -156,7 +173,7 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
       if (dragOffset > 150) {
         setIsPartSelectorVisible(false);
       }
-      
+
       // Réinitialiser
       setDragOffset(0);
       setIsDragging(false);
@@ -166,29 +183,31 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
   // Empêcher le défilement du body et gérer le scroll initial
   useEffect(() => {
     if (isPartSelectorVisible) {
-      document.body.style.overflow = 'hidden';
-      
+      document.body.style.overflow = "hidden";
+
       // Reset du drag offset
       setDragOffset(0);
       setIsDragging(false);
-      
+
       // Scroll vers la partie sélectionnée
       setTimeout(() => {
-        const currentButton = document.querySelector(`[data-part-index="${currentPartIndex}"]`);
+        const currentButton = document.querySelector(
+          `[data-part-index="${currentPartIndex}"]`,
+        );
         if (currentButton && scrollContainerRef.current) {
-          currentButton.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center',
-            inline: 'nearest'
+          currentButton.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "nearest",
           });
         }
       }, 100);
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isPartSelectorVisible, currentPartIndex]);
 
@@ -199,142 +218,154 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
           {/* Bouton précédent */}
           <button
             onClick={handlePreviousPart}
-            className="px-3 py-2 rounded-full border transition-all duration-200 hover:shadow-sm active:scale-95"
+            className="rounded-full border px-3 py-2 transition-all duration-200 hover:shadow-sm active:scale-95"
             style={{
               backgroundColor: colors.card,
-              borderColor: colors.border
+              borderColor: colors.border,
             }}
             disabled={currentPartIndex === 0}
             aria-label="Partie précédente"
           >
-            <ArrowLeft 
-              size={16} 
-              color={currentPartIndex === 0 ? colors.textSecondary : colors.text} 
+            <ArrowLeft
+              size={16}
+              color={
+                currentPartIndex === 0 ? colors.textSecondary : colors.text
+              }
             />
           </button>
-          
+
           {/* Sélecteur de partie */}
           <button
             onClick={() => setIsPartSelectorVisible(true)}
-            className={`px-3 py-2 rounded-full flex flex-row items-center gap-1.5 border relative transition-all duration-200 hover:shadow-sm active:scale-95 ${
-              isCurrentPartCompleted 
-                ? 'bg-green-100/50 text-green-600 border-green-300' 
-                : ''
+            className={`relative flex flex-row items-center gap-1.5 rounded-full border px-3 py-2 transition-all duration-200 hover:shadow-sm active:scale-95 ${
+              isCurrentPartCompleted
+                ? "border-green-300 bg-green-100/50 text-green-600"
+                : ""
             }`}
             style={{
-              backgroundColor: isCurrentPartCompleted ? '' : colors.card,
-              borderColor: isCurrentPartCompleted ? '' : colors.border,
-              color: isCurrentPartCompleted ? '' : colors.text
+              backgroundColor: isCurrentPartCompleted ? "" : colors.card,
+              borderColor: isCurrentPartCompleted ? "" : colors.border,
+              color: isCurrentPartCompleted ? "" : colors.text,
             }}
             aria-label="Choisir la partie"
           >
             {/* Icône de validation si la partie est complétée */}
             {isCurrentPartCompleted && (
-              <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 border border-green-300 shadow-sm">
+              <div className="absolute -top-1 -right-1 rounded-full border border-green-300 bg-white p-0.5 shadow-sm">
                 <Check size={10} className="text-green-600" />
               </div>
             )}
-            
-            <List 
-              size={16} 
-              className={isCurrentPartCompleted ? 'text-green-600' : ''} 
+
+            <List
+              size={16}
+              className={isCurrentPartCompleted ? "text-green-600" : ""}
             />
-            <span className={`text-xs font-mono ${isCurrentPartCompleted ? 'text-green-600' : ''}`}>
+            <span
+              className={`font-mono text-xs ${isCurrentPartCompleted ? "text-green-600" : ""}`}
+            >
               {currentPartIndex + 1}/{audioParts.length}
             </span>
           </button>
-          
+
           {/* Bouton suivant */}
           <button
             onClick={handleNextPart}
-            className="px-3 py-2 rounded-full border transition-all duration-200 hover:shadow-sm active:scale-95"
+            className="rounded-full border px-3 py-2 transition-all duration-200 hover:shadow-sm active:scale-95"
             style={{
               backgroundColor: colors.card,
-              borderColor: colors.border
+              borderColor: colors.border,
             }}
             disabled={currentPartIndex === audioParts.length - 1}
             aria-label="Partie suivante"
           >
-            <ArrowRight 
-              size={16} 
-              color={currentPartIndex === audioParts.length - 1 ? colors.textSecondary : colors.text} 
+            <ArrowRight
+              size={16}
+              color={
+                currentPartIndex === audioParts.length - 1
+                  ? colors.textSecondary
+                  : colors.text
+              }
             />
           </button>
         </div>
       ) : null}
-      
+
       {/* Modal de sélection des parties avec swipe to dismiss */}
       {isPartSelectorVisible && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-end justify-center"
           onClick={() => setIsPartSelectorVisible(false)}
         >
           {/* Overlay avec animation de fade et opacité dynamique */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/10 backdrop-blur-[0.5px] transition-opacity duration-200"
             style={{
-              opacity: isDragging ? Math.max(0, 1 - dragOffset / 300) : 1
+              opacity: isDragging ? Math.max(0, 1 - dragOffset / 300) : 1,
             }}
           />
-          
+
           {/* Conteneur de la modal avec animations et swipe */}
-          <div 
+          <div
             ref={modalRef}
-            className="relative bg-white rounded-t-3xl shadow-xl w-full max-w-lg mx-1 mb-0 overflow-hidden flex flex-col"
-            style={{ 
-              maxHeight: '70vh',
+            className="relative mx-1 mb-0 flex w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-[#FBF3E4] shadow-xl"
+            style={{
+              maxHeight: "70vh",
               transform: `translateY(${dragOffset}px)`,
-              transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+              transition: isDragging ? "none" : "transform 0.3s ease-out",
             }}
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
             {/* En-tête fixe avec design amélioré */}
-            <div className="relative px-6 pt-4 pb-3 bg-white border-b border-gray-100 shrink-0">
+            <div className="relative shrink-0 border-b border-[#3D3226]/10 bg-[#FBF3E4] px-6 pt-4 pb-3">
               {/* Poignée de drag centrée et stylisée */}
-              <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-                <div 
-                  className="w-12 h-1 rounded-full bg-gray-300 transition-all duration-200"
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 transform">
+                <div
+                  className="h-1 w-12 rounded-full bg-[#3D3226]/25 transition-all duration-200"
                   style={{
-                    width: isDragging ? '16px' : '48px',
-                    backgroundColor: isDragging && dragOffset > 150 ? '#22c55e' : ''
+                    width: isDragging ? "16px" : "48px",
+                    backgroundColor:
+                      isDragging && dragOffset > 150 ? "#22c55e" : "",
                   }}
                 />
               </div>
-              
+
               {/* Conteneur du titre et croix */}
               <div className="flex items-center justify-between pt-2">
                 <div className="w-8" />
-                
-                <h3 className="font-semibold text-lg text-gray-800 text-center">
+
+                <h3 className="text-center text-lg font-semibold text-[#3D3226]">
                   Choisir la partie
                 </h3>
-                
+
                 <button
                   onClick={() => setIsPartSelectorVisible(false)}
-                  className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center active:scale-95"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3D3226]/8 transition-colors duration-200 hover:bg-[#3D3226]/15 active:scale-95"
                   aria-label="Fermer"
                 >
-                  <X size={18} className="text-gray-600" />
+                  <X size={18} className="text-[#3D3226]/70" />
                 </button>
               </div>
             </div>
-            
+
             {/* Liste des parties avec défilement interne */}
-            <div 
+            <div
               ref={scrollContainerRef}
-              className="overflow-y-auto flex-1 bg-gray-50/30 min-h-0"
+              className="min-h-0 flex-1 overflow-y-auto bg-[#3D3226]/5"
               style={{
-                overflowY: isDragging ? 'hidden' : 'auto'
+                overflowY: isDragging ? "hidden" : "auto",
               }}
             >
               {audioParts.map((part, idx) => {
-                const uniqueVerses = new Set(part.timings.map(t => t.id));
+                const uniqueVerses = new Set(part.timings.map((t) => t.id));
                 const totalOccurrences = part.timings.length;
-                const hasMultipleOccurrences = totalOccurrences > uniqueVerses.size;
-                const isCompleted = completedPartIds.has(part.id) && part.id !== "remaining-verses";
+                const hasMultipleOccurrences =
+                  totalOccurrences > uniqueVerses.size;
+                const isCompleted =
+                  completedPartIds.has(part.id) &&
+                  part.id !== "remaining-verses";
                 const isCurrentPart = idx === currentPartIndex;
 
                 if (isCompleted) {
@@ -359,43 +390,61 @@ const HeaderRight: React.FC<HeaderRightProps> = ({
                     key={part && part.id ? String(part.id) : String(idx)}
                     data-part-index={idx}
                     onClick={() => handlePartSelection(idx)}
-                    className={`w-full py-4 px-6 flex flex-row items-center transition-all duration-200 ${
+                    className={`flex w-full flex-row items-center px-6 py-4 transition-all duration-200 ${
                       isCurrentPart
-                        ? 'bg-blue-50 border-l-4 border-l-blue-500'
-                        : 'bg-white hover:bg-gray-50 border-l-4 border-l-transparent'
-                    } ${idx !== audioParts.length - 1 ? 'border-b border-gray-100' : ''}`}
+                        ? "border-l-4 border-l-[#d28820] bg-[#d28820]/10"
+                        : "border-l-4 border-l-transparent bg-[#FBF3E4] hover:bg-[#3D3226]/5"
+                    } ${idx !== audioParts.length - 1 ? "border-b border-[#3D3226]/10" : ""}`}
                     aria-label={`Sélectionner ${part.title}`}
-                    aria-current={isCurrentPart ? 'page' : undefined}
+                    aria-current={isCurrentPart ? "page" : undefined}
                   >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                      isCurrentPart ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
-                    }`}>
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
+                        isCurrentPart
+                          ? "bg-[#d28820] text-white"
+                          : "bg-[#3D3226]/10 text-[#3D3226]/70"
+                      }`}
+                    >
                       {idx + 1}
                     </div>
-                    <div className="flex-1 ml-4 text-left">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`font-medium ${isCurrentPart ? 'text-blue-700' : 'text-gray-800'}`}>
+                    <div className="ml-4 flex-1 text-left">
+                      <div className="mb-1 flex items-center gap-2">
+                        <span
+                          className={`font-medium ${isCurrentPart ? "text-[#d28820]" : "text-[#3D3226]"}`}
+                        >
                           {part.id === "remaining-verses" ? (
-                            <>{part.title} ({part.timings.length})</>
+                            <>
+                              {part.title} ({part.timings.length})
+                            </>
                           ) : (
                             part.title || `Partie ${idx + 1}`
                           )}
                         </span>
-                        {hasMultipleOccurrences && part.id !== "remaining-verses" && (
-                          <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full font-medium" aria-label="Contient des occurrences multiples">
-                            +occurrences
-                          </span>
-                        )}
+                        {hasMultipleOccurrences &&
+                          part.id !== "remaining-verses" && (
+                            <span
+                              className="rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-600"
+                              aria-label="Contient des occurrences multiples"
+                            >
+                              +occurrences
+                            </span>
+                          )}
                       </div>
                       {part.id === "remaining-verses" && (
-                        <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium" aria-label="Partie sans audio">
+                        <span
+                          className="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-600"
+                          aria-label="Partie sans audio"
+                        >
                           sans audio
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
                       {isCurrentPart && (
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" aria-label="Partie actuelle" />
+                        <div
+                          className="h-2 w-2 animate-pulse rounded-full bg-[#d28820]"
+                          aria-label="Partie actuelle"
+                        />
                       )}
                     </div>
                   </button>
