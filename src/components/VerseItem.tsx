@@ -107,12 +107,12 @@ const VerseItem = React.memo(
         id={`verse-${verse.id}`}
         onClick={() => !verse.noAudio && seekToVerse(verse)}
         className={`my-1 cursor-pointer rounded-2xl p-3 transition-colors duration-250 ease-in-out [contain-intrinsic-size:auto_120px] [content-visibility:auto] ${
-          !verse.noAudio ? "hover:bg-gray-50" : ""
+          !verse.noAudio ? "hover:bg-[#3D3226]/5" : ""
         } ${
           verse.noAudio
-            ? "border-[0.7px] border-x-2 border-blue-200 bg-gray-50/50 md:border-x-4"
+            ? "border-[0.7px] border-x-2 border-blue-200 bg-[#3D3226]/5 md:border-x-4"
             : isActive && audioUrl
-              ? `border-[0.7px] bg-[rgba(255,255,204,0.4)] ${isMobile ? "border-x-2" : "border-x-4"} border-[#F59E0B] shadow-[0_0_10px_5px_rgba(255,193,7,0.5)]`
+              ? `border-[0.7px] bg-[#d28820]/10 ${isMobile ? "border-x-2" : "border-x-4"} border-[#d28820] shadow-[0_0_10px_5px_rgba(210,136,32,0.25)]`
               : "border-transparent"
         }`}
         animate={{ scale: isActive && audioUrl ? 1.02 : 1 }}
@@ -125,7 +125,7 @@ const VerseItem = React.memo(
             </span>
           )}
           <div
-            className="verse-arabic-text mt-2 flex items-center text-right text-gray-800 md:gap-1"
+            className="verse-arabic-text mt-2 flex items-center text-right text-[#3D3226] md:gap-1"
             data-script={arabicScript}
             lang="ar"
             dir="rtl"
@@ -161,10 +161,10 @@ const VerseItem = React.memo(
                 : `${verse.text} ${toArabicNumerals(verse.id)}`}
             </span>
           </div>
-          <p className="text-md mt-2 text-right font-medium text-gray-500">
+          <p className="text-md mt-2 text-right font-medium text-[#3D3226]/60">
             {verse.transliteration}
           </p>
-          <p className="-mt-2 self-start text-gray-700">
+          <p className="-mt-2 self-start text-[#3D3226]/85">
             {verse.id}. {verse.translation}
           </p>
         </div>
