@@ -22,23 +22,6 @@
   font-weight: 400;
   font-display: swap;
 }
-@font-face {
-  font-family: 'Bismillah';
-  src: url('/fonts/Islamic.TTF') format('truetype');
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'QuranKarim114';
-  src: url('/fonts/Quran_karim_114.ttf') format('truetype');
-  font-display: swap;
-}
-@font-face {
-  font-family: 'QuranCommon';
-  src: url('/fonts/quran-common.ttf') format('truetype');
-  font-display: swap;
-}
 
 @import "tailwindcss";
 
@@ -51,9 +34,6 @@
   --font-indopak: IndoPak;
   --font-sura: Surah;
   --font-sura-colors: SurahColors;
-  --font-quran: QuranKarim114;
-  --font-bismillah: Bismillah;
-  --font-quran-common: QuranCommon;
 }
 
 .verse-arabic-text {

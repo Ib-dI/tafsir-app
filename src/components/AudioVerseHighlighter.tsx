@@ -318,7 +318,7 @@ const AudioVerseHighlighter = ({
       }
 
       {/* Section des contrôles audio */}
-      <div className="relative mt-3 flex flex-shrink-0 flex-col md:mt-6">
+      <div className="relative mt-3 flex shrink-0 flex-col md:mt-6">
         {audioUrl && (
           <div
             ref={audioPlayback.containerRef}
@@ -357,7 +357,7 @@ const AudioVerseHighlighter = ({
             {isMobile &&
               (audioPlayback.drag.isDragging || audioPlayback.drag.isTouching) &&
               audioPlayback.drag.dragTime !== null && (
-                <div className="pointer-events-none absolute inset-0 z-50 -mt-[1px] flex h-[42px] items-center justify-center rounded-lg border-2 border-blue-300 bg-blue-400/25">
+                <div className="pointer-events-none absolute inset-0 z-50 -mt-px flex h-10.5 items-center justify-center rounded-lg border-2 border-blue-300 bg-blue-400/25">
                   <div className="rounded-lg bg-blue-600 px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
                     {formatTime(audioPlayback.drag.dragTime)}
                   </div>
@@ -421,10 +421,10 @@ const AudioVerseHighlighter = ({
               damping: 10,
               delay: 0.1,
             }}
-            className="-mt-3 flex h-[60px] w-full items-center justify-center"
+            className="-mt-3 flex h-15 w-full items-center justify-center"
           >
             <div className="relative mx-auto inline-flex w-fit max-w-full items-center gap-2 rounded-lg border border-[#2563eb]/30 bg-blue-50/80 px-3 py-1 font-medium text-gray-900 shadow-lg ring-1 shadow-blue-400/20 ring-black/10 filter backdrop-blur-[1px] transition-colors hover:bg-blue-100/80 focus:outline-hidden sm:text-sm">
-              <Info className="mr-2 h-5 w-5 flex-shrink-0 text-[#2563eb] drop-shadow" />
+              <Info className="mr-2 h-5 w-5 shrink-0 text-[#2563eb] drop-shadow" />
               <p className="inline-block w-full truncate text-center text-[#2563eb]">
                 Tafsir audio non disponible !
               </p>

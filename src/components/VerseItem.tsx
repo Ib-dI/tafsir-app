@@ -32,7 +32,7 @@ const VerseItem = React.memo(
         key={`verse-${verse.id}`}
         id={`verse-${verse.id}`}
         onClick={() => !verse.noAudio && seekToVerse(verse)}
-        className={`my-1 cursor-pointer rounded-2xl p-3 [content-visibility:auto] [contain-intrinsic-size:auto_120px] transition-colors duration-[250ms] ease-in-out ${
+        className={`my-1 cursor-pointer rounded-2xl p-3 [content-visibility:auto] [contain-intrinsic-size:auto_120px] transition-colors duration-250 ease-in-out ${
           !verse.noAudio ? "hover:bg-gray-50" : ""
         } ${
           verse.noAudio
@@ -58,7 +58,7 @@ const VerseItem = React.memo(
               {verse.text} {toArabicNumerals(verse.id)}
             </span>
           </div>
-          <p className="text-md mt-[-8px] text-right font-medium text-gray-500">
+          <p className="text-md mt-2 text-right font-medium text-gray-500">
             {verse.transliteration}
           </p>
           <p className="-mt-2 self-start text-gray-700">

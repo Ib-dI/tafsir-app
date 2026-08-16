@@ -44,7 +44,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-gray-50/80 antialiased`}
       >
-        <div className="mx-auto flex min-h-screen max-w-[900px] flex-col  font-sans text-sm">
+        <div className="mx-auto flex min-h-screen max-w-225 flex-col  font-sans text-sm">
           <FontSettingsProvider>
             <Header />
             {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}

@@ -436,7 +436,7 @@ export default function SourateInteractiveContent({
                 damping: 12,
                 delay: 0.15,
               }}
-              className="flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-orange-400 via-yellow-300 to-amber-400 p-[1px] shadow-xs"
+              className="flex items-center justify-center gap-3 rounded-2xl bg-linear-to-r from-orange-400 via-yellow-300 to-amber-400 p-px shadow-xs"
             >
               <div className="flex w-full items-center justify-between rounded-2xl bg-white/95 px-2 py-1.5 backdrop-blur md:px-4 md:py-2">
                 {/* Bouton chapitre précédent */}
@@ -473,7 +473,7 @@ export default function SourateInteractiveContent({
                     Chapitre {chapterNumber}
                   </span>
                   <div className="flex items-center justify-center gap-1 md:flex-col md:gap-0">
-                    <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-sm font-semibold text-transparent md:text-base">
+                    <span className="bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-sm font-semibold text-transparent md:text-base">
                       {chapterName || `Sourate ${chapterNumber}`}
                     </span>
                     {isMobile && (
@@ -575,7 +575,7 @@ export default function SourateInteractiveContent({
               </motion.button>
 
               {/* Select universel */}
-              <div className="flex w-full flex-grow items-center justify-center gap-2">
+              <div className="flex w-full grow items-center justify-center gap-2">
                 <Select
                   value={selectedPart?.id || ""}
                   onValueChange={(value) => {
@@ -585,7 +585,7 @@ export default function SourateInteractiveContent({
                   open={isSelectOpen}
                   onOpenChange={setIsSelectOpen}
                 >
-                  <SelectTrigger className="w-full max-w-[220px] md:max-w-[260px]">
+                  <SelectTrigger className="w-full max-w-55 md:max-w-65">
                     <SelectValue placeholder="Sélectionner une partie" />
                   </SelectTrigger>
                   <SelectContent className="font-sans">
@@ -756,7 +756,7 @@ export default function SourateInteractiveContent({
               onAtTopChange={setIsVerseContainerAtTop}
               onRegisterAudioControls={handleRegisterAudioControls}
             >
-              <div className={`sticky top-[-8px] z-20 flex w-full items-center justify-center border-b border-gray-100 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-2 text-center text-gray-800 shadow backdrop-blur h-[2.7rem] md:top-[-10px] md:h-[3.8rem] md:text-5xl transition-all duration-300 ${(isAudioPlaying || !isVerseContainerAtTop) ? "opacity-0 pointer-events-none -translate-y-full" : "opacity-100 translate-y-0"}`}>
+              <div className={`sticky top-2 z-20 flex w-full items-center justify-center border-b border-gray-100 bg-linear-to-r from-yellow-300 via-yellow-400 to-yellow-500/80 py-2 text-center text-gray-800 shadow backdrop-blur h-[2.7rem] md:-top-2.5 md:h-[3.8rem] md:text-5xl transition-all duration-300 ${(isAudioPlaying || !isVerseContainerAtTop) ? "opacity-0 pointer-events-none -translate-y-full" : "opacity-100 translate-y-0"}`}>
                 <div className="font-sura absolute z-30 flex h-full w-full items-center justify-center">
                   <div className="mx-auto flex h-[90%] min-h-0 w-fit max-w-3xl items-center justify-center rounded-lg bg-white/90 px-3 py-3 shadow md:rounded-2xl md:px-5">
                     <h1
