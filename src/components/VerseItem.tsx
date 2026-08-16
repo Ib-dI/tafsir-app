@@ -1,6 +1,7 @@
-import { VerseHighlight } from "@/types/types";
+import { cn } from "@/lib/utils";
+import { VerseHighlight, VerseWord } from "@/types/types";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { type ReactNode, useState } from "react";
 
 // Fonction pour convertir un nombre en chiffres arabes
 export const toArabicNumerals = (n: number): string => {
@@ -12,6 +13,54 @@ export const toArabicNumerals = (n: number): string => {
     .map((digit) => arabicNumerals[parseInt(digit)])
     .join("");
 };
+
+// Un mot arabe interactif : survol (desktop) ou tap (mobile) affiche sa
+// traduction française dans une bulle. `stopPropagation` empêche le tap de
+// remonter jusqu'au conteneur du verset, qui sinon déclencherait le seek
+// audio (`seekToVerse`) à la place d'ouvrir la bulle.
+function InteractiveWord({
+  word,
+  isOpen,
+  onToggle,
+}: {
+  word: VerseWord;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  if (!word.translation) {
+    return <span>{word.arabic}</span>;
+  }
+
+  return (
+    <span className="group relative inline-block">
+      <span
+        role="button"
+        tabIndex={0}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle();
+        }}
+        className={cn(
+          "-mx-0.5 cursor-pointer rounded px-0.5 transition-colors",
+          isOpen ? "bg-amber-100" : "hover:bg-amber-100",
+        )}
+      >
+        {word.arabic}
+      </span>
+      <span
+        role="tooltip"
+        style={{ direction: "ltr" }}
+        className={cn(
+          "pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 rounded-lg bg-gray-800 px-2 py-1 text-xs font-medium whitespace-nowrap text-white opacity-0 shadow-lg transition-opacity",
+          isOpen ? "opacity-100" : "group-hover:opacity-100",
+        )}
+      >
+        {word.translation}
+        <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800" />
+      </span>
+    </span>
+  );
+}
 
 const VerseItem = React.memo(
   ({
@@ -27,6 +76,8 @@ const VerseItem = React.memo(
     seekToVerse: (verse: VerseHighlight) => void;
     isMobile: boolean;
   }) => {
+    const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
+
     return (
       <motion.div
         key={`verse-${verse.id}`}
@@ -55,7 +106,23 @@ const VerseItem = React.memo(
             style={{ direction: "rtl" }}
           >
             <span style={{ direction: "rtl" }}>
-              {verse.text} {toArabicNumerals(verse.id)}
+              {verse.words.length > 0
+                ? verse.words.flatMap((word, index) => {
+                    const nodes: ReactNode[] = index > 0 ? [" "] : [];
+                    nodes.push(
+                      <InteractiveWord
+                        key={index}
+                        word={word}
+                        isOpen={openWordIndex === index}
+                        onToggle={() =>
+                          setOpenWordIndex((current) => (current === index ? null : index))
+                        }
+                      />,
+                    );
+                    return nodes;
+                  })
+                : verse.text}{" "}
+              {toArabicNumerals(verse.id)}
             </span>
           </div>
           <p className="text-md mt-2 text-right font-medium text-gray-500">
