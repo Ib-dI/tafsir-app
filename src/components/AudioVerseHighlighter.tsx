@@ -4,6 +4,7 @@ import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Tooltip } from "radix-ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useSound from "use-sound";
 import { PauseIcon } from "./icons/PauseIcon";
@@ -458,16 +459,18 @@ const AudioVerseHighlighter = ({
           )}
 
         {/* Liste des versets */}
-        {verses.map((verse: VerseHighlight) => (
-          <VerseItem
-            key={`verse-${verse.id}`}
-            verse={verse}
-            isActive={verse.id === audioPlayback.currentVerseId}
-            audioUrl={audioUrl}
-            seekToVerse={audioPlayback.seekToVerse}
-            isMobile={isMobile}
-          />
-        ))}
+        <Tooltip.Provider delayDuration={200}>
+          {verses.map((verse: VerseHighlight) => (
+            <VerseItem
+              key={`verse-${verse.id}`}
+              verse={verse}
+              isActive={verse.id === audioPlayback.currentVerseId}
+              audioUrl={audioUrl}
+              seekToVerse={audioPlayback.seekToVerse}
+              isMobile={isMobile}
+            />
+          ))}
+        </Tooltip.Provider>
       </div>
     </div>
   );

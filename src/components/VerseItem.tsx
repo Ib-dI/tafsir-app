@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { VerseHighlight, VerseWord } from "@/types/types";
 import { motion } from "framer-motion";
+import { Tooltip } from "radix-ui";
 import React, { type ReactNode, useState } from "react";
 
 // Fonction pour convertir un nombre en chiffres arabes
@@ -18,52 +19,58 @@ export const toArabicNumerals = (n: number): string => {
 // traduction française dans une bulle. `stopPropagation` empêche le tap de
 // remonter jusqu'au conteneur du verset, qui sinon déclencherait le seek
 // audio (`seekToVerse`) à la place d'ouvrir la bulle.
+//
+// La bulle passe par un portail Radix (rendu dans document.body, positionné
+// via floating-ui) plutôt qu'un `position: absolute` local : la carte du
+// verset a `content-visibility:auto` (confinement de peinture — tout ce qui
+// dépasse sa boîte est rogné) et est elle-même dans une liste au scroll
+// interne (`overflow-y-auto`), donc une bulle positionnée localement se fait
+// soit rogner (au-dessus du mot), soit chevaucher la translitération
+// en-dessous. Le portail échappe aux deux.
 function InteractiveWord({
   word,
   isOpen,
-  onToggle,
+  onOpenChange,
 }: {
   word: VerseWord;
   isOpen: boolean;
-  onToggle: () => void;
+  onOpenChange: (open: boolean) => void;
 }) {
   if (!word.translation) {
     return <span>{word.arabic}</span>;
   }
 
   return (
-    <span className="group relative inline-block">
-      <span
-        role="button"
-        tabIndex={0}
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggle();
-        }}
-        className={cn(
-          "-mx-0.5 cursor-pointer rounded px-0.5 transition-colors",
-          isOpen ? "bg-amber-100" : "hover:bg-amber-100",
-        )}
-      >
-        {word.arabic}
-      </span>
-      {/* Sous le mot, pas au-dessus : la carte du verset a
-          content-visibility:auto (voir plus bas), qui impose un
-          confinement de peinture — tout ce qui dépasse la boîte de la
-          carte est rogné. Une bulle au-dessus du premier mot (en haut de
-          la carte) serait donc invisible. */}
-      <span
-        role="tooltip"
-        style={{ direction: "ltr" }}
-        className={cn(
-          "pointer-events-none absolute top-full left-1/2 z-10 mt-2 -translate-x-1/2 rounded-lg bg-gray-800 px-2 py-1 text-xs font-medium whitespace-nowrap text-white opacity-0 shadow-lg transition-opacity",
-          isOpen ? "opacity-100" : "group-hover:opacity-100",
-        )}
-      >
-        {word.translation}
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-800" />
-      </span>
-    </span>
+    <Tooltip.Root open={isOpen} onOpenChange={onOpenChange}>
+      <Tooltip.Trigger asChild>
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenChange(!isOpen);
+          }}
+          className={cn(
+            "-mx-0.5 cursor-pointer rounded px-0.5 transition-colors",
+            isOpen ? "bg-amber-100" : "hover:bg-amber-100",
+          )}
+        >
+          {word.arabic}
+        </span>
+      </Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Content
+          side="top"
+          sideOffset={8}
+          collisionPadding={8}
+          style={{ direction: "ltr" }}
+          className="z-50 rounded-lg bg-gray-800 px-2 py-1 text-xs font-medium whitespace-nowrap text-white shadow-lg"
+        >
+          {word.translation}
+          <Tooltip.Arrow className="fill-gray-800" />
+        </Tooltip.Content>
+      </Tooltip.Portal>
+    </Tooltip.Root>
   );
 }
 
@@ -119,9 +126,7 @@ const VerseItem = React.memo(
                         key={index}
                         word={word}
                         isOpen={openWordIndex === index}
-                        onToggle={() =>
-                          setOpenWordIndex((current) => (current === index ? null : index))
-                        }
+                        onOpenChange={(open) => setOpenWordIndex(open ? index : null)}
                       />,
                     );
                     return nodes;
