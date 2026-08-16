@@ -1,11 +1,13 @@
 "use client";
 
 // import NotificationPermission from "@/components/NotificationPermission";
-import { motion, Variants } from "framer-motion";
+import { motion, useReducedMotion, Variants } from "framer-motion";
 import { Compass, Headphones } from "lucide-react";
 import Link from "next/link";
 
 export default function HomePage() {
+  const shouldReduceMotion = useReducedMotion();
+
   // Variants pour les animations d'entrée des sections
   const sectionVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -32,14 +34,12 @@ export default function HomePage() {
 
   const floatingVariants: Variants = {
     animate: {
-      y: [0, -10, 0],
-      rotate: [0, 2, 0, -2, 0],
-      transition: {
-        duration: 4,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
+      y: shouldReduceMotion ? 0 : [0, -10, 0],
+      rotate: shouldReduceMotion ? 0 : [0, 2, 0, -2, 0],
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : { duration: 4, repeat: Infinity, ease: "easeInOut" },
+    },
   };
 
   return (
