@@ -43,16 +43,16 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-gray-50/80 antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-[#FBF3E4] antialiased`}
       >
-        <div className="mx-auto flex min-h-screen max-w-225 flex-col  font-sans text-sm">
+        <div className="mx-auto flex min-h-screen max-w-225 flex-col font-sans text-sm">
           <FontSettingsProvider>
             <WordByWordProvider>
               <Header />
               {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
               <Suspense
                 fallback={
-                    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
+                  <div className="flex min-h-screen flex-col items-center justify-center bg-[#FBF3E4]">
                     <LoadingSpinner
                       size="xl"
                       color="blue"

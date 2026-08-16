@@ -296,7 +296,7 @@ const AudioVerseHighlighter = ({
   return (
     <Tooltip.Provider delayDuration={200}>
       <div
-        className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible rounded-lg bg-[#FBF3E4] p-1 shadow sm:p-4"
+        className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible bg-[#FBF3E4] p-1 shadow sm:p-4"
         style={{ height: "100vh", maxHeight: "100dvh" }}
       >
         <ProgressIndicator
@@ -463,7 +463,7 @@ const AudioVerseHighlighter = ({
         {/* Section des versets */}
         <div
           ref={versesRef}
-          className="relative z-20 mt-1 flex-1 overflow-y-auto rounded-lg border border-gray-200 p-2"
+          className="relative z-20 mt-1 flex-1 overflow-y-auto border border-gray-200 p-2"
           style={{ minHeight: 0 }}
           onScroll={(e) => onAtTopChange?.(e.currentTarget.scrollTop < 10)}
         >
@@ -495,7 +495,6 @@ const AudioVerseHighlighter = ({
               isActive={verse.id === audioPlayback.currentVerseId}
               audioUrl={audioUrl}
               seekToVerse={audioPlayback.seekToVerse}
-              isMobile={isMobile}
             />
           ))}
         </div>

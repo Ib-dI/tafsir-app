@@ -86,13 +86,11 @@ const VerseItem = React.memo(
     isActive,
     audioUrl,
     seekToVerse,
-    isMobile,
   }: {
     verse: VerseHighlight;
     isActive: boolean;
     audioUrl: string;
     seekToVerse: (verse: VerseHighlight) => void;
-    isMobile: boolean;
   }) => {
     const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
     const { wordByWordEnabled } = useWordByWord();
@@ -106,13 +104,13 @@ const VerseItem = React.memo(
         key={`verse-${verse.id}`}
         id={`verse-${verse.id}`}
         onClick={() => !verse.noAudio && seekToVerse(verse)}
-        className={`my-1 cursor-pointer rounded-2xl p-3 transition-colors duration-250 ease-in-out [contain-intrinsic-size:auto_120px] [content-visibility:auto] ${
+        className={`my-1 cursor-pointer p-3 transition-colors duration-250 ease-in-out [contain-intrinsic-size:auto_120px] [content-visibility:auto] ${
           !verse.noAudio ? "hover:bg-[#3D3226]/5" : ""
         } ${
           verse.noAudio
-            ? "border-[0.7px] border-x-2 border-blue-200 bg-[#3D3226]/5 md:border-x-4"
+            ? "border-[0.7px] border-x border-blue-200 bg-[#3D3226]/5"
             : isActive && audioUrl
-              ? `border-[0.7px] bg-[#d28820]/10 ${isMobile ? "border-x-2" : "border-x-4"} border-[#d28820] shadow-[0_0_10px_5px_rgba(210,136,32,0.25)]`
+              ? `border-[0.7px] border-x border-[#d28820] bg-[#d28820]/10 shadow-[0_0_10px_5px_rgba(210,136,32,0.25)]`
               : "border-transparent"
         }`}
         animate={{ scale: isActive && audioUrl ? 1.02 : 1 }}
