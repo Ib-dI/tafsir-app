@@ -22,6 +22,18 @@
   font-weight: 400;
   font-display: swap;
 }
+@font-face {
+  font-family: 'DigitalKhattV1';
+  src: url('/fonts/DigitalKhattQuranicV1.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DigitalKhattV2';
+  src: url('/fonts/DigitalKhattV2.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
 
 @import "tailwindcss";
 
@@ -45,6 +57,71 @@
   .verse-arabic-text {
     font-size: var(--verse-arabic-font-size-desktop, 30px);
   }
+}
+
+/*
+ * Ported from extractor-quran/src/app/globals.css: both DigitalKhatt files
+ * ship a space (U+0020) glyph with a zero advance width baked into the
+ * font's own metrics, so plain inter-word spaces collapse to nothing.
+ * word-spacing works around it (adds a fixed length to every word-separator
+ * character regardless of the glyph's own advance width). 0.22em matches
+ * UthmanicHafs's natural word gap at the same font-size. Both files are also
+ * missing several Quranic Uthmani diacritics from their cmap, so Uthmanic is
+ * kept as the fallback family rather than an arbitrary system serif.
+ * Excluded for IndoPak ([data-script="indopak"]): that script always uses
+ * its own dedicated font regardless of the selected font style.
+ */
+:root[data-font-style="digitalkhatt-v1"] .verse-arabic-text:not([data-script="indopak"]) {
+  font-family: DigitalKhattV1, Uthmanic, serif;
+  word-spacing: 0.22em;
+}
+
+:root[data-font-style="digitalkhatt-v2"] .verse-arabic-text:not([data-script="indopak"]) {
+  font-family: DigitalKhattV2, Uthmanic, serif;
+  word-spacing: 0.22em;
+}
+
+/* Couleurs des règles de tajweed — portées telles quelles depuis extractor-quran/src/app/globals.css */
+.tajweed-rule--ham_wasl,
+.tajweed-rule--laam_shamsiyah,
+.tajweed-rule--slnt {
+  opacity: 0.5;
+}
+
+.tajweed-rule--ghunnah {
+  color: #e08a3c;
+}
+
+.tajweed-rule--idgham_ghunnah,
+.tajweed-rule--idgham_shafawi {
+  color: #3fa34d;
+}
+
+.tajweed-rule--idgham_wo_ghunnah,
+.tajweed-rule--idgham_mutajanisayn,
+.tajweed-rule--idgham_mutaqaribayn {
+  color: #2f9e6b;
+}
+
+.tajweed-rule--ikhafa,
+.tajweed-rule--ikhafa_shafawi {
+  color: #c77b2c;
+}
+
+.tajweed-rule--iqlab {
+  color: #a15fc9;
+}
+
+.tajweed-rule--qalaqah {
+  color: #3b82c4;
+}
+
+.tajweed-rule--madda_normal,
+.tajweed-rule--madda_necessary,
+.tajweed-rule--madda_obligatory_monfasel,
+.tajweed-rule--madda_obligatory_mottasel,
+.tajweed-rule--madda_permissible {
+  color: #d1453b;
 }
 
 @theme inline {
