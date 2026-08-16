@@ -1,7 +1,7 @@
 "use client";
 
 import confetti from "canvas-confetti";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -288,18 +288,20 @@ const AudioVerseHighlighter = ({
       />
 
       {/* Overlay de completion */}
-      {completionVisible && (
-        <SuccessCard
-          replayChapter={replayChapter}
-          hasNextChapter={hasNextChapter}
-          hasPreviousChapter={hasPreviousChapter}
-          infoSourate={infoSourate}
-          closeOverlay={closeOverlay}
-          goToPreviousChapter={goToPreviousChapter}
-          goToNextChapter={goToNextChapter}
-          isMobile={isMobile}
-        />
-      )}
+      <AnimatePresence>
+        {completionVisible && (
+          <SuccessCard
+            replayChapter={replayChapter}
+            hasNextChapter={hasNextChapter}
+            hasPreviousChapter={hasPreviousChapter}
+            infoSourate={infoSourate}
+            closeOverlay={closeOverlay}
+            goToPreviousChapter={goToPreviousChapter}
+            goToNextChapter={goToNextChapter}
+            isMobile={isMobile}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Overlay pour les versets longs */}
       {

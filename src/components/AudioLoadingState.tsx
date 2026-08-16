@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 
@@ -59,61 +59,61 @@ export default function AudioLoadingState({
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  if (audioError) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          type: "spring",
-          stiffness: 100,
-          damping: 10,
-          delay: 0.1,
-        }}
-        className={`absolute top-0 left-0 z-10 flex h-[50px] w-full flex-col items-center justify-center rounded border border-red-200 bg-red-50/90 backdrop-blur-sm md:h-[60px] ${className}`}
-      >
-        <div className="flex items-center gap-2">
-          <div className="h-5 w-5 rounded-full bg-red-500 flex items-center justify-center">
-            <span className="text-white text-xs font-bold">!</span>
+  return (
+    <AnimatePresence>
+      {audioError && (
+        <motion.div
+          key="audio-error"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{
+            type: "spring",
+            stiffness: 100,
+            damping: 10,
+            delay: 0.1,
+          }}
+          className={`absolute top-0 left-0 z-10 flex h-[50px] w-full flex-col items-center justify-center rounded border border-red-200 bg-red-50/90 backdrop-blur-sm md:h-[60px] ${className}`}
+        >
+          <div className="flex items-center gap-2">
+            <div className="h-5 w-5 rounded-full bg-red-500 flex items-center justify-center">
+              <span className="text-white text-xs font-bold">!</span>
+            </div>
+            <div className="text-center">
+              <p className="font-semibold text-red-700 text-sm">
+                Erreur de chargement audio
+              </p>
+              <p className="text-xs text-red-600">
+                Veuillez réessayer plus tard
+              </p>
+            </div>
           </div>
-          <div className="text-center">
-            <p className="font-semibold text-red-700 text-sm">
-              Erreur de chargement audio
-            </p>
-            <p className="text-xs text-red-600">
-              Veuillez réessayer plus tard
-            </p>
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{
-          type: "spring",
-          stiffness: 100,
-          damping: 10,
-          delay: 0.1,
-        }}
-        className={`absolute top-0 left-0 z-10 flex h-[90px] w-full flex-col items-center justify-center rounded bg-white/90 backdrop-blur-sm md:h-[60px] ${className}`}
-      >
-        <LoadingSpinner
-          size="md"
-          color="blue"
-          text={loadingText}
-          showProgress={true}
-          progress={progress}
-          className="gap-2"
-        />
-      </motion.div>
-    );
-  }
-
-  return null;
+        </motion.div>
+      )}
+      {!audioError && isLoading && (
+        <motion.div
+          key="audio-loading"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{
+            type: "spring",
+            stiffness: 100,
+            damping: 10,
+            delay: 0.1,
+          }}
+          className={`absolute top-0 left-0 z-10 flex h-[90px] w-full flex-col items-center justify-center rounded bg-white/90 backdrop-blur-sm md:h-[60px] ${className}`}
+        >
+          <LoadingSpinner
+            size="md"
+            color="blue"
+            text={loadingText}
+            showProgress={true}
+            progress={progress}
+            className="gap-2"
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }
