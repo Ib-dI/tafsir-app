@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useWordByWord } from "@/context/WordByWordContext";
 import { VerseHighlight, VerseWord } from "@/types/types";
 import { motion } from "framer-motion";
 import { Tooltip } from "radix-ui";
@@ -89,6 +90,7 @@ const VerseItem = React.memo(
     isMobile: boolean;
   }) => {
     const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
+    const { wordByWordEnabled } = useWordByWord();
 
     return (
       <motion.div
@@ -118,7 +120,7 @@ const VerseItem = React.memo(
             style={{ direction: "rtl" }}
           >
             <span style={{ direction: "rtl" }}>
-              {verse.words.length > 0
+              {wordByWordEnabled && verse.words.length > 0
                 ? verse.words.flatMap((word, index) => {
                     const nodes: ReactNode[] = index > 0 ? [" "] : [];
                     nodes.push(

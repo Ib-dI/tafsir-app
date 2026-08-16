@@ -2,6 +2,7 @@
 import Header from "@/components/header";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { FontSettingsProvider } from "@/context/FontSettingsContext";
+import { WordByWordProvider } from "@/context/WordByWordContext";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
@@ -46,22 +47,24 @@ export default function RootLayout({
       >
         <div className="mx-auto flex min-h-screen max-w-225 flex-col  font-sans text-sm">
           <FontSettingsProvider>
-            <Header />
-            {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
-            <Suspense
-              fallback={
-                  <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
-                  <LoadingSpinner
-                    size="xl"
-                    color="blue"
-                    text="Chargement du contenu..."
-                    className="gap-4"
-                  />
-                </div>
-              }
-            >
-              {children}
-            </Suspense>
+            <WordByWordProvider>
+              <Header />
+              {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
+              <Suspense
+                fallback={
+                    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
+                    <LoadingSpinner
+                      size="xl"
+                      color="blue"
+                      text="Chargement du contenu..."
+                      className="gap-4"
+                    />
+                  </div>
+                }
+              >
+                {children}
+              </Suspense>
+            </WordByWordProvider>
           </FontSettingsProvider>
           {/* AJOUTEZ CE COMPOSANT ICI */}
           {/* <NotificationsSetup /> */}

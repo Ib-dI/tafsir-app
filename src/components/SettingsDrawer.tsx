@@ -11,11 +11,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Counter } from "@/components/ui/counter";
+import { Switch } from "@/components/ui/switch";
 import {
   useFontSettings,
   FONT_SCALE_STEPS_MOBILE,
   type ArabicScript,
 } from "@/context/FontSettingsContext";
+import { DEFAULT_WORD_BY_WORD_ENABLED, useWordByWord } from "@/context/WordByWordContext";
 import { useMediaQuery } from "./UseMediaQuery";
 
 const SPEEDS = [1, 1.25, 1.5, 1.75, 2] as const;
@@ -49,6 +51,7 @@ export default function SettingsDrawer({
     arabicScript,
     setArabicScript,
   } = useFontSettings();
+  const { wordByWordEnabled, setWordByWordEnabled } = useWordByWord();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const speedIndex = SPEEDS.indexOf(playbackRate as (typeof SPEEDS)[number]);
@@ -58,6 +61,7 @@ export default function SettingsDrawer({
   const handleReset = () => {
     resetFontScale();
     onPlaybackRateChange(1);
+    setWordByWordEnabled(DEFAULT_WORD_BY_WORD_ENABLED);
   };
 
   return (
@@ -153,6 +157,21 @@ export default function SettingsDrawer({
                   ? () => onPlaybackRateChange(SPEEDS[speedIndex + 1])
                   : undefined
               }
+            />
+          </div>
+
+          {/* Mot par mot */}
+          <div className="flex items-center justify-between py-1">
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-[#3D3226]">Mot par mot</span>
+              <span className="text-xs text-[#3D3226]/60">
+                Survol ou tap sur un mot pour sa traduction
+              </span>
+            </div>
+            <Switch
+              checked={wordByWordEnabled}
+              onCheckedChange={setWordByWordEnabled}
+              aria-label="Activer le mode mot par mot"
             />
           </div>
         </div>
