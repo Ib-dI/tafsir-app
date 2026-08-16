@@ -134,7 +134,7 @@ export function useAudioPlayback({
 
     const wavesurfer = WaveSurfer.create({
       container: waveformRef.current,
-      waveColor: "#e8dcc3",
+      waveColor: "#cbb694",
       progressColor: "#d28820",
       cursorColor: "#3D3226",
       barWidth: 2,
