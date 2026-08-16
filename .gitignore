@@ -40,4 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# données mot par mot générées (voir `pnpm prepare-quran-data`)
+/src/lib/data/quran-wbw/generated/
+
 service_key.json

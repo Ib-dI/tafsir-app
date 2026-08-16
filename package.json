@@ -8,7 +8,8 @@
     "dev-ht": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare-quran-data": "node tools/prepare-quran-wbw-data.mjs"
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.2.5",
