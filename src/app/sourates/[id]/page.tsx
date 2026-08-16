@@ -33,7 +33,7 @@ export default async function Sourate({ params }: SouratePageProps) {
   const audioParts = currentAudioTafsir?.parts || [];
 
   return (
-    <div className="container mx-auto mt-1 bg-white p-2 md:p-4">
+    <div className="container mx-auto mt-1 bg-[#FBF3E4] p-2 md:p-4">
       {/* Le bouton de retour est un Client Component qui lit ses propres searchParams */}
 
       {/* Passe toutes les données nécessaires au Client Component interactif */}

@@ -1,6 +1,6 @@
 @font-face {
-  font-family: 'Uthmanic';
-  src: url('/fonts/UthmanicHafs1Ver18.woff2') format('woff2');
+  font-family: "Uthmanic";
+  src: url("/fonts/UthmanicHafs1Ver18.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
 }
@@ -11,32 +11,32 @@
      ayah-end ornament as this font's own Private Use Area codepoints
      (e.g. U+F61E) — indopak.woff2 doesn't map them and rendered an empty
      circle. */
-  font-family: 'IndoPak';
-  src: url('/fonts/indopack-v2.woff2') format('woff2');
+  font-family: "IndoPak";
+  src: url("/fonts/indopack-v2.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Surah';
-  src: url('/fonts/surah-name-v4.ttf') format('truetype');
+  font-family: "Surah";
+  src: url("/fonts/surah-name-v4.ttf") format("truetype");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: 'SurahColors';
-  src: url('/fonts/surah_names_colors.ttf') format('truetype');
+  font-family: "SurahColors";
+  src: url("/fonts/surah_names_colors.ttf") format("truetype");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: 'DigitalKhattV1';
-  src: url('/fonts/DigitalKhattQuranicV1.otf') format('opentype');
+  font-family: "DigitalKhattV1";
+  src: url("/fonts/DigitalKhattQuranicV1.otf") format("opentype");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: 'DigitalKhattV2';
-  src: url('/fonts/DigitalKhattV2.otf') format('opentype');
+  font-family: "DigitalKhattV2";
+  src: url("/fonts/DigitalKhattV2.otf") format("opentype");
   font-weight: 400;
   font-display: swap;
 }
@@ -47,7 +47,6 @@
 
 @custom-variant dark (&:is(.dark *));
 @theme {
-
   --font-uthmanic: Uthmanic;
   --font-indopak: IndoPak;
   --font-sura: Surah;
@@ -57,6 +56,15 @@
 .verse-arabic-text {
   font-size: var(--verse-arabic-font-size-mobile, 23.5px);
   font-family: var(--verse-arabic-font-family, Uthmanic);
+  /* Porté d'extractor-quran/src/app/globals.css (.verse-card__arabic) : le
+     texte arabe a besoin de plus de hauteur de ligne que du texte latin pour
+     laisser respirer les diacritiques (harakat) au-dessus/en dessous des
+     lettres. IndoPak (data-script) a des diacritiques plus hauts encore. */
+  line-height: 2.4;
+}
+
+.verse-arabic-text[data-script="indopak"] {
+  line-height: 2.8;
 }
 
 @media (min-width: 768px) {
@@ -77,12 +85,14 @@
  * Excluded for IndoPak ([data-script="indopak"]): that script always uses
  * its own dedicated font regardless of the selected font style.
  */
-:root[data-font-style="digitalkhatt-v1"] .verse-arabic-text:not([data-script="indopak"]) {
+:root[data-font-style="digitalkhatt-v1"]
+  .verse-arabic-text:not([data-script="indopak"]) {
   font-family: DigitalKhattV1, Uthmanic, serif;
   word-spacing: 0.22em;
 }
 
-:root[data-font-style="digitalkhatt-v2"] .verse-arabic-text:not([data-script="indopak"]) {
+:root[data-font-style="digitalkhatt-v2"]
+  .verse-arabic-text:not([data-script="indopak"]) {
   font-family: DigitalKhattV2, Uthmanic, serif;
   word-spacing: 0.22em;
 }
@@ -268,7 +278,8 @@
 }
 
 @keyframes successPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }

@@ -8,9 +8,12 @@ import {
   type ReactNode,
 } from "react";
 
-// Paliers de taille du texte arabe, en px. Index 2 = valeur actuelle (par défaut).
-export const FONT_SCALE_STEPS_MOBILE = [19, 21, 23.5, 26, 29] as const;
-export const FONT_SCALE_STEPS_DESKTOP = [25, 27, 30, 33, 37] as const;
+// Paliers de taille du texte arabe, en px. Index 2 = valeur par défaut.
+// 7 paliers pour correspondre à la plage d'extractor-quran (ARABIC_SIZE_MIN=1
+// à ARABIC_SIZE_MAX=7) ; les 5 premiers sont inchangés, 2 paliers ajoutés en
+// haut de l'échelle.
+export const FONT_SCALE_STEPS_MOBILE = [19, 21, 23.5, 26, 29, 33, 37] as const;
+export const FONT_SCALE_STEPS_DESKTOP = [25, 27, 30, 33, 37, 42, 47] as const;
 export const DEFAULT_FONT_SCALE_INDEX = 2;
 
 export type ArabicScript = "uthmani" | "indopak" | "tajweed";

@@ -125,11 +125,12 @@ const VerseItem = React.memo(
             </span>
           )}
           <div
-            className="verse-arabic-text mt-2 flex items-center text-right leading-relaxed text-gray-800 md:gap-1"
+            className="verse-arabic-text mt-2 flex items-center text-right text-gray-800 md:gap-1"
             data-script={arabicScript}
-            style={{ direction: "rtl" }}
+            lang="ar"
+            dir="rtl"
           >
-            <span style={{ direction: "rtl" }}>
+            <span lang="ar" dir="rtl">
               {verse.words.length > 0
                 ? verse.words.flatMap((word, index) => {
                     const content = wordContent(

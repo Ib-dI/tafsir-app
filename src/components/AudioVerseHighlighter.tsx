@@ -296,7 +296,7 @@ const AudioVerseHighlighter = ({
   return (
     <Tooltip.Provider delayDuration={200}>
       <div
-        className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible rounded-lg bg-white p-1 shadow sm:p-4"
+        className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible rounded-lg bg-[#FBF3E4] p-1 shadow sm:p-4"
         style={{ height: "100vh", maxHeight: "100dvh" }}
       >
         <ProgressIndicator

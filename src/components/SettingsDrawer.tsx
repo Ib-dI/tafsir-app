@@ -68,9 +68,10 @@ function VersePreview({ verse }: { verse: VerseHighlight | undefined }) {
     <div className="rounded-2xl bg-[#3D3226]/5 p-4">
       <p className="mb-3 text-xs font-medium text-[#3D3226]/60">Aperçu :</p>
       <div
-        className="verse-arabic-text mb-3 text-right leading-relaxed"
+        className="verse-arabic-text mb-3 text-right"
         data-script={arabicScript}
-        style={{ direction: "rtl" }}
+        lang="ar"
+        dir="rtl"
       >
         {verse.words.flatMap((word, index) => {
           const content = wordContent(
