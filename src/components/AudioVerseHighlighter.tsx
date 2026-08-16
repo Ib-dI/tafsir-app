@@ -407,7 +407,7 @@ const AudioVerseHighlighter = ({
                 {audioPlayback.isPlaying ? <PauseIcon /> : <PlayIcon />}
               </button>
 
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex items-center gap-2 text-[#3D3226]/70">
                 <span className="font-sura -mt-1 text-xl">
                   surah
                   {Number(infoSourate[0]) < 10
@@ -424,7 +424,7 @@ const AudioVerseHighlighter = ({
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="font-mono text-xs whitespace-nowrap text-gray-600 md:text-sm">
+                <div className="font-mono text-xs whitespace-nowrap text-[#3D3226]/70 md:text-sm">
                   {formatTime(audioPlayback.currentTime)} /{" "}
                   {formatTime(audioPlayback.duration)}
                 </div>

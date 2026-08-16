@@ -86,7 +86,7 @@ export default function Header() {
                   alt="logo"
                   width={40}
                   height={40}
-                  className="rounded-full ring-2 ring-gray-200 transition-all duration-300 group-hover:ring-gray-400"
+                  className="rounded-full ring-2 ring-[#3D3226]/15 transition-all duration-300 group-hover:ring-[#3D3226]/30"
                   priority
                 />
               </motion.div>
@@ -100,7 +100,7 @@ export default function Header() {
                   delay: 0.2,
                 }}
               >
-                <span className="text-2xl font-black text-gray-900">
+                <span className="text-2xl font-black text-[#3D3226]">
                   Tafsir
                 </span>
               </motion.div>
@@ -124,13 +124,13 @@ export default function Header() {
                           className={`relative flex items-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition-all duration-300 ${
                             isActive
                               ? "text-white"
-                              : "text-gray-700 hover:text-blue-600"
+                              : "text-[#3D3226]/70 hover:text-[#3D3226]"
                           }`}
                         >
                           {isActive && (
                             <motion.div
                               layoutId="activeTab"
-                              className="absolute inset-0 rounded-xl bg-[#f08800] shadow-sm"
+                              className="absolute inset-0 rounded-xl bg-[#d28820] shadow-sm"
                               transition={{
                                 type: "spring",
                                 stiffness: 300,
@@ -142,7 +142,7 @@ export default function Header() {
                           <span className="relative z-10">{item.label}</span>
                           {!isActive && (
                             <motion.div
-                              className="absolute inset-0 rounded-xl bg-gray-100 opacity-0 transition-opacity duration-300 hover:opacity-100"
+                              className="absolute inset-0 rounded-xl bg-[#3D3226]/8 opacity-0 transition-opacity duration-300 hover:opacity-100"
                               whileHover={{ scale: 1 }}
                             />
                           )}
@@ -161,12 +161,12 @@ export default function Header() {
               transition={{ delay: 0.3 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-xl bg-gray-100 p-2 transition-colors hover:bg-gray-200 md:hidden"
+              className="rounded-xl bg-[#3D3226]/8 p-2 transition-colors hover:bg-[#3D3226]/15 md:hidden"
             >
               {mobileMenuOpen ? (
-                <X size={24} className="text-gray-700" />
+                <X size={24} className="text-[#3D3226]" />
               ) : (
-                <Menu size={24} className="text-gray-700" />
+                <Menu size={24} className="text-[#3D3226]" />
               )}
             </motion.button>
           </div>
@@ -202,8 +202,8 @@ export default function Header() {
                       whileTap={{ scale: 0.98 }}
                       className={`flex items-center gap-3 rounded-xl px-5 py-4 font-semibold transition-all duration-300 ${
                         isActive
-                          ? "bg-[#f08800] text-white shadow-sm"
-                          : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                          ? "bg-[#d28820] text-white shadow-sm"
+                          : "bg-[#3D3226]/5 text-[#3D3226]/70 hover:bg-[#3D3226]/10"
                       }`}
                     >
                       <item.icon size={20} />

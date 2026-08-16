@@ -141,7 +141,7 @@ export default function SettingsDrawer({
           type="button"
           title="Réglages"
           aria-label="Réglages"
-          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-100"
+          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-[#3D3226]/70 transition-colors hover:bg-[#3D3226]/8"
         >
           <Settings className="size-4" />
         </button>
