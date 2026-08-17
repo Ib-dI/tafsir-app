@@ -11,7 +11,7 @@ import { PauseIcon } from "./icons/PauseIcon";
 import { PlayIcon } from "./icons/PlayIcon";
 import SettingsDrawer from "./SettingsDrawer";
 import { useMediaQuery } from "./UseMediaQuery";
-import VerseItem, { toArabicNumerals } from "./VerseItem";
+import VerseItem from "./VerseItem";
 
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
 import { useWakeLock } from "@/hooks/useWakeLock";
@@ -22,7 +22,6 @@ import {
 import { AudioVerseHighlighterProps, VerseHighlight } from "@/types/types";
 import AudioLoadingState from "./AudioLoadingState";
 import LoadingSkeleton from "./LoadingSkeleton";
-import OverlayVerses from "./OverlayVerses";
 import ProgressIndicator from "./ProgressIndicator";
 import SuccessCard from "./SuccessCard";
 
@@ -322,16 +321,6 @@ const AudioVerseHighlighter = ({
           )}
         </AnimatePresence>
 
-        {/* Overlay pour les versets longs */}
-        {
-          <OverlayVerses
-            currentVerseId={audioPlayback.currentVerseId}
-            verses={verses}
-            isMobile={isMobile}
-            audioUrl={audioUrl}
-            toArabicNumerals={toArabicNumerals}
-          />
-        }
 
         {/* Section des contrôles audio */}
         <div className="relative mt-3 flex shrink-0 flex-col md:mt-6">
