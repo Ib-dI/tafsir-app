@@ -20,6 +20,10 @@ import {
   type ArabicScript,
 } from "@/context/FontSettingsContext";
 import {
+  DEFAULT_SHOW_TRANSLATION,
+  useTranslationDisplay,
+} from "@/context/TranslationDisplayContext";
+import {
   DEFAULT_WORD_BY_WORD_ENABLED,
   useWordByWord,
 } from "@/context/WordByWordContext";
@@ -31,7 +35,7 @@ import { VerseHighlight } from "@/types/types";
 
 const SPEEDS = [1, 1.25, 1.5, 1.75, 2] as const;
 
-type SettingsTab = "arabic" | "wordByWord";
+type SettingsTab = "arabic" | "translation" | "wordByWord";
 
 const ARABIC_SCRIPTS: { id: ArabicScript; label: string }[] = [
   { id: "uthmani", label: "Uthmani" },
@@ -55,6 +59,7 @@ const FONT_STYLE_OPTIONS: { value: ArabicFontStyle; label: string }[] = [
 // onglets comme là-bas.
 function VersePreview({ verse }: { verse: VerseHighlight | undefined }) {
   const { arabicScript, fontStyle } = useFontSettings();
+  const { showTranslation } = useTranslationDisplay();
   const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
   const applyOrnament = applyOrnamentFor(fontStyle);
   const useDigitalKhattText =
@@ -94,7 +99,9 @@ function VersePreview({ verse }: { verse: VerseHighlight | undefined }) {
           return nodes;
         })}
       </div>
-      <p className="text-sm text-[#3D3226]/80">{verse.translation}</p>
+      {showTranslation && (
+        <p className="text-sm text-[#3D3226]/80">{verse.translation}</p>
+      )}
     </div>
   );
 }
@@ -122,6 +129,7 @@ export default function SettingsDrawer({
     setFontStyle,
   } = useFontSettings();
   const { wordByWordEnabled, setWordByWordEnabled } = useWordByWord();
+  const { showTranslation, setShowTranslation } = useTranslationDisplay();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const speedIndex = SPEEDS.indexOf(playbackRate as (typeof SPEEDS)[number]);
@@ -132,6 +140,7 @@ export default function SettingsDrawer({
     resetFontScale();
     onPlaybackRateChange(1);
     setWordByWordEnabled(DEFAULT_WORD_BY_WORD_ENABLED);
+    setShowTranslation(DEFAULT_SHOW_TRANSLATION);
   };
 
   return (
@@ -167,6 +176,19 @@ export default function SettingsDrawer({
               }`}
             >
               Arabe
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "translation"}
+              onClick={() => setActiveTab("translation")}
+              className={`border-b-2 pb-2 text-sm font-semibold transition-colors ${
+                activeTab === "translation"
+                  ? "border-[#3D3226] text-[#3D3226]"
+                  : "border-transparent text-[#3D3226]/50 hover:text-[#3D3226]/80"
+              }`}
+            >
+              Traduction
             </button>
             <button
               type="button"
@@ -251,6 +273,29 @@ export default function SettingsDrawer({
                       ? undefined
                       : increaseFontScale
                   }
+                />
+              </div>
+            </>
+          )}
+
+          {activeTab === "translation" && (
+            <>
+              <VersePreview verse={previewVerse} />
+
+              {/* Traduction / translitération */}
+              <div className="flex items-center justify-between py-1">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-[#3D3226]">
+                    Afficher la traduction
+                  </span>
+                  <span className="text-xs text-[#3D3226]/60">
+                    Traduction française et translitération sous le verset
+                  </span>
+                </div>
+                <Switch
+                  checked={showTranslation}
+                  onCheckedChange={setShowTranslation}
+                  aria-label="Afficher la traduction et la translitération"
                 />
               </div>
             </>

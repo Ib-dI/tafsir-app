@@ -2,6 +2,7 @@
 import Header from "@/components/header";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { FontSettingsProvider } from "@/context/FontSettingsContext";
+import { TranslationDisplayProvider } from "@/context/TranslationDisplayContext";
 import { WordByWordProvider } from "@/context/WordByWordContext";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -48,22 +49,24 @@ export default function RootLayout({
         <div className="mx-auto flex min-h-screen max-w-225 flex-col font-sans text-sm">
           <FontSettingsProvider>
             <WordByWordProvider>
-              <Header />
-              {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
-              <Suspense
-                fallback={
-                  <div className="flex min-h-screen flex-col items-center justify-center bg-[#FBF3E4]">
-                    <LoadingSpinner
-                      size="xl"
-                      color="blue"
-                      text="Chargement du contenu..."
-                      className="gap-4"
-                    />
-                  </div>
-                }
-              >
-                {children}
-              </Suspense>
+              <TranslationDisplayProvider>
+                <Header />
+                {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
+                <Suspense
+                  fallback={
+                    <div className="flex min-h-screen flex-col items-center justify-center bg-[#FBF3E4]">
+                      <LoadingSpinner
+                        size="xl"
+                        color="blue"
+                        text="Chargement du contenu..."
+                        className="gap-4"
+                      />
+                    </div>
+                  }
+                >
+                  {children}
+                </Suspense>
+              </TranslationDisplayProvider>
             </WordByWordProvider>
           </FontSettingsProvider>
           {/* AJOUTEZ CE COMPOSANT ICI */}
