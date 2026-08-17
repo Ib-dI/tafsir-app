@@ -75,7 +75,7 @@ export default function ResetProgressDialog({
                 {/* Fermeture */}
                 <button
                   onClick={() => setOpen(false)}
-                  className="absolute right-3 top-3 rounded-full p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                  className="absolute right-3 top-3 rounded-full p-1.5 text-[#3D3226]/40 transition-colors hover:bg-[#3D3226]/8 hover:text-[#3D3226]/70"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -95,7 +95,7 @@ export default function ResetProgressDialog({
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.22, duration: 0.35 }}
-                  className="mb-2 text-lg font-bold tracking-tight text-gray-800"
+                  className="mb-2 text-lg font-bold tracking-tight text-[#3D3226]"
                 >
                   Réviser ce chapitre ?
                 </motion.h3>
@@ -105,10 +105,10 @@ export default function ResetProgressDialog({
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.35 }}
-                  className="mb-7 text-sm leading-relaxed text-gray-500"
+                  className="mb-7 text-sm leading-relaxed text-[#3D3226]/60"
                 >
                   La progression de{" "}
-                  <span className="font-semibold text-gray-700">{name}</span>{" "}
+                  <span className="font-semibold text-[#3D3226]/80">{name}</span>{" "}
                   sera réinitialisée. Vous pourrez recommencer depuis le début.
                 </motion.p>
 
@@ -121,7 +121,7 @@ export default function ResetProgressDialog({
                 >
                   <button
                     onClick={() => setOpen(false)}
-                    className="flex-1 rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-700 active:scale-95"
+                    className="flex-1 rounded-full border border-[#3D3226]/15 bg-[#3D3226]/5 px-4 py-2.5 text-sm font-medium text-[#3D3226]/70 transition-all hover:bg-[#3D3226]/10 hover:text-[#3D3226]/90 active:scale-95"
                   >
                     Annuler
                   </button>

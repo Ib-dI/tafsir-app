@@ -86,7 +86,7 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
               <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500">
                 Reprendre la lecture
               </p>
-              <p className="truncate text-sm font-semibold text-gray-800">
+              <p className="truncate text-sm font-semibold text-[#3D3226]">
                 {lastListenedChapter.transliteration}
               </p>
               <div className="flex items-center gap-1 text-xs text-amber-700/70">
@@ -134,7 +134,7 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
               <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">
                 Récemment ajouté
               </p>
-              <p className="truncate text-sm font-semibold text-gray-800">
+              <p className="truncate text-sm font-semibold text-[#3D3226]">
                 {lastAddedChapter.transliteration}
               </p>
               <p className="text-xs text-emerald-700/70">

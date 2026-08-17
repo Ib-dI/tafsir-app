@@ -206,21 +206,21 @@ export default function SouratesClient({
 
   if (chaptersLoadError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white text-red-600">
+      <div className="flex min-h-screen items-center justify-center bg-[#FBF3E4] text-red-600">
         Erreur lors du chargement des chapitres. Veuillez réessayer.
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto pt-9 w-full bg-white p-4">
+    <div className="container mx-auto pt-9 w-full bg-[#FBF3E4] p-4">
       <div className="mx-auto mb-8 flex w-fit items-start justify-center">
         <div className="shrink-0">
           <Image src="/coran.png" alt="Coran fermé" width={30} height={30} className="sm:hidden" />
           <Image src="/coran.png" alt="Coran fermé" width={50} height={50} className="hidden sm:block" />
         </div>
 
-        <h1 className="leading-[0.95] tracking-tight font-extrabold text-center text-gray-800 text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+        <h1 className="leading-[0.95] tracking-tight font-extrabold text-center text-[#3D3226] text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
           <span className="block w-fit -mr-2">Chapitres</span>
           <span className="flex items-end justify-center gap-1 -ml-4">
             <span>du Coran</span>
@@ -245,13 +245,13 @@ export default function SouratesClient({
         >
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={20} className="text-gray-400" />
+              <Search size={20} className="text-[#3D3226]/40" />
             </div>
             <input
               ref={searchInputRef}
               type="text"
               placeholder="Rechercher une sourate (nom, traduction, numéro...)"
-              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full pl-10 pr-4 py-3 bg-white border border-[#3D3226]/15 rounded-xl shadow-sm text-[#3D3226] placeholder-[#3D3226]/40 focus:outline-none focus:ring-2 focus:ring-[#d28820] focus:border-transparent transition-all duration-200"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -263,7 +263,7 @@ export default function SouratesClient({
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.3 }}
-          className="flex flex-col gap-3 bg-gray-50 p-4 rounded-xl"
+          className="flex flex-col gap-3 bg-[#3D3226]/5 p-4 rounded-xl"
         >
           {/* Chips de filtre */}
           <div className="flex flex-wrap items-center justify-center gap-2">
@@ -273,8 +273,8 @@ export default function SouratesClient({
                 onClick={toggleShowOnlyWithAudio}
                 className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
                   showOnlyWithAudio
-                    ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                    : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300"
+                    ? "bg-[#d28820] border-[#d28820] text-white shadow-sm"
+                    : "border-[#3D3226]/15 bg-white text-[#3D3226]/60 hover:bg-[#3D3226]/5 hover:border-[#3D3226]/25"
                 }`}
               >
                 <AudioLines size={15} />
@@ -288,7 +288,7 @@ export default function SouratesClient({
               className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
                 showOnlyIncomplete
                   ? "bg-amber-500 border-amber-500 text-white shadow-sm"
-                  : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300"
+                  : "border-[#3D3226]/15 bg-white text-[#3D3226]/60 hover:bg-[#3D3226]/5 hover:border-[#3D3226]/25"
               }`}
             >
               <Hourglass size={15} />
@@ -301,7 +301,7 @@ export default function SouratesClient({
               className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
                 showOnlyFavorites
                   ? "bg-rose-500 border-rose-500 text-white shadow-sm"
-                  : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300"
+                  : "border-[#3D3226]/15 bg-white text-[#3D3226]/60 hover:bg-[#3D3226]/5 hover:border-[#3D3226]/25"
               }`}
             >
               <Heart size={15} fill={showOnlyFavorites ? "white" : "none"} />
@@ -310,26 +310,26 @@ export default function SouratesClient({
           </div>
 
           {/* Statistiques */}
-          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-gray-500">
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-[#3D3226]/60">
             {!allHaveAudio && (
               <>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <div className="w-2 h-2 rounded-full bg-[#d28820]" />
                   <span>{sourateIdsWithAudio.size} avec audio</span>
                 </div>
-                <div className="h-3 w-px bg-gray-300" />
+                <div className="h-3 w-px bg-[#3D3226]/20" />
               </>
             )}
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-amber-400" />
               <span>{incompleteCount} non complétés</span>
             </div>
-            <div className="h-3 w-px bg-gray-300" />
+            <div className="h-3 w-px bg-[#3D3226]/20" />
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-emerald-500" />
               <span>{completedCount} complétés</span>
             </div>
-            <div className="h-3 w-px bg-gray-300" />
+            <div className="h-3 w-px bg-[#3D3226]/20" />
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-rose-400" />
               <span>{favoriteChapters.size} favoris</span>
@@ -361,7 +361,7 @@ export default function SouratesClient({
                   className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-xs transition-colors duration-200 md:w-80 will-change-transform will-change-opacity ${
                     isFullyCompleted
                       ? "bg-card-gradient border border-emerald-200 ring-1 ring-emerald-100/60 hover:opacity-95"
-                      : "bg-white border-gray-200 hover:bg-slate-50/50"
+                      : "bg-white border-[#3D3226]/15 hover:bg-[#3D3226]/5"
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -381,7 +381,7 @@ export default function SouratesClient({
                     className={`absolute top-0 right-2 z-20 p-1.5 rounded-full transition-all duration-200 hover:scale-110 ${
                       isFavorite
                         ? "text-rose-500 hover:text-rose-600"
-                        : `${isFullyCompleted ? "text-white" : "text-gray-400"} hover:text-rose-500`
+                        : `${isFullyCompleted ? "text-white" : "text-[#3D3226]/40"} hover:text-rose-500`
                     }`}
                     title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
                   >
@@ -420,7 +420,7 @@ export default function SouratesClient({
                         className={`h-1.5 w-20 overflow-hidden rounded-full border border-white shadow-inner ${
                           isFullyCompleted
                             ? "bg-linear-to-r from-emerald-100 via-emerald-50 to-amber-100"
-                            : "bg-gray-200"
+                            : "bg-[#3D3226]/10"
                         }`}
                       >
                         <div
@@ -434,7 +434,7 @@ export default function SouratesClient({
                       </div>
                       <span
                         className={`ml-2 text-xs font-semibold ${
-                          isFullyCompleted ? "text-emerald-900 drop-shadow" : "text-gray-600"
+                          isFullyCompleted ? "text-emerald-900 drop-shadow" : "text-[#3D3226]/70"
                         }`}
                       >
                         {progressPercent}%
@@ -447,7 +447,7 @@ export default function SouratesClient({
                       className={`flex h-8 w-8 -mb-4 shrink-0 items-center justify-center rounded-full font-mono text-sm font-semibold ${
                         isFullyCompleted
                           ? "bg-white text-emerald-700 border border-emerald-300"
-                          : "bg-blue-100 text-blue-500"
+                          : "bg-[#d28820]/10 text-[#d28820]"
                       }`}
                     >
                       {`${chapter.id < 10 ? "0" : ""}${chapter.id}`}
@@ -455,7 +455,7 @@ export default function SouratesClient({
                     <div className="flex min-w-0 grow flex-col">
                       <div className="flex items-center gap-2">
                         <strong
-                          className={`text-md truncate ${isFullyCompleted ? "text-emerald-900" : "text-gray-800"}`}
+                          className={`text-md truncate ${isFullyCompleted ? "text-emerald-900" : "text-[#3D3226]"}`}
                         >
                           {chapter.transliteration}
                         </strong>
@@ -464,7 +464,7 @@ export default function SouratesClient({
                         >{`surah${chapter.id < 10 ? "00" : chapter.id < 100 ? "0" : ""}${chapter.id}`}</span>
                       </div>
                       <p
-                        className={`truncate text-sm ${isFullyCompleted ? "text-emerald-800" : "text-gray-700"}`}
+                        className={`truncate text-sm ${isFullyCompleted ? "text-emerald-800" : "text-[#3D3226]/80"}`}
                       >
                         <span className="inline-block max-w-27.5 truncate overflow-hidden align-bottom font-semibold whitespace-nowrap">
                           {chapter.translation}
@@ -480,7 +480,7 @@ export default function SouratesClient({
                       className={`mt-2 inline-block rounded-full px-2 py-1 text-sm font-semibold ${
                         isFullyCompleted
                           ? "border border-emerald-300 bg-white text-emerald-700"
-                          : "bg-blue-100 text-blue-500"
+                          : "bg-[#d28820]/10 text-[#d28820]"
                       }`}
                     >
                       {chapter.type === "meccan" ? "Mecque" : "Médine"}
@@ -495,8 +495,8 @@ export default function SouratesClient({
                         </div>
                       ) : (
                         <div className="flex">
-                          <AudioLines size={18} className="inline-block text-blue-500" />
-                          <AudioLines size={18} className="inline-block text-gray-400" />
+                          <AudioLines size={18} className="inline-block text-[#d28820]" />
+                          <AudioLines size={18} className="inline-block text-[#3D3226]/30" />
                         </div>
                       )
                     ) : (
@@ -512,7 +512,7 @@ export default function SouratesClient({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="mt-4 text-center text-gray-500"
+              className="mt-4 text-center text-[#3D3226]/60"
             >
               {showOnlyFavorites && favoriteChapters.size === 0
                 ? "Vous n'avez pas encore de sourates favorites. Cliquez sur le cœur pour en ajouter !"
