@@ -9,7 +9,7 @@ import {
 } from "react";
 
 export const DEFAULT_SHOW_TRANSLATION = true;
-export const DEFAULT_SHOW_TRANSLITERATION = true;
+export const DEFAULT_SHOW_TRANSLITERATION = false;
 
 const TRANSLATION_STORAGE_KEY = "tafsir:showTranslation";
 const TRANSLITERATION_STORAGE_KEY = "tafsir:showTransliteration";
