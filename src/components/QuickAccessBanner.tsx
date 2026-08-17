@@ -56,7 +56,7 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
   return (
     <AnimatePresence>
       <motion.div
-        className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-2"
+        className="mx-auto mb-6 grid max-w-3xl grid-cols-1 gap-3 md:grid-cols-2"
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
