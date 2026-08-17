@@ -56,7 +56,7 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
   return (
     <AnimatePresence>
       <motion.div
-        className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-2"
+        className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-2"
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
@@ -65,7 +65,7 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
         {lastListened && lastListenedChapter && (
           <motion.button
             onClick={() => router.push(`/sourates/${lastListened.chapterId}`)}
-            className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-100/70 px-3 py-2 text-left shadow-sm transition-shadow hover:shadow-md"
+            className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-100/70 px-4 py-3 text-left shadow-sm transition-shadow hover:shadow-md"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             transition={{ type: "spring", stiffness: 400, damping: 22 }}
@@ -73,17 +73,17 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
             {/* Icône surah en fond décoratif */}
             <span
               aria-hidden
-              className="font-sura pointer-events-none absolute right-[-6px] top-1/2 -translate-y-1/2 select-none text-5xl text-amber-200/60 transition-opacity group-hover:text-amber-200/90"
+              className="font-sura pointer-events-none absolute right-[-6px] top-1/2 -translate-y-1/2 select-none text-7xl text-amber-200/60 transition-opacity group-hover:text-amber-200/90"
             >
               {surahIconCode(lastListened.chapterId)}
             </span>
 
-            <div className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-amber-400 shadow-sm transition-colors group-hover:bg-amber-500">
-              <Play size={12} className="ml-0.5 text-white" fill="white" />
+            <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-amber-400 shadow-sm transition-colors group-hover:bg-amber-500">
+              <Play size={15} className="ml-0.5 text-white" fill="white" />
             </div>
 
             <div className="relative min-w-0 flex-1">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500">
                 Reprendre la lecture
               </p>
               <p className="truncate text-sm font-semibold text-[#3D3226]">
@@ -108,30 +108,30 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
         {lastAddedChapter && lastAddedAudio && (
           <motion.button
             onClick={() => router.push(`/sourates/${lastAddedChapter.id}`)}
-            className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/70 px-3 py-2 text-left shadow-sm transition-shadow hover:shadow-md"
+            className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/70 px-4 py-3 text-left shadow-sm transition-shadow hover:shadow-md"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             transition={{ type: "spring", stiffness: 400, damping: 22 }}
           >
             {/* Badge "Nouveau" */}
-            <span className="absolute right-2.5 top-2 rounded-full bg-emerald-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm">
+            <span className="absolute right-3 top-2.5 rounded-full bg-emerald-500 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm">
               Nouveau
             </span>
 
             {/* Icône surah en fond décoratif */}
             <span
               aria-hidden
-              className="font-sura pointer-events-none absolute right-[-6px] top-1/2 -translate-y-1/2 select-none text-5xl text-emerald-200/60 transition-opacity group-hover:text-emerald-200/90"
+              className="font-sura pointer-events-none absolute right-[-6px] top-1/2 -translate-y-1/2 select-none text-7xl text-emerald-200/60 transition-opacity group-hover:text-emerald-200/90"
             >
               {surahIconCode(lastAddedChapter.id)}
             </span>
 
-            <div className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-emerald-400 shadow-sm transition-colors group-hover:bg-emerald-500">
-              <Sparkles size={12} className="text-white" />
+            <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-emerald-400 shadow-sm transition-colors group-hover:bg-emerald-500">
+              <Sparkles size={15} className="text-white" />
             </div>
 
             <div className="relative min-w-0 flex-1">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-emerald-600">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">
                 Récemment ajouté
               </p>
               <p className="truncate text-sm font-semibold text-[#3D3226]">
