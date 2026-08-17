@@ -83,7 +83,7 @@ export default function SourateDrawer({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Rechercher une sourate…"
-              className="w-full rounded-full bg-[#3D3226]/8 py-2 pr-3 pl-9 text-sm text-[#3D3226] placeholder-[#3D3226]/40 outline-none focus:ring-2 focus:ring-[#d28820]/40"
+              className="w-full rounded-full bg-[#3D3226]/8 py-2 pr-3 pl-9 text-base text-[#3D3226] placeholder-[#3D3226]/40 outline-none focus:ring-2 focus:ring-[#d28820]/40"
             />
           </div>
         </SheetHeader>
@@ -98,31 +98,31 @@ export default function SourateDrawer({
                   type="button"
                   data-chapter-id={chapter.id}
                   onClick={() => handleSelect(chapter.id)}
-                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors ${
+                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors ${
                     isCurrent
                       ? "bg-[#d28820]/10 font-semibold text-[#d28820]"
                       : "text-[#3D3226] hover:bg-[#3D3226]/5"
                   }`}
                 >
-                  <span className="w-7 shrink-0 text-center font-mono text-xs text-[#3D3226]/50">
+                  <span className="w-7 shrink-0 text-center font-mono text-sm text-[#3D3226]/50">
                     {chapter.id}
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate text-sm">
+                    <span className="truncate text-base font-medium">
                       {chapter.transliteration}
                     </span>
-                    <span className="truncate text-xs text-[#3D3226]/50">
+                    <span className="truncate text-sm text-[#3D3226]/50">
                       {chapter.translation}
                     </span>
                   </span>
-                  <span className="font-sura shrink-0 text-lg">
+                  <span className="font-sura shrink-0 text-xl">
                     {surahIconClass(chapter.id)}
                   </span>
                 </button>
               );
             })
           ) : (
-            <p className="px-3 py-6 text-center text-sm text-[#3D3226]/50">
+            <p className="px-3 py-6 text-center text-base text-[#3D3226]/50">
               Aucune sourate ne correspond à la recherche.
             </p>
           )}

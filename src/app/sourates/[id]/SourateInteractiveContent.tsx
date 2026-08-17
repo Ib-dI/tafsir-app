@@ -15,7 +15,6 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import AnimatedBackButton from "./AnimatedBackButton";
 
 import { useUserId } from "@/hooks/useUserId";
 import { useChapterProgress } from "@/hooks/useChapterProgress";
@@ -448,11 +447,6 @@ export default function SourateInteractiveContent({
         <>
           {/* Header premium avec navigation entre chapitres */}
           <div className="mb-2 flex flex-col gap-2">
-            <div className="hidden sm:inline">
-              {/* AnimatedBackButton à gauche */}
-              <AnimatedBackButton />
-            </div>
-
             {/* Barre de navigation chapitres - UI premium */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
