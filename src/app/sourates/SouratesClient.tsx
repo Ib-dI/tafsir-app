@@ -235,38 +235,30 @@ export default function SouratesClient({
       <QuickAccessBanner chapters={chapters} />
 
       <div className="flex flex-col gap-4 mb-6">
-        {/* Barre de recherche */}
-        <motion.div
-          className="w-full relative"
-          onFocus={handleFocus}
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }}
-        >
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={20} className="text-[#3D3226]/40" />
-            </div>
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Rechercher une sourate (nom, traduction, numéro...)"
-              className="w-full pl-10 pr-4 py-3 bg-white border border-[#3D3226]/15 rounded-xl shadow-sm text-[#3D3226] placeholder-[#3D3226]/40 focus:outline-none focus:ring-2 focus:ring-[#d28820] focus:border-transparent transition-all duration-200"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </motion.div>
-
-        {/* Filtres */}
+        {/* Recherche + filtres */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.3 }}
+          transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }}
           className="flex flex-col gap-3 bg-[#3D3226]/5 p-4 rounded-xl"
         >
-          {/* Chips de filtre */}
+          {/* Barre de recherche + chips de filtre, sur une même ligne */}
           <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="relative w-full sm:w-56">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search size={16} className="text-[#3D3226]/40" />
+              </div>
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Rechercher..."
+                className="w-full pl-9 pr-3 py-2 bg-white border border-[#3D3226]/15 rounded-full shadow-sm text-sm text-[#3D3226] placeholder-[#3D3226]/40 focus:outline-none focus:ring-2 focus:ring-[#d28820] focus:border-transparent transition-all duration-200"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onFocus={handleFocus}
+              />
+            </div>
+
             {/* Avec audio — masqué quand toutes les sourates ont un audio */}
             {!allHaveAudio && (
               <button
