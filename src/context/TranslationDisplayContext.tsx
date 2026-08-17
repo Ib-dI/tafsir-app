@@ -12,7 +12,9 @@ export const DEFAULT_SHOW_TRANSLATION = true;
 export const DEFAULT_SHOW_TRANSLITERATION = false;
 
 const TRANSLATION_STORAGE_KEY = "tafsir:showTranslation";
-const TRANSLITERATION_STORAGE_KEY = "tafsir:showTransliteration";
+// v2 : la translitération passe à false par défaut — nouvelle clé pour que
+// les préférences "true" déjà enregistrées ne l'emportent plus sur ce défaut.
+const TRANSLITERATION_STORAGE_KEY = "tafsir:showTransliteration:v2";
 
 interface TranslationDisplayContextValue {
   showTranslation: boolean;

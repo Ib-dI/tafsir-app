@@ -157,9 +157,9 @@ export default function SettingsDrawer({
           type="button"
           title="Réglages"
           aria-label="Réglages"
-          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-[#3D3226]/70 transition-colors hover:bg-[#3D3226]/8"
+          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-[#3D3226]/70 transition-colors hover:bg-[#3D3226]/8"
         >
-          <Settings className="size-4" />
+          <Settings className="size-5" />
         </button>
       </SheetTrigger>
       <SheetContent
