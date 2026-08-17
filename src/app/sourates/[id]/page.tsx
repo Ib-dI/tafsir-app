@@ -1,6 +1,7 @@
 import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapters, getSimpleChapterVerses } from "@/lib/quranSimpleApi";
 import { getSurahWbw, mergeVersesWithWbw } from "@/lib/quranWbw";
+import { notFound } from "next/navigation";
 import SourateInteractiveContent from "./SourateInteractiveContent";
 
 // Définition des types des props pour un Server Component
@@ -19,11 +20,7 @@ export default async function Sourate({ params }: SouratePageProps) {
   ]);
 
   if (!data) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 text-red-600">
-        Erreur lors du chargement des versets ou chapitre introuvable.
-      </div>
-    );
+    notFound();
   }
 
   const verses = mergeVersesWithWbw(data.verses || [], surahWbw);
