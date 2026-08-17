@@ -150,7 +150,7 @@ const SuccessCard = ({
                       disabled={!hasNextChapter}
                       className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 font-medium transition-all ${
                         hasNextChapter
-                          ? "bg-[#d28820] text-white shadow-md shadow-[#d28820]/30 hover:shadow-lg hover:bg-[#d28820]/90"
+                          ? "bg-[#3D3226] text-white shadow-md shadow-[#3D3226]/30 hover:shadow-lg hover:bg-[#3D3226]/90"
                     : "cursor-not-allowed bg-[#3D3226]/8 text-[#3D3226]/30"
                       }`}
                       whileHover={hasNextChapter ? { scale: 1.02 } : {}}
