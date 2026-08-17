@@ -456,7 +456,7 @@ export default function SourateInteractiveContent({
               }}
               className="flex items-center justify-center gap-3 rounded-2xl bg-linear-to-r from-orange-400 via-yellow-300 to-amber-400 p-px shadow-xs"
             >
-              <div className="flex w-full items-center justify-between rounded-2xl bg-white/95 px-2 py-1.5 backdrop-blur md:px-4 md:py-2">
+              <div className="flex w-full items-center justify-between rounded-2xl bg-[#FBF3E4]/95 px-2 py-1.5 backdrop-blur md:px-4 md:py-2">
                 {/* Bouton chapitre précédent */}
                 <button
                   onClick={goToPreviousChapter}
@@ -487,15 +487,15 @@ export default function SourateInteractiveContent({
 
                 {/* Nom du chapitre centré */}
                 <div className="flex flex-col items-center text-center">
-                  <span className="text-[11px] tracking-[0.18em] text-gray-700 uppercase">
+                  <span className="text-[11px] tracking-[0.18em] text-[#3D3226]/70 uppercase">
                     Chapitre {chapterNumber}
                   </span>
                   <div className="flex items-center justify-center gap-1 md:flex-col md:gap-0">
-                    <span className="bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-sm font-semibold text-transparent md:text-base">
+                    <span className="text-sm font-semibold text-[#3D3226] md:text-base">
                       {chapterName || `Sourate ${chapterNumber}`}
                     </span>
                     {isMobile && (
-                      <span className="text-gray-500 md:text-xs">|</span>
+                      <span className="text-[#3D3226]/50 md:text-xs">|</span>
                     )}
                     {chapterTranslation && (
                       <span className="text-red-800 md:text-xs">
