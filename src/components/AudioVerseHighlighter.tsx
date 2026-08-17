@@ -376,8 +376,8 @@ const AudioVerseHighlighter = ({
                 (audioPlayback.drag.isDragging ||
                   audioPlayback.drag.isTouching) &&
                 audioPlayback.drag.dragTime !== null && (
-                  <div className="pointer-events-none absolute inset-0 z-50 -mt-px flex h-10.5 items-center justify-center rounded-lg border-2 border-blue-300 bg-blue-400/25">
-                    <div className="rounded-lg bg-blue-600 px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
+                  <div className="pointer-events-none absolute inset-0 z-50 -mt-px flex h-10.5 items-center justify-center rounded-lg border-2 border-[#d28820]/50 bg-[#d28820]/20">
+                    <div className="rounded-lg bg-[#d28820] px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
                       {formatTime(audioPlayback.drag.dragTime)}
                     </div>
                   </div>

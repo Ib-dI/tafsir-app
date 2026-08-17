@@ -57,7 +57,7 @@ export default function RootLayout({
                     <div className="flex min-h-screen flex-col items-center justify-center bg-[#FBF3E4]">
                       <LoadingSpinner
                         size="xl"
-                        color="blue"
+                        color="gold"
                         text="Chargement du contenu..."
                         className="gap-4"
                       />

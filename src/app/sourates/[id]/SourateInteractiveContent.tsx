@@ -49,7 +49,7 @@ const AudioVerseHighlighter = dynamic(
       <div className="flex min-h-[40vh] w-full items-center justify-center py-12">
         <LoadingSpinner
           size="lg"
-          color="blue"
+          color="gold"
           text="Chargement du lecteur audio…"
           className="gap-4"
         />
@@ -427,10 +427,10 @@ export default function SourateInteractiveContent({
   return (
     <div className="container mx-auto">
       {!isAuthReady || !userId ? (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 text-blue-600">
+        <div className="flex min-h-screen items-center justify-center bg-[#FBF3E4] text-[#3D3226]">
           <LoadingSpinner
             size="lg"
-            color="blue"
+            color="gold"
             text="
         Initialisation de la connexion..."
           />

@@ -13,7 +13,7 @@ interface AudioLoadingStateProps {
 export default function AudioLoadingState({
   isLoading,
   audioError,
-  className
+  className,
 }: AudioLoadingStateProps) {
   const [progress, setProgress] = useState(0);
   const [loadingText, setLoadingText] = useState("Chargement de l'audio...");
@@ -36,7 +36,7 @@ export default function AudioLoadingState({
 
     const interval = setInterval(() => {
       currentProgress += Math.random() * 15 + 5; // Progression variable
-      
+
       if (currentProgress >= 100) {
         setProgress(100);
         setLoadingText("Prêt !");
@@ -76,11 +76,11 @@ export default function AudioLoadingState({
           className={`absolute top-0 left-0 z-10 flex h-[50px] w-full flex-col items-center justify-center rounded border border-red-200 bg-red-50/90 backdrop-blur-sm md:h-[60px] ${className}`}
         >
           <div className="flex items-center gap-2">
-            <div className="h-5 w-5 rounded-full bg-red-500 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">!</span>
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500">
+              <span className="text-xs font-bold text-white">!</span>
             </div>
             <div className="text-center">
-              <p className="font-semibold text-red-700 text-sm">
+              <p className="text-sm font-semibold text-red-700">
                 Erreur de chargement audio
               </p>
               <p className="text-xs text-red-600">
@@ -102,11 +102,11 @@ export default function AudioLoadingState({
             damping: 10,
             delay: 0.1,
           }}
-          className={`absolute top-0 left-0 z-10 flex h-[90px] w-full flex-col items-center justify-center rounded bg-white/90 backdrop-blur-sm md:h-[60px] ${className}`}
+          className={`absolute top-0 left-0 z-10 flex h-[90px] w-full flex-col items-center justify-center rounded bg-[#FBF3E4]/90 backdrop-blur-sm md:h-[60px] ${className}`}
         >
           <LoadingSpinner
             size="md"
-            color="blue"
+            color="gold"
             text={loadingText}
             showProgress={true}
             progress={progress}
