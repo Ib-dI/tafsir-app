@@ -1,4 +1,5 @@
 // src/app/layout.tsx
+import AppShell from "@/components/AppShell";
 import Header from "@/components/header";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { FontSettingsProvider } from "@/context/FontSettingsContext";
@@ -46,7 +47,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-[#FBF3E4] antialiased`}
       >
-        <div className="mx-auto flex min-h-screen max-w-225 flex-col font-sans text-sm">
+        <AppShell>
           <FontSettingsProvider>
             <WordByWordProvider>
               <TranslationDisplayProvider>
@@ -71,7 +72,7 @@ export default function RootLayout({
           </FontSettingsProvider>
           {/* AJOUTEZ CE COMPOSANT ICI */}
           {/* <NotificationsSetup /> */}
-        </div>
+        </AppShell>
       </body>
     </html>
   );
