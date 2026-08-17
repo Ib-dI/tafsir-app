@@ -57,17 +57,17 @@
   font-size: var(--verse-arabic-font-size-mobile, 23.5px);
   font-family: var(--verse-arabic-font-family, Uthmanic);
   /* Porté d'extractor-quran/src/app/globals.css (.verse-card__arabic), puis
-     réduit : leur valeur (2.4) laisse assez de place aux diacritiques
-     (harakat) au-dessus/en dessous des lettres, mais nos versets sont assez
-     courts pour tenir sur 1-2 lignes, où un line-height aussi grand crée un
-     espace disproportionné entre les deux lignes d'un même verset qui
-     retourne à la ligne. IndoPak (data-script) garde des diacritiques plus
+    réduit : leur valeur (2.4) laisse assez de place aux diacritiques
+    (harakat) au-dessus/en dessous des lettres, mais nos versets sont assez
+    courts pour tenir sur 1-2 lignes, où un line-height aussi grand crée un
+    espace disproportionné entre les deux lignes d'un même verset qui
+    retourne à la ligne. IndoPak (data-script) garde des diacritiques plus
      hauts, donc une valeur un peu plus généreuse. */
   line-height: 1.9;
 }
 
 .verse-arabic-text[data-script="indopak"] {
-  line-height: 2.2;
+  line-height: 2;
 }
 
 /* Scrollbar fine et discrète pour la liste des versets (au lieu de la barre
