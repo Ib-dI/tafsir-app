@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import type { SimpleChapterIndexEntry } from "@/lib/quranSimpleApi";
 
 // Types et interfaces partagés mot par mot (voir src/lib/quranWbw.ts)
 export type TajweedSegment = {
@@ -42,6 +43,7 @@ export interface SourateInteractiveContentProps {
   audioParts: TafsirAudioPart[];
   infoSourate: (number | string)[];
   chapterId: number;
+  allChapters: SimpleChapterIndexEntry[];
 }
 
 // Types et interfaces partagés AudioVerseHighlighter

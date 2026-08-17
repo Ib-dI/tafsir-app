@@ -36,8 +36,9 @@ import {
   AudioControls,
 } from "@/types/types";
 import type { Verse } from "@/types/types";
-import { RotateCcw } from "lucide-react";
+import { ChevronDown, RotateCcw } from "lucide-react";
 import ResetProgressDialog from "@/components/ResetProgressDialog";
+import SourateDrawer from "@/components/SourateDrawer";
 import { useMediaQuery } from "@/components/UseMediaQuery";
 import LongPressPartBadge from "@/components/LongPressPartBadge";
 import { useCompletedPartLongPress } from "@/hooks/useCompletedPartLongPress";
@@ -142,11 +143,13 @@ export default function SourateInteractiveContent({
   audioParts: initialAudioParts,
   infoSourate,
   chapterId,
+  allChapters,
 }: SourateInteractiveContentProps) {
   const router = useRouter();
   const [audioParts] = useState(() =>
     buildAudioParts(initialAudioParts, initialVerses),
   );
+  const [isSourateDrawerOpen, setIsSourateDrawerOpen] = useState(false);
 
   const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
     () => {
@@ -485,24 +488,32 @@ export default function SourateInteractiveContent({
                   <span className="sm:hidden">Préc.</span>
                 </button>
 
-                {/* Nom du chapitre centré */}
+                {/* Nom du chapitre centré — ouvre le tiroir de navigation des sourates */}
                 <div className="flex flex-col items-center text-center">
-                  <span className="text-[11px] tracking-[0.18em] text-[#3D3226]/70 uppercase">
-                    Chapitre {chapterNumber}
-                  </span>
-                  <div className="flex items-center justify-center gap-1 md:flex-col md:gap-0">
-                    <span className="text-sm font-semibold text-[#3D3226] md:text-base">
-                      {chapterName || `Sourate ${chapterNumber}`}
+                  <button
+                    type="button"
+                    onClick={() => setIsSourateDrawerOpen(true)}
+                    aria-label="Parcourir toutes les sourates"
+                    className="flex flex-col items-center text-center transition-opacity active:scale-95"
+                  >
+                    <span className="text-[11px] tracking-[0.18em] text-[#3D3226]/70 uppercase">
+                      Chapitre {chapterNumber}
                     </span>
-                    {isMobile && (
-                      <span className="text-[#3D3226]/50 md:text-xs">|</span>
-                    )}
-                    {chapterTranslation && (
-                      <span className="text-red-800 md:text-xs">
-                        {chapterTranslation}
+                    <div className="flex items-center justify-center gap-1 md:flex-col md:gap-0">
+                      <span className="flex items-center gap-0.5 text-sm font-semibold text-[#3D3226] md:text-base">
+                        {chapterName || `Sourate ${chapterNumber}`}
+                        <ChevronDown size={14} className="text-[#3D3226]/50" />
                       </span>
-                    )}
-                  </div>
+                      {isMobile && (
+                        <span className="text-[#3D3226]/50 md:text-xs">|</span>
+                      )}
+                      {chapterTranslation && (
+                        <span className="text-red-800 md:text-xs">
+                          {chapterTranslation}
+                        </span>
+                      )}
+                    </div>
+                  </button>
                   {completedAudioPartsCount >= 1 && (
                     <ResetProgressDialog
                       name={chapterName || `Sourate ${chapterNumber}`}
@@ -802,6 +813,12 @@ export default function SourateInteractiveContent({
           </div>
         </>
       )}
+      <SourateDrawer
+        chapters={allChapters}
+        currentChapterId={chapterId}
+        open={isSourateDrawerOpen}
+        onOpenChange={setIsSourateDrawerOpen}
+      />
     </div>
   );
 }
