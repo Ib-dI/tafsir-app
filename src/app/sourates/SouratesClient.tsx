@@ -240,7 +240,7 @@ export default function SouratesClient({
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.2 }}
-          className="flex flex-col gap-2 bg-[#3D3226]/5 p-3 rounded-xl"
+          className="flex w-fit max-w-full flex-col gap-2 self-center bg-[#3D3226]/5 p-3 rounded-xl"
         >
           {/* Barre de recherche + chips de filtre, sur une même ligne */}
           <div className="flex flex-wrap items-center justify-center gap-2">
