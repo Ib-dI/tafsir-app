@@ -37,11 +37,13 @@ export function InteractiveWord({
   translation,
   isOpen,
   onOpenChange,
+  highlighted,
 }: {
   content: ReactNode;
   translation: string | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  highlighted?: boolean;
 }) {
   if (!translation) {
     return <span>{content}</span>;
@@ -58,8 +60,12 @@ export function InteractiveWord({
             onOpenChange(!isOpen);
           }}
           className={cn(
-            "-mx-0.5 cursor-pointer rounded px-0.5 transition-colors",
-            isOpen ? "bg-[#d28820]/18" : "hover:bg-[#d28820]/18",
+            "-mx-0.5 cursor-pointer rounded px-0.5 transition-colors duration-150",
+            isOpen
+              ? "bg-[#d28820]/18"
+              : highlighted
+                ? "bg-[#d28820]/35"
+                : "hover:bg-[#d28820]/18",
           )}
         >
           {content}
@@ -85,11 +91,13 @@ const VerseItem = React.memo(
   ({
     verse,
     isActive,
+    activeWordIndex,
     audioUrl,
     seekToVerse,
   }: {
     verse: VerseHighlight;
     isActive: boolean;
+    activeWordIndex?: number | null;
     audioUrl: string;
     seekToVerse: (verse: VerseHighlight) => void;
   }) => {
@@ -140,6 +148,7 @@ const VerseItem = React.memo(
                       useDigitalKhattText,
                       applyOrnament,
                     );
+                    const isWordActive = activeWordIndex === index;
                     const nodes: ReactNode[] = index > 0 ? [" "] : [];
                     nodes.push(
                       wordByWordEnabled ? (
@@ -151,9 +160,19 @@ const VerseItem = React.memo(
                           onOpenChange={(open) =>
                             setOpenWordIndex(open ? index : null)
                           }
+                          highlighted={isWordActive}
                         />
                       ) : (
-                        <span key={index}>{content}</span>
+                        <span
+                          key={index}
+                          className={
+                            isWordActive
+                              ? "-mx-0.5 rounded bg-[#d28820]/35 px-0.5 transition-colors duration-150"
+                              : undefined
+                          }
+                        >
+                          {content}
+                        </span>
                       ),
                     );
                     return nodes;

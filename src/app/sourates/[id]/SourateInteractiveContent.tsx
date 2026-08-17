@@ -33,6 +33,7 @@ import { computeChapterProgress } from "@/lib/chapterProgress";
 import {
   SourateInteractiveContentProps,
   TafsirAudioPart,
+  TafsirAudioTiming,
   AudioControls,
 } from "@/types/types";
 import type { Verse } from "@/types/types";
@@ -309,7 +310,11 @@ export default function SourateInteractiveContent({
               words: Verse["words"];
               noAudio: boolean;
               verset: string;
-              occurrences: { startTime: number; endTime: number }[];
+              occurrences: {
+                startTime: number;
+                endTime: number;
+                words?: TafsirAudioTiming["words"];
+              }[];
             }
           >();
 
@@ -333,6 +338,7 @@ export default function SourateInteractiveContent({
             verseMap.get(timing.id)!.occurrences.push({
               startTime: timing.startTime,
               endTime: timing.endTime,
+              words: timing.words,
             });
           });
 

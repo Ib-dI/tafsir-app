@@ -62,7 +62,11 @@ export type VerseHighlight = {
   translation: string;
   words: VerseWord[];
   noAudio?: boolean;
-  occurrences: { startTime: number; endTime: number }[];
+  occurrences: {
+    startTime: number;
+    endTime: number;
+    words?: WordTiming[][];
+  }[];
 };
 
 export type AudioVerseHighlighterProps = {

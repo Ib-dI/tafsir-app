@@ -44,6 +44,9 @@ export function useAudioPlayback({
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
+  const [currentWordIndex, setCurrentWordIndex] = useState<number | null>(
+    null,
+  );
   const [playbackRate, setPlaybackRate] = useState(1);
   const [audioError, setAudioError] = useState(false);
   const [restoredPosition, setRestoredPosition] =
@@ -64,13 +67,30 @@ export function useAudioPlayback({
   const rafIdRef = useRef<number | null>(null);
 
   const findVerseAtTime = useCallback(
-    (time: number): VerseHighlight | null => {
+    (
+      time: number,
+    ): { verse: VerseHighlight; wordIndex: number | null } | null => {
       for (const verse of verses) {
         if (verse.noAudio) continue;
-        const match = verse.occurrences.find(
+        const occurrence = verse.occurrences.find(
           (occ) => time >= occ.startTime && time <= occ.endTime,
         );
-        if (match) return verse;
+        if (!occurrence) continue;
+
+        // Un mot peut avoir plusieurs occurrences dans le même passage
+        // (le cheikh le redit en l'expliquant) — on vérifie toutes les
+        // plages de chaque mot, pas juste la première.
+        let wordIndex: number | null = null;
+        if (occurrence.words) {
+          const index = occurrence.words.findIndex((wordOccurrences) =>
+            wordOccurrences.some(
+              (w) => time >= w.startTime && time <= w.endTime,
+            ),
+          );
+          wordIndex = index === -1 ? null : index;
+        }
+
+        return { verse, wordIndex };
       }
       return null;
     },
@@ -79,8 +99,9 @@ export function useAudioPlayback({
 
   const updateCurrentVerse = useCallback(
     (time: number) => {
-      const foundVerse = findVerseAtTime(time);
-      setCurrentVerseId(foundVerse ? foundVerse.id : null);
+      const found = findVerseAtTime(time);
+      setCurrentVerseId(found ? found.verse.id : null);
+      setCurrentWordIndex(found ? found.wordIndex : null);
     },
     [findVerseAtTime],
   );
@@ -125,6 +146,7 @@ export function useAudioPlayback({
     setDuration(0);
     setAudioError(false);
     setCurrentVerseId(null);
+    setCurrentWordIndex(null);
     setDragTime(null);
     setRestoredPosition(null);
     finishHandledRef.current = false;
@@ -238,6 +260,7 @@ export function useAudioPlayback({
         finishHandledRef.current = true;
         setIsPlaying(false);
         setCurrentVerseId(null);
+        setCurrentWordIndex(null);
         onFinishedRef.current?.();
       }
     });
@@ -343,6 +366,7 @@ export function useAudioPlayback({
       ws.seekTo(seekPosition);
       setCurrentTime(seekTime);
       setCurrentVerseId(verse.id);
+      setCurrentWordIndex(null);
 
       setTimeout(() => {
         const t = wavesurferRef.current?.getCurrentTime() || 0;
@@ -586,6 +610,7 @@ export function useAudioPlayback({
     audioError,
     isLoading,
     currentVerseId,
+    currentWordIndex,
     restoredPosition,
     drag: { isDragging, isTouching, dragTime },
     togglePlayPause,
