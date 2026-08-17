@@ -112,7 +112,7 @@ const VerseItem = React.memo(
           verse.noAudio
             ? "border-[0.7px] border-x border-blue-200 bg-[#3D3226]/5"
             : isActive && audioUrl
-              ? `border-[0.7px] border-x border-[#d28820] bg-[#d28820]/10 shadow-[0_0_10px_5px_rgba(210,136,32,0.25)]`
+              ? `border-[0.7px] border-x border-[#d28820] bg-[#d28820]/10 shadow-[0_0_6px_1px_rgba(210,136,32,0.15)]`
               : "border-transparent"
         }`}
         animate={{ scale: isActive && audioUrl ? 1.01 : 1 }}
