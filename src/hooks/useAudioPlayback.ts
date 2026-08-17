@@ -19,6 +19,9 @@ interface UseAudioPlaybackOptions {
   onFinished?: () => void;
 }
 
+const PLAYBACK_RATE_STORAGE_KEY = "tafsir:playbackRate";
+const VALID_PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
+
 function hasIsPlaying(obj: unknown): obj is { isPlaying: () => boolean } {
   return (
     typeof obj === "object" &&
@@ -47,7 +50,21 @@ export function useAudioPlayback({
   const [currentWordIndex, setCurrentWordIndex] = useState<number | null>(
     null,
   );
-  const [playbackRate, setPlaybackRate] = useState(1);
+  // Initialiseur paresseux (pas un effet séparé) : lu une seule fois, à la
+  // toute première évaluation du render, avant qu'un quelconque effet de
+  // sauvegarde puisse s'exécuter. Un hydrate-effect + write-effect séparés
+  // ont une fenêtre de course : le write-effect du premier montage peut
+  // encore utiliser la valeur par défaut avant que le hydrate-effect ait eu
+  // le temps de la corriger, et si le composant est démonté entre-temps
+  // (montage/démontage double de StrictMode en dev, ou un remount précoce
+  // pendant que l'audio se résout), la correction n'a jamais lieu — observé
+  // en pratique : la vitesse revenait toujours à x1 après rechargement.
+  const [playbackRate, setPlaybackRate] = useState(() => {
+    if (typeof window === "undefined") return 1;
+    const stored = window.localStorage.getItem(PLAYBACK_RATE_STORAGE_KEY);
+    const parsed = stored !== null ? Number(stored) : null;
+    return parsed !== null && VALID_PLAYBACK_RATES.includes(parsed) ? parsed : 1;
+  });
   const [audioError, setAudioError] = useState(false);
   const [restoredPosition, setRestoredPosition] =
     useState<PlaybackPosition | null>(null);
@@ -290,6 +307,7 @@ export function useAudioPlayback({
 
   useEffect(() => {
     wavesurferRef.current?.setPlaybackRate(playbackRate);
+    window.localStorage.setItem(PLAYBACK_RATE_STORAGE_KEY, String(playbackRate));
   }, [playbackRate]);
 
   // Sauvegarde régulière de la position de lecture pendant la lecture.
