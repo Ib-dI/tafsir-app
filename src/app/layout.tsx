@@ -47,11 +47,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-[#FBF3E4] antialiased`}
       >
-        <AppShell>
+        <AppShell header={<Header />}>
           <FontSettingsProvider>
             <WordByWordProvider>
               <TranslationDisplayProvider>
-                <Header />
                 {/* ENVELOPPEZ LE CHILDREN AVEC SUSPENSE ICI */}
                 <Suspense
                   fallback={
