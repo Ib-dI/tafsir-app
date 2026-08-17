@@ -21,6 +21,7 @@ import {
 } from "@/context/FontSettingsContext";
 import {
   DEFAULT_SHOW_TRANSLATION,
+  DEFAULT_SHOW_TRANSLITERATION,
   useTranslationDisplay,
 } from "@/context/TranslationDisplayContext";
 import {
@@ -129,7 +130,12 @@ export default function SettingsDrawer({
     setFontStyle,
   } = useFontSettings();
   const { wordByWordEnabled, setWordByWordEnabled } = useWordByWord();
-  const { showTranslation, setShowTranslation } = useTranslationDisplay();
+  const {
+    showTranslation,
+    setShowTranslation,
+    showTransliteration,
+    setShowTransliteration,
+  } = useTranslationDisplay();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const speedIndex = SPEEDS.indexOf(playbackRate as (typeof SPEEDS)[number]);
@@ -141,6 +147,7 @@ export default function SettingsDrawer({
     onPlaybackRateChange(1);
     setWordByWordEnabled(DEFAULT_WORD_BY_WORD_ENABLED);
     setShowTranslation(DEFAULT_SHOW_TRANSLATION);
+    setShowTransliteration(DEFAULT_SHOW_TRANSLITERATION);
   };
 
   return (
@@ -282,20 +289,37 @@ export default function SettingsDrawer({
             <>
               <VersePreview verse={previewVerse} />
 
-              {/* Traduction / translitération */}
+              {/* Traduction */}
               <div className="flex items-center justify-between py-1">
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-[#3D3226]">
                     Afficher la traduction
                   </span>
                   <span className="text-xs text-[#3D3226]/60">
-                    Traduction française et translitération sous le verset
+                    Traduction française sous le verset
                   </span>
                 </div>
                 <Switch
                   checked={showTranslation}
                   onCheckedChange={setShowTranslation}
-                  aria-label="Afficher la traduction et la translitération"
+                  aria-label="Afficher la traduction"
+                />
+              </div>
+
+              {/* Translitération */}
+              <div className="flex items-center justify-between py-1">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-[#3D3226]">
+                    Afficher la translitération
+                  </span>
+                  <span className="text-xs text-[#3D3226]/60">
+                    Lecture phonétique sous le verset
+                  </span>
+                </div>
+                <Switch
+                  checked={showTransliteration}
+                  onCheckedChange={setShowTransliteration}
+                  aria-label="Afficher la translitération"
                 />
               </div>
             </>

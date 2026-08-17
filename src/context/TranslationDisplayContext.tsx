@@ -9,12 +9,16 @@ import {
 } from "react";
 
 export const DEFAULT_SHOW_TRANSLATION = true;
+export const DEFAULT_SHOW_TRANSLITERATION = true;
 
-const STORAGE_KEY = "tafsir:showTranslation";
+const TRANSLATION_STORAGE_KEY = "tafsir:showTranslation";
+const TRANSLITERATION_STORAGE_KEY = "tafsir:showTransliteration";
 
 interface TranslationDisplayContextValue {
   showTranslation: boolean;
   setShowTranslation: (show: boolean) => void;
+  showTransliteration: boolean;
+  setShowTransliteration: (show: boolean) => void;
 }
 
 const TranslationDisplayContext =
@@ -28,21 +32,48 @@ export function TranslationDisplayProvider({
   const [showTranslation, setShowTranslation] = useState(
     DEFAULT_SHOW_TRANSLATION,
   );
+  const [showTransliteration, setShowTransliteration] = useState(
+    DEFAULT_SHOW_TRANSLITERATION,
+  );
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === "true" || stored === "false") {
-      setShowTranslation(stored === "true");
+    const storedTranslation = window.localStorage.getItem(
+      TRANSLATION_STORAGE_KEY,
+    );
+    if (storedTranslation === "true" || storedTranslation === "false") {
+      setShowTranslation(storedTranslation === "true");
+    }
+
+    const storedTransliteration = window.localStorage.getItem(
+      TRANSLITERATION_STORAGE_KEY,
+    );
+    if (storedTransliteration === "true" || storedTransliteration === "false") {
+      setShowTransliteration(storedTransliteration === "true");
     }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, String(showTranslation));
+    window.localStorage.setItem(
+      TRANSLATION_STORAGE_KEY,
+      String(showTranslation),
+    );
   }, [showTranslation]);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      TRANSLITERATION_STORAGE_KEY,
+      String(showTransliteration),
+    );
+  }, [showTransliteration]);
 
   return (
     <TranslationDisplayContext.Provider
-      value={{ showTranslation, setShowTranslation }}
+      value={{
+        showTranslation,
+        setShowTranslation,
+        showTransliteration,
+        setShowTransliteration,
+      }}
     >
       {children}
     </TranslationDisplayContext.Provider>

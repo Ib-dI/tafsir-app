@@ -95,7 +95,7 @@ const VerseItem = React.memo(
   }) => {
     const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
     const { wordByWordEnabled } = useWordByWord();
-    const { showTranslation } = useTranslationDisplay();
+    const { showTranslation, showTransliteration } = useTranslationDisplay();
     const { arabicScript, fontStyle } = useFontSettings();
     const applyOrnament = applyOrnamentFor(fontStyle);
     const useDigitalKhattText =
@@ -161,15 +161,17 @@ const VerseItem = React.memo(
                 : `${verse.text} ${toArabicNumerals(verse.id)}`}
             </span>
           </div>
+          {showTransliteration && (
+            <p className="mt-2 text-right text-base font-medium text-[#3D3226]/60">
+              {verse.transliteration}
+            </p>
+          )}
           {showTranslation && (
-            <>
-              <p className="mt-2 text-right text-base font-medium text-[#3D3226]/60">
-                {verse.transliteration}
-              </p>
-              <p className="-mt-2 self-start text-base text-[#3D3226]/85">
-                {verse.id}. {verse.translation}
-              </p>
-            </>
+            <p
+              className={`self-start text-base text-[#3D3226]/85 ${showTransliteration ? "-mt-2" : "mt-2"}`}
+            >
+              {verse.id}. {verse.translation}
+            </p>
           )}
         </div>
       </motion.div>
