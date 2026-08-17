@@ -562,7 +562,7 @@ export default function SourateInteractiveContent({
                 damping: 10,
                 delay: 0.3,
               }}
-              className="mb-2 flex flex-row items-center justify-center gap-2 rounded-lg bg-gray-50 p-1 shadow-inner md:p-2"
+              className="mb-2 flex flex-row items-center justify-center gap-2 rounded-lg bg-[#3D3226]/5 p-1 shadow-inner md:p-2"
             >
               {/* Flèche Gauche */}
               <motion.button
@@ -572,8 +572,8 @@ export default function SourateInteractiveContent({
                 whileTap={{ scale: 0.9 }}
                 className={`rounded-full p-2 transition-colors duration-200 ${
                   canGoPrevious
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "cursor-not-allowed bg-gray-300 text-gray-500"
+                    ? "bg-[#d28820] text-white hover:bg-[#d28820]/90"
+                    : "cursor-not-allowed bg-[#3D3226]/10 text-[#3D3226]/30"
                 }`}
               >
                 <svg
@@ -652,7 +652,7 @@ export default function SourateInteractiveContent({
                           value={part.id}
                           className={
                             part.id === "remaining-verses"
-                              ? "font-medium text-blue-600"
+                              ? "font-medium text-orange-600"
                               : ""
                           }
                         >
@@ -660,7 +660,7 @@ export default function SourateInteractiveContent({
                             {part.id === "remaining-verses" ? (
                               <>
                                 {part.title} ({part.timings.length})
-                                <span className="text-xs text-blue-500">
+                                <span className="text-xs text-orange-500">
                                   (sans audio)
                                 </span>
                               </>
@@ -700,8 +700,8 @@ export default function SourateInteractiveContent({
                 whileTap={{ scale: 0.9 }}
                 className={`rounded-full p-2 transition-colors duration-200 ${
                   canGoNext
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "cursor-not-allowed bg-gray-300 text-gray-500"
+                    ? "bg-[#d28820] text-white hover:bg-[#d28820]/90"
+                    : "cursor-not-allowed bg-[#3D3226]/10 text-[#3D3226]/30"
                 }`}
               >
                 <svg
