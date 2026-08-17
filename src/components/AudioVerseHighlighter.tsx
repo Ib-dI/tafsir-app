@@ -270,10 +270,22 @@ const AudioVerseHighlighter = ({
     const verseElement = document.getElementById(
       `verse-${audioPlayback.currentVerseId}`,
     );
-    if (verseElement) {
-      verseElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, [audioPlayback.currentVerseId]);
+    if (!verseElement) return;
+
+    // Verset long : on cale son début en haut plutôt que de le centrer, pour
+    // ne pas faire remonter le début du texte hors écran.
+    const currentVerse = verses.find(
+      (v) => v.id === audioPlayback.currentVerseId,
+    );
+    const overlayThreshold = isMobile ? 290 : 410;
+    const isLongVerse =
+      (currentVerse?.text.length ?? 0) > overlayThreshold;
+
+    verseElement.scrollIntoView({
+      behavior: "smooth",
+      block: isLongVerse ? "start" : "center",
+    });
+  }, [audioPlayback.currentVerseId, verses, isMobile]);
 
   // Défilement vers le haut lors du changement d'URL audio
   useEffect(() => {
