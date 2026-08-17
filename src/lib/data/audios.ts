@@ -10583,10 +10583,64 @@ export const audiosTafsir = [
         title: "Tafsir Al-Ikhlas",
         url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Ikhlas.ogg",
         timings: [
-          { id: 1, startTime: 124.42, endTime: 135.49 },
-          { id: 2, startTime: 137.62, endTime: 166.58 },
-          { id: 3, startTime: 168.21, endTime: 179.7 },
-          { id: 4, startTime: 180.12, endTime: 191.86 },
+          {
+            id: 1,
+            startTime: 124.42,
+            endTime: 135.49,
+            words: [
+              [{ startTime: 124.42, endTime: 128.54 }],
+              [{ startTime: 128.54, endTime: 129.29 }],
+              [{ startTime: 129.29, endTime: 131.96 }],
+              [{ startTime: 131.96, endTime: 135.49 }],
+            ],
+          },
+          {
+            id: 2,
+            startTime: 137.62,
+            endTime: 166.58,
+            words: [
+              [
+                { startTime: 137.62, endTime: 141.17 },
+                { startTime: 154.16, endTime: 157.31 },
+              ],
+              [
+                { startTime: 141.17, endTime: 166.58 },
+                { startTime: 157.31, endTime: 166.58 },
+              ],
+            ],
+          },
+          {
+            id: 3,
+            startTime: 168.21,
+            endTime: 179.7,
+            words: [
+              [{ startTime: 168.21, endTime: 168.97 }],
+              [{ startTime: 168.97, endTime: 176.36 }],
+              [{ startTime: 176.36, endTime: 177.08 }],
+              [{ startTime: 177.08, endTime: 179.7 }],
+            ],
+          },
+          {
+            id: 4,
+            startTime: 180.12,
+            endTime: 191.86,
+            words: [
+              [
+                { startTime: 181.27, endTime: 181.83 },
+                { startTime: 185.15, endTime: 185.56 },
+              ],
+              [
+                { startTime: 181.83, endTime: 184.6 },
+                { startTime: 185.56, endTime: 186.5 },
+              ],
+              [
+                { startTime: 184.6, endTime: 187.28 },
+                { startTime: 186.5, endTime: 187.28 },
+              ],
+              [{ startTime: 187.28, endTime: 188.23 }],
+              [{ startTime: 188.23, endTime: 191.86 }],
+            ],
+          },
         ],
       },
     ],

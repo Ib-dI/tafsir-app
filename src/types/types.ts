@@ -24,11 +24,18 @@ export type Verse = {
   words: VerseWord[];
 };
 
+// Timing d'un mot au sein d'un verset (voir versets-split, l'outil de
+// marquage manuel). Un tableau d'occurrences par mot — normalement une
+// seule, mais le cheikh peut redire le même mot plus loin dans le même
+// passage (miroir de TafsirAudioTiming.occurrence, un niveau plus bas).
+export type WordTiming = { startTime: number; endTime: number };
+
 export type TafsirAudioTiming = {
   id: number;
   startTime: number;
   endTime: number;
-  occurrence?: number; 
+  occurrence?: number;
+  words?: WordTiming[][];
 };
 
 export type TafsirAudioPart = {
