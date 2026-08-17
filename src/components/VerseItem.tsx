@@ -71,7 +71,7 @@ export function InteractiveWord({
           sideOffset={8}
           collisionPadding={8}
           style={{ direction: "ltr" }}
-          className="z-50 rounded-lg bg-[#3D3226] px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-[#FBF3E4] shadow-lg"
+          className="z-50 rounded-lg bg-[#3D3226] px-2.5 py-1.5 text-[0.8rem] leading-[1.3] font-medium whitespace-nowrap text-[#FBF3E4] shadow-lg"
         >
           {translation}
           <Tooltip.Arrow className="fill-[#3D3226]" />
