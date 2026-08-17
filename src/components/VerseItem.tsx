@@ -59,7 +59,7 @@ export function InteractiveWord({
           }}
           className={cn(
             "-mx-0.5 cursor-pointer rounded px-0.5 transition-colors",
-            isOpen ? "bg-amber-100" : "hover:bg-amber-100",
+            isOpen ? "bg-[#d28820]/18" : "hover:bg-[#d28820]/18",
           )}
         >
           {content}
@@ -71,10 +71,10 @@ export function InteractiveWord({
           sideOffset={8}
           collisionPadding={8}
           style={{ direction: "ltr" }}
-          className="z-50 rounded-lg bg-gray-800 px-2 py-1 text-xs font-medium whitespace-nowrap text-white shadow-lg"
+          className="z-50 rounded-lg bg-[#3D3226] px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-[#FBF3E4] shadow-lg"
         >
           {translation}
-          <Tooltip.Arrow className="fill-gray-800" />
+          <Tooltip.Arrow className="fill-[#3D3226]" />
         </Tooltip.Content>
       </Tooltip.Portal>
     </Tooltip.Root>
