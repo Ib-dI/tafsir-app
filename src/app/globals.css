@@ -70,6 +70,10 @@
   line-height: 2;
 }
 
+.verse-translation-text {
+  font-size: var(--verse-translation-font-size, 16px);
+}
+
 /* Scrollbar fine et discrète pour la liste des versets (au lieu de la barre
    grise épaisse par défaut, trop visible maintenant que le conteneur n'a
    plus de bordure pour la "contenir" visuellement). */

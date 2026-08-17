@@ -168,7 +168,7 @@ const VerseItem = React.memo(
           )}
           {showTranslation && (
             <p
-              className={`self-start text-base text-[#3D3226]/85 ${showTransliteration ? "-mt-2" : "mt-2"}`}
+              className={`verse-translation-text self-start text-[#3D3226]/85 ${showTransliteration ? "-mt-2" : "mt-2"}`}
             >
               {verse.id}. {verse.translation}
             </p>

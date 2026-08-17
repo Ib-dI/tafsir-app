@@ -22,6 +22,7 @@ import {
 import {
   DEFAULT_SHOW_TRANSLATION,
   DEFAULT_SHOW_TRANSLITERATION,
+  TRANSLATION_SCALE_STEPS,
   useTranslationDisplay,
 } from "@/context/TranslationDisplayContext";
 import {
@@ -101,7 +102,9 @@ function VersePreview({ verse }: { verse: VerseHighlight | undefined }) {
         })}
       </div>
       {showTranslation && (
-        <p className="text-sm text-[#3D3226]/80">{verse.translation}</p>
+        <p className="verse-translation-text text-[#3D3226]/80">
+          {verse.translation}
+        </p>
       )}
     </div>
   );
@@ -135,6 +138,10 @@ export default function SettingsDrawer({
     setShowTranslation,
     showTransliteration,
     setShowTransliteration,
+    translationScaleIndex,
+    increaseTranslationScale,
+    decreaseTranslationScale,
+    resetTranslationScale,
   } = useTranslationDisplay();
   const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -148,6 +155,7 @@ export default function SettingsDrawer({
     setWordByWordEnabled(DEFAULT_WORD_BY_WORD_ENABLED);
     setShowTranslation(DEFAULT_SHOW_TRANSLATION);
     setShowTransliteration(DEFAULT_SHOW_TRANSLITERATION);
+    resetTranslationScale();
   };
 
   return (
@@ -303,6 +311,27 @@ export default function SettingsDrawer({
                   checked={showTranslation}
                   onCheckedChange={setShowTranslation}
                   aria-label="Afficher la traduction"
+                />
+              </div>
+
+              {/* Taille de la traduction */}
+              <div className="flex items-center justify-between py-1">
+                <span className="text-sm font-medium text-[#3D3226]">
+                  Taille de la traduction
+                </span>
+                <Counter
+                  value={translationScaleIndex + 1}
+                  onDecrement={
+                    !showTranslation || translationScaleIndex === 0
+                      ? undefined
+                      : decreaseTranslationScale
+                  }
+                  onIncrement={
+                    !showTranslation ||
+                    translationScaleIndex === TRANSLATION_SCALE_STEPS.length - 1
+                      ? undefined
+                      : increaseTranslationScale
+                  }
                 />
               </div>
 
