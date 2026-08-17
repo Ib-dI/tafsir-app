@@ -156,7 +156,7 @@ const VerseItem = React.memo(
                           key={index}
                           content={content}
                           translation={word.translation}
-                          isOpen={openWordIndex === index}
+                          isOpen={openWordIndex === index || isWordActive}
                           onOpenChange={(open) =>
                             setOpenWordIndex(open ? index : null)
                           }
