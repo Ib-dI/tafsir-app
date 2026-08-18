@@ -32,7 +32,42 @@ export default function SourateDrawer({
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [searchTerm, setSearchTerm] = useState("");
+  const [viewportOverride, setViewportOverride] = useState<{
+    bottom: number;
+    maxHeight: number;
+  } | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+
+  // Sur mobile, le tiroir est en `position: fixed; bottom: 0`, ancré au bas
+  // du viewport de mise en page — qui ne rétrécit pas quand le clavier
+  // s'ouvre (contrairement au viewport visuel). Résultat : `bottom: 0`
+  // pointe toujours vers le bas de l'écran, désormais caché sous le
+  // clavier. On recale le tiroir sur le viewport visuel via son offset.
+  useEffect(() => {
+    if (!open || !isMobile) {
+      setViewportOverride(null);
+      return;
+    }
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const update = () => {
+      const bottom = Math.max(
+        0,
+        Math.round(window.innerHeight - vv.height - vv.offsetTop),
+      );
+      setViewportOverride(
+        bottom > 0 ? { bottom, maxHeight: Math.round(vv.height) } : null,
+      );
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, [open, isMobile]);
 
   const filteredChapters = useMemo(() => {
     if (!searchTerm) return chapters;
@@ -70,6 +105,20 @@ export default function SourateDrawer({
         className={`flex flex-col gap-0 border-none bg-[#FBF3E4] p-0 text-[#3D3226] ${
           isMobile ? "max-h-[85vh] rounded-t-2xl" : "sm:max-w-sm"
         }`}
+        style={
+          viewportOverride
+            ? {
+                bottom: viewportOverride.bottom,
+                maxHeight: viewportOverride.maxHeight,
+              }
+            : undefined
+        }
+        onOpenAutoFocus={(e) => {
+          // Sur mobile, le focus auto de Radix sur le champ de recherche
+          // (premier élément focusable) ouvre le clavier virtuel, qui
+          // recouvre la liste des sourates juste en dessous.
+          if (isMobile) e.preventDefault();
+        }}
       >
         <SheetHeader className="border-b border-[#3D3226]/10 p-4 pb-3">
           <SheetTitle className="text-[#3D3226]">Sourates</SheetTitle>
