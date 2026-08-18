@@ -61,7 +61,7 @@ const FONT_STYLE_OPTIONS: { value: ArabicFontStyle; label: string }[] = [
 // onglets comme là-bas.
 function VersePreview({ verse }: { verse: VerseHighlight | undefined }) {
   const { arabicScript, fontStyle } = useFontSettings();
-  const { showTranslation } = useTranslationDisplay();
+  const { showTranslation, showTransliteration } = useTranslationDisplay();
   const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
   const applyOrnament = applyOrnamentFor(fontStyle);
   const useDigitalKhattText =
@@ -101,6 +101,11 @@ function VersePreview({ verse }: { verse: VerseHighlight | undefined }) {
           return nodes;
         })}
       </div>
+      {showTransliteration && (
+        <p className="mb-2 text-right text-base font-medium text-[#3D3226]/60">
+          {verse.transliteration}
+        </p>
+      )}
       {showTranslation && (
         <p className="verse-translation-text text-[#3D3226]/80">
           {verse.translation}
