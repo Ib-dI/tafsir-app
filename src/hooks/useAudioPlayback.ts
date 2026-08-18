@@ -142,6 +142,9 @@ export function useAudioPlayback({
   const updateCurrentVerseRef = useRef(updateCurrentVerse);
   updateCurrentVerseRef.current = updateCurrentVerse;
 
+  const playbackRateRef = useRef(playbackRate);
+  playbackRateRef.current = playbackRate;
+
   const resetPlaybackPosition = useCallback(() => {
     clearPlaybackPosition();
     setRestoredPosition(null);
@@ -205,6 +208,11 @@ export function useAudioPlayback({
       wavesurferRef.current = wavesurfer;
       setDuration(wavesurfer.getDuration());
       setIsLoading(false);
+      // Chaque nouvelle instance WaveSurfer (changement de sourate/partie)
+      // redémarre à la vitesse x1 par défaut : on réapplique la vitesse
+      // choisie par l'utilisateur, qui ne change pas d'elle-même donc ne
+      // redéclencherait pas l'effet dédié (ligne ci-dessous, dép. [playbackRate]).
+      wavesurfer.setPlaybackRate(playbackRateRef.current);
 
       const position = loadPlaybackPosition(currentChapterId);
       if (position && position.currentPartIndex === currentPartIndex) {

@@ -109,6 +109,33 @@ const AudioVerseHighlighter = ({
     }
   }, [onRegisterAudioControls, pause, resetFinishGuard]);
 
+  // Raccourci clavier barre espace pour play/pause, sauf quand le focus est
+  // dans un champ de saisie (sinon on volerait l'espace au clavier partout).
+  const { togglePlayPause, audioError } = audioPlayback;
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== "Space") return;
+
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (!audioUrl || audioError) return;
+
+      e.preventDefault();
+      togglePlayPause();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [audioUrl, audioError, togglePlayPause]);
+
   const launchConfetti = useCallback(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
