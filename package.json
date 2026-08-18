@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev-ht": "next dev --experimental-https",
-    "build": "next build",
+    "build": "node tools/prepare-quran-wbw-data.mjs && next build",
     "start": "next start",
     "lint": "next lint",
     "prepare-quran-data": "node tools/prepare-quran-wbw-data.mjs"
