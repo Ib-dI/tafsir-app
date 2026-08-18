@@ -4,21 +4,24 @@ import confetti from "canvas-confetti";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Tooltip } from "radix-ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useSound from "use-sound";
 import { PauseIcon } from "./icons/PauseIcon";
 import { PlayIcon } from "./icons/PlayIcon";
 import SettingsDrawer from "./SettingsDrawer";
 import { useMediaQuery } from "./UseMediaQuery";
-import VerseItem, { toArabicNumerals } from "./VerseItem";
+import VerseItem from "./VerseItem";
 
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
 import { useWakeLock } from "@/hooks/useWakeLock";
-import { clearPlaybackPosition, savePlaybackPosition } from "@/lib/data/playbackPosition";
+import {
+  clearPlaybackPosition,
+  savePlaybackPosition,
+} from "@/lib/data/playbackPosition";
 import { AudioVerseHighlighterProps, VerseHighlight } from "@/types/types";
 import AudioLoadingState from "./AudioLoadingState";
 import LoadingSkeleton from "./LoadingSkeleton";
-import OverlayVerses from "./OverlayVerses";
 import ProgressIndicator from "./ProgressIndicator";
 import SuccessCard from "./SuccessCard";
 
@@ -85,7 +88,9 @@ const AudioVerseHighlighter = ({
     onFinished: handleFinished,
   });
 
-  useWakeLock(audioPlayback.isPlaying && !!audioUrl && !audioPlayback.audioError);
+  useWakeLock(
+    audioPlayback.isPlaying && !!audioUrl && !audioPlayback.audioError,
+  );
 
   useEffect(() => {
     onPlayingChange?.(audioPlayback.isPlaying);
@@ -103,6 +108,33 @@ const AudioVerseHighlighter = ({
       });
     }
   }, [onRegisterAudioControls, pause, resetFinishGuard]);
+
+  // Raccourci clavier barre espace pour play/pause, sauf quand le focus est
+  // dans un champ de saisie (sinon on volerait l'espace au clavier partout).
+  const { togglePlayPause, audioError } = audioPlayback;
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== "Space") return;
+
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (!audioUrl || audioError) return;
+
+      e.preventDefault();
+      togglePlayPause();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [audioUrl, audioError, togglePlayPause]);
 
   const launchConfetti = useCallback(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -147,7 +179,8 @@ const AudioVerseHighlighter = ({
     if (onPreviousChapter) {
       onPreviousChapter();
     } else {
-      const prevChapterId = currentChapterId === 1 ? totalChapters : currentChapterId - 1;
+      const prevChapterId =
+        currentChapterId === 1 ? totalChapters : currentChapterId - 1;
       router.push(`/sourates/${prevChapterId}`);
     }
   };
@@ -165,7 +198,8 @@ const AudioVerseHighlighter = ({
     if (onNextChapter) {
       onNextChapter();
     } else {
-      const nextChapterId = currentChapterId === totalChapters ? 1 : currentChapterId + 1;
+      const nextChapterId =
+        currentChapterId === totalChapters ? 1 : currentChapterId + 1;
       router.push(`/sourates/${nextChapterId}`);
     }
   };
@@ -199,7 +233,12 @@ const AudioVerseHighlighter = ({
       launchConfetti();
       playSuccessSound();
     }
-  }, [hasAudioFinished, showCompletionOverlay, launchConfetti, playSuccessSound]);
+  }, [
+    hasAudioFinished,
+    showCompletionOverlay,
+    launchConfetti,
+    playSuccessSound,
+  ]);
 
   // Fonction pour rejouer le chapitre
   const replayChapter = () => {
@@ -255,11 +294,25 @@ const AudioVerseHighlighter = ({
   useEffect(() => {
     if (audioPlayback.currentVerseId === null || !versesRef.current) return;
 
-    const verseElement = document.getElementById(`verse-${audioPlayback.currentVerseId}`);
-    if (verseElement) {
-      verseElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, [audioPlayback.currentVerseId]);
+    const verseElement = document.getElementById(
+      `verse-${audioPlayback.currentVerseId}`,
+    );
+    if (!verseElement) return;
+
+    // Verset long : on cale son début en haut plutôt que de le centrer, pour
+    // ne pas faire remonter le début du texte hors écran.
+    const currentVerse = verses.find(
+      (v) => v.id === audioPlayback.currentVerseId,
+    );
+    const overlayThreshold = isMobile ? 290 : 410;
+    const isLongVerse =
+      (currentVerse?.text.length ?? 0) > overlayThreshold;
+
+    verseElement.scrollIntoView({
+      behavior: "smooth",
+      block: isLongVerse ? "start" : "center",
+    });
+  }, [audioPlayback.currentVerseId, verses, isMobile]);
 
   // Défilement vers le haut lors du changement d'URL audio
   useEffect(() => {
@@ -279,197 +332,207 @@ const AudioVerseHighlighter = ({
   };
 
   return (
-    <div
-      className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible rounded-lg bg-white p-1 shadow sm:p-4"
-      style={{ height: "100vh", maxHeight: "100dvh" }}
-    >
-      <ProgressIndicator
-        restoredPosition={audioPlayback.restoredPosition}
-        resetPlaybackPosition={audioPlayback.resetPlaybackPosition}
-        audioUrl={audioUrl}
-        isMobile={isMobile}
-      />
-
-      {/* Overlay de completion */}
-      <AnimatePresence>
-        {completionVisible && (
-          <SuccessCard
-            replayChapter={replayChapter}
-            hasNextChapter={hasNextChapter}
-            hasPreviousChapter={hasPreviousChapter}
-            infoSourate={infoSourate}
-            closeOverlay={closeOverlay}
-            goToPreviousChapter={goToPreviousChapter}
-            goToNextChapter={goToNextChapter}
-            isMobile={isMobile}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Overlay pour les versets longs */}
-      {
-      <OverlayVerses
-        currentVerseId={audioPlayback.currentVerseId}
-        verses={verses}
-        isMobile={isMobile}
-        audioUrl={audioUrl}
-        toArabicNumerals={toArabicNumerals}
-      />
-      }
-
-      {/* Section des contrôles audio */}
-      <div className="relative mt-3 flex shrink-0 flex-col md:mt-6">
-        {audioUrl && (
-          <div
-            ref={audioPlayback.containerRef}
-            className={`relative w-full transition-opacity duration-300 ${
-              audioPlayback.drag.isDragging || audioPlayback.drag.isTouching
-                ? "cursor-grabbing"
-                : "cursor-grab"
-            } hover:opacity-80`}
-            style={{
-              minHeight: 50,
-              userSelect: "none",
-              WebkitUserSelect: "none",
-              touchAction: "none",
-              WebkitTouchCallout: "none",
-              WebkitTapHighlightColor: "transparent",
-              msContentZooming: "none",
-              msTouchAction: "none",
-            }}
-            title={
-              isMobile
-                ? "Touchez ou glissez pour naviguer"
-                : "Cliquez ou glissez pour naviguer dans l'audio"
-            }
-          >
-            <div
-              ref={audioPlayback.waveformRef}
-              className="h-full w-full"
-              style={{
-                pointerEvents:
-                  isMobile && (audioPlayback.drag.isDragging || audioPlayback.drag.isTouching)
-                    ? "none"
-                    : "auto",
-              }}
-            />
-            {/* Indicateur visuel avec mise à jour en temps réel */}
-            {isMobile &&
-              (audioPlayback.drag.isDragging || audioPlayback.drag.isTouching) &&
-              audioPlayback.drag.dragTime !== null && (
-                <div className="pointer-events-none absolute inset-0 z-50 -mt-px flex h-10.5 items-center justify-center rounded-lg border-2 border-blue-300 bg-blue-400/25">
-                  <div className="rounded-lg bg-blue-600 px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
-                    {formatTime(audioPlayback.drag.dragTime)}
-                  </div>
-                </div>
-              )}
-          </div>
-        )}
-
-        {/* État de chargement amélioré */}
-        <AudioLoadingState
-          isLoading={audioPlayback.isLoading}
-          audioError={audioPlayback.audioError}
+    <Tooltip.Provider delayDuration={200}>
+      <div
+        className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible bg-[#FBF3E4] p-1 sm:p-4"
+        style={{ height: "100vh", maxHeight: "100dvh" }}
+      >
+        <ProgressIndicator
+          restoredPosition={audioPlayback.restoredPosition}
+          resetPlaybackPosition={audioPlayback.resetPlaybackPosition}
+          audioUrl={audioUrl}
+          isMobile={isMobile}
         />
 
-        {/* Contrôles audio */}
-        {audioUrl && (
-          <div
-            className={`flex w-full items-center justify-between transition-opacity duration-300 ${
-              audioPlayback.isLoading || audioPlayback.audioError
-                ? "pointer-events-none opacity-0"
-                : ""
-            }`}
-          >
-            <button
-              onClick={audioPlayback.togglePlayPause}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 cursor-pointer text-white hover:bg-blue-700"
+        {/* Overlay de completion */}
+        <AnimatePresence>
+          {completionVisible && (
+            <SuccessCard
+              replayChapter={replayChapter}
+              hasNextChapter={hasNextChapter}
+              hasPreviousChapter={hasPreviousChapter}
+              infoSourate={infoSourate}
+              closeOverlay={closeOverlay}
+              goToPreviousChapter={goToPreviousChapter}
+              goToNextChapter={goToNextChapter}
+              isMobile={isMobile}
+            />
+          )}
+        </AnimatePresence>
+
+
+        {/* Section des contrôles audio */}
+        <div className="relative mt-3 flex shrink-0 flex-col md:mt-6">
+          {audioUrl && (
+            <div
+              ref={audioPlayback.containerRef}
+              className={`relative w-full transition-opacity duration-300 ${
+                audioPlayback.drag.isDragging || audioPlayback.drag.isTouching
+                  ? "cursor-grabbing"
+                  : "cursor-grab"
+              } hover:opacity-80`}
+              style={{
+                minHeight: 50,
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                touchAction: "none",
+                WebkitTouchCallout: "none",
+                WebkitTapHighlightColor: "transparent",
+                msContentZooming: "none",
+                msTouchAction: "none",
+              }}
+              title={
+                isMobile
+                  ? "Touchez ou glissez pour naviguer"
+                  : "Cliquez ou glissez pour naviguer dans l'audio"
+              }
             >
-              {audioPlayback.isPlaying ? <PauseIcon /> : <PlayIcon />}
-            </button>
-
-            <div className="flex items-center text-gray-600 gap-2">
-              <span
-                className="font-sura -mt-1 text-xl"
-              >surah{Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}{infoSourate[0]}</span>
-              <span>|</span>
-              <div className="spacing-[0.86px] font-mono text-xs whitespace-nowrap md:text-sm">
-                {infoSourate[0]}.{infoSourate[1]}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="font-mono text-xs whitespace-nowrap text-gray-600 md:text-sm">
-                {formatTime(audioPlayback.currentTime)} / {formatTime(audioPlayback.duration)}
-              </div>
-              <SettingsDrawer
-                playbackRate={audioPlayback.playbackRate}
-                onPlaybackRateChange={audioPlayback.setPlaybackRate}
+              <div
+                ref={audioPlayback.waveformRef}
+                className="h-full w-full"
+                style={{
+                  pointerEvents:
+                    isMobile &&
+                    (audioPlayback.drag.isDragging ||
+                      audioPlayback.drag.isTouching)
+                      ? "none"
+                      : "auto",
+                }}
               />
-            </div>
-          </div>
-        )}
-
-        {/* Message quand pas d'audio */}
-        {!audioUrl && !audioPlayback.isLoading && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              type: "spring",
-              stiffness: 100,
-              damping: 10,
-              delay: 0.1,
-            }}
-            className="-mt-3 flex h-15 w-full items-center justify-center"
-          >
-            <div className="relative mx-auto inline-flex w-fit max-w-full items-center gap-2 rounded-lg border border-[#2563eb]/30 bg-blue-50/80 px-3 py-1 font-medium text-gray-900 shadow-lg ring-1 shadow-blue-400/20 ring-black/10 filter backdrop-blur-[1px] transition-colors hover:bg-blue-100/80 focus:outline-hidden sm:text-sm">
-              <Info className="mr-2 h-5 w-5 shrink-0 text-[#2563eb] drop-shadow" />
-              <p className="inline-block w-full truncate text-center text-[#2563eb]">
-                Tafsir audio non disponible !
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Section des versets */}
-      <div
-        ref={versesRef}
-        className="relative z-20 mt-1 flex-1 overflow-y-auto rounded-lg border border-gray-200 p-2"
-        style={{ minHeight: 0 }}
-        onScroll={(e) => onAtTopChange?.((e.currentTarget.scrollTop) < 10)}
-      >
-        {/* Skeleton loader pendant le chargement initial */}
-        {audioPlayback.isLoading && !children && (
-          <LoadingSkeleton count={5} />
-        )}
-
-        {children}
-        {/* Bismillah pour les sourates qui en ont besoin */}
-        {Number(infoSourate[0]) !== 1 &&
-          Number(infoSourate[0]) !== 9 &&
-          verses[0]?.id === 1 && (
-            <div className="mt-2 flex w-full justify-center">
-              <p className="font-sura-colors mt-4 text-center text-xl text-gray-900 md:text-[32px] leading-relaxed" style={{ direction: "rtl" }}>
-              ﲪﲫﲮﲴ
-              </p>
+              {/* Indicateur visuel avec mise à jour en temps réel */}
+              {isMobile &&
+                (audioPlayback.drag.isDragging ||
+                  audioPlayback.drag.isTouching) &&
+                audioPlayback.drag.dragTime !== null && (
+                  <div className="pointer-events-none absolute inset-0 z-50 -mt-px flex h-10.5 items-center justify-center rounded-lg border-2 border-[#d28820]/50 bg-[#d28820]/20">
+                    <div className="rounded-lg bg-[#d28820] px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
+                      {formatTime(audioPlayback.drag.dragTime)}
+                    </div>
+                  </div>
+                )}
             </div>
           )}
 
-        {/* Liste des versets */}
-        {verses.map((verse: VerseHighlight) => (
-          <VerseItem
-            key={`verse-${verse.id}`}
-            verse={verse}
-            isActive={verse.id === audioPlayback.currentVerseId}
-            audioUrl={audioUrl}
-            seekToVerse={audioPlayback.seekToVerse}
-            isMobile={isMobile}
+          {/* État de chargement amélioré */}
+          <AudioLoadingState
+            isLoading={audioPlayback.isLoading}
+            audioError={audioPlayback.audioError}
           />
-        ))}
+
+          {/* Contrôles audio */}
+          {audioUrl && (
+            <div
+              className={`flex w-full items-center justify-between transition-opacity duration-300 ${
+                audioPlayback.isLoading || audioPlayback.audioError
+                  ? "pointer-events-none opacity-0"
+                  : ""
+              }`}
+            >
+              <button
+                onClick={audioPlayback.togglePlayPause}
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#d28820] text-white hover:bg-[#d28820]/90"
+              >
+                {audioPlayback.isPlaying ? <PauseIcon /> : <PlayIcon />}
+              </button>
+
+              <div className="flex items-center gap-2 text-[#3D3226]/70">
+                <span className="font-sura -mt-1 text-xl">
+                  surah
+                  {Number(infoSourate[0]) < 10
+                    ? "00"
+                    : Number(infoSourate[0]) < 100
+                      ? "0"
+                      : ""}
+                  {infoSourate[0]}
+                </span>
+                <span>|</span>
+                <div className="spacing-[0.86px] font-mono text-xs whitespace-nowrap md:text-sm">
+                  {infoSourate[0]}.{infoSourate[1]}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="font-mono text-xs whitespace-nowrap text-[#3D3226]/70 md:text-sm">
+                  {formatTime(audioPlayback.currentTime)} /{" "}
+                  {formatTime(audioPlayback.duration)}
+                </div>
+                <SettingsDrawer
+                  playbackRate={audioPlayback.playbackRate}
+                  onPlaybackRateChange={audioPlayback.setPlaybackRate}
+                  previewVerse={verses.find((v) => v.words.length > 0)}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Message quand pas d'audio */}
+          {!audioUrl && !audioPlayback.isLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 10,
+                delay: 0.1,
+              }}
+              className="-mt-3 flex h-15 w-full items-center justify-center"
+            >
+              <div className="relative mx-auto inline-flex w-fit max-w-full items-center gap-2 rounded-lg border border-[#2563eb]/30 bg-blue-50/80 px-3 py-1 font-medium text-gray-900 shadow-lg ring-1 shadow-blue-400/20 ring-black/10 filter backdrop-blur-[1px] transition-colors hover:bg-blue-100/80 focus:outline-hidden sm:text-sm">
+                <Info className="mr-2 h-5 w-5 shrink-0 text-[#2563eb] drop-shadow" />
+                <p className="inline-block w-full truncate text-center text-[#2563eb]">
+                  Tafsir audio non disponible !
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Section des versets */}
+        <div
+          ref={versesRef}
+          className="verses-scroll relative z-20 mt-1 flex-1 overflow-y-auto p-2"
+          style={{ minHeight: 0 }}
+          onScroll={(e) => onAtTopChange?.(e.currentTarget.scrollTop < 10)}
+        >
+          {/* Skeleton loader pendant le chargement initial */}
+          {audioPlayback.isLoading && !children && (
+            <LoadingSkeleton count={5} />
+          )}
+
+          {children}
+          {/* Bismillah pour les sourates qui en ont besoin */}
+          {Number(infoSourate[0]) !== 1 &&
+            Number(infoSourate[0]) !== 9 &&
+            verses[0]?.id === 1 && (
+              <div className="mt-2 flex w-full justify-center">
+                <p
+                  className="font-sura-colors mt-4 text-center text-xl leading-relaxed text-gray-900 md:text-[32px]"
+                  style={{ direction: "rtl" }}
+                >
+                  ﲪﲫﲮﲴ
+                </p>
+              </div>
+            )}
+
+          {/* Liste des versets */}
+          {verses.map((verse: VerseHighlight) => (
+            <VerseItem
+              key={`verse-${verse.id}`}
+              verse={verse}
+              isActive={verse.id === audioPlayback.currentVerseId}
+              activeWordIndex={
+                verse.id === audioPlayback.currentVerseId
+                  ? audioPlayback.currentWordIndex
+                  : null
+              }
+              audioUrl={audioUrl}
+              seekToVerse={audioPlayback.seekToVerse}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </Tooltip.Provider>
   );
 };
 

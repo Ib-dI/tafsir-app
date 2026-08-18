@@ -1,6 +1,5 @@
 "use client";
 
-// import NotificationPermission from "@/components/NotificationPermission";
 import { motion, useReducedMotion, Variants } from "framer-motion";
 import { Compass, Headphones } from "lucide-react";
 import Link from "next/link";
@@ -43,7 +42,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white p-1 md:p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#FBF3E4] p-1 md:p-4">
       {" "}
       {/* Arrière-plan plus sobre */}
       {/* Conteneur principal reprenant le style des cartes de sourates */}
@@ -54,11 +53,10 @@ export default function HomePage() {
         transition={{ delayChildren: 0.2, staggerChildren: 0.1 }}
         className="mt-8 mb-8 w-full max-w-4xl rounded-lg bg-white p-6 text-center sm:p-10" // Classes de la page sourates
       >
-        {/* <NotificationPermission /> */}
         {/* Titre principal */}
         <motion.h1
           variants={itemVariants}
-          className="mb-6 text-4xl leading-tight font-bold text-gray-800 sm:text-5xl" // Font-bold pour harmoniser
+          className="mb-6 text-4xl leading-tight font-bold text-[#3D3226] sm:text-5xl" // Font-bold pour harmoniser
         >
           Apprenez le Tafsir du Coran en{" "}
           <motion.span className="relative inline-block "
@@ -83,7 +81,7 @@ export default function HomePage() {
         {/* Sous-titre / Description */}
         <motion.p
           variants={itemVariants}
-          className="mx-auto mb-8 max-w-2xl text-lg text-gray-700 sm:text-xl"
+          className="mx-auto mb-8 max-w-2xl text-lg text-[#3D3226]/80 sm:text-xl"
         >
           Étudier le sens des versets du Coran grâce à notre
           plateforme intuitive, synchronisant les audios de Tafsir en Shi-Maoré
@@ -99,7 +97,7 @@ export default function HomePage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="order-1 rounded-full bg-blue-600 px-4 py-3 text-xl font-bold whitespace-nowrap text-white shadow-md transition-all duration-300 ease-in-out hover:bg-blue-700 md:px-8"
+              className="order-1 rounded-full bg-[#d28820] px-4 py-3 text-xl font-bold whitespace-nowrap text-white shadow-md transition-all duration-300 ease-in-out hover:bg-[#d28820]/90 md:px-8"
             >
               Commencer le Tafsir
             </motion.button>
@@ -111,13 +109,13 @@ export default function HomePage() {
           {/* Carte de fonctionnalité 1 */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col items-center rounded-lg border border-gray-100 bg-gray-50 p-6 shadow-sm" // Style plus proche des list-items
+            className="flex flex-col items-center rounded-lg border border-[#3D3226]/10 bg-[#3D3226]/5 p-6 shadow-sm" // Style plus proche des list-items
           >
-            <Headphones size="42" className="text-blue-500" />
-            <h3 className="mb-2 text-xl font-semibold text-gray-800">
+            <Headphones size="42" className="text-[#d28820]" />
+            <h3 className="mb-2 text-xl font-semibold text-[#3D3226]">
               Synchronisation Audio-Texte
             </h3>
-            <p className="text-gray-600">
+            <p className="text-[#3D3226]/70">
               Suivez le Tafsir verset par verset, avec le texte coranique mis en
               évidence en temps réel.
             </p>
@@ -126,13 +124,13 @@ export default function HomePage() {
           {/* Carte de fonctionnalité 2 */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col items-center rounded-lg border border-gray-100 bg-gray-50 p-6 shadow-sm" // Style plus proche des list-items
+            className="flex flex-col items-center rounded-lg border border-[#3D3226]/10 bg-[#3D3226]/5 p-6 shadow-sm" // Style plus proche des list-items
           >
-            <Compass size="42" className="text-blue-500" />
-            <h3 className="mb-2 text-xl font-semibold text-gray-800">
+            <Compass size="42" className="text-[#d28820]" />
+            <h3 className="mb-2 text-xl font-semibold text-[#3D3226]">
               Navigation Facile
             </h3>
-            <p className="text-gray-600">
+            <p className="text-[#3D3226]/70">
               Recherchez vos sourates par nom ou numéro et reprenez votre étude
               là où vous l&apos;avez laissée.
             </p>
@@ -144,7 +142,7 @@ export default function HomePage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 1.2, ease: "easeOut" }}
-        className="mt-12 text-sm text-gray-600"
+        className="mt-12 text-sm text-[#3D3226]/60"
       >
         <p>
           &copy; {new Date().getFullYear()} Plateforme Tafsir. Tous droits

@@ -1,4 +1,19 @@
 import { ReactNode } from "react";
+import type { SimpleChapterIndexEntry } from "@/lib/quranSimpleApi";
+
+// Types et interfaces partagés mot par mot (voir src/lib/quranWbw.ts)
+export type TajweedSegment = {
+  text: string;
+  rule: string | null;
+};
+
+export type VerseWord = {
+  arabic: string;
+  arabicIndoPak: string;
+  arabicDigitalKhatt: string;
+  tajweed: TajweedSegment[];
+  translation: string | null;
+};
 
 // Types et interfaces partagés SourateInteractiveContent
 export type Verse = {
@@ -6,13 +21,21 @@ export type Verse = {
   text: string;
   translation: string;
   transliteration: string;
+  words: VerseWord[];
 };
+
+// Timing d'un mot au sein d'un verset (voir versets-split, l'outil de
+// marquage manuel). Un tableau d'occurrences par mot — normalement une
+// seule, mais le cheikh peut redire le même mot plus loin dans le même
+// passage (miroir de TafsirAudioTiming.occurrence, un niveau plus bas).
+export type WordTiming = { startTime: number; endTime: number };
 
 export type TafsirAudioTiming = {
   id: number;
   startTime: number;
   endTime: number;
-  occurrence?: number; 
+  occurrence?: number;
+  words?: WordTiming[][];
 };
 
 export type TafsirAudioPart = {
@@ -27,6 +50,7 @@ export interface SourateInteractiveContentProps {
   audioParts: TafsirAudioPart[];
   infoSourate: (number | string)[];
   chapterId: number;
+  allChapters: SimpleChapterIndexEntry[];
 }
 
 // Types et interfaces partagés AudioVerseHighlighter
@@ -36,8 +60,13 @@ export type VerseHighlight = {
   verset: string;
   transliteration: string;
   translation: string;
+  words: VerseWord[];
   noAudio?: boolean;
-  occurrences: { startTime: number; endTime: number }[];
+  occurrences: {
+    startTime: number;
+    endTime: number;
+    words?: WordTiming[][];
+  }[];
 };
 
 export type AudioVerseHighlighterProps = {

@@ -1,5 +1,7 @@
 import { audiosTafsir } from "@/lib/data/audios";
-import { getSimpleChapterVerses } from "@/lib/quranSimpleApi";
+import { getSimpleChapters, getSimpleChapterVerses } from "@/lib/quranSimpleApi";
+import { getSurahWbw, mergeVersesWithWbw } from "@/lib/quranWbw";
+import { notFound } from "next/navigation";
 import SourateInteractiveContent from "./SourateInteractiveContent";
 
 // Définition des types des props pour un Server Component
@@ -11,17 +13,17 @@ export default async function Sourate({ params }: SouratePageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams; // Accède directement à l'ID
   const chapterId = Number(id); // Convertir l'ID de la sourate en nombre
-  const data = await getSimpleChapterVerses(id); // Récupère tous les versets
+  const [data, surahWbw, allChapters] = await Promise.all([
+    getSimpleChapterVerses(id), // Récupère tous les versets (translitération)
+    getSurahWbw(chapterId), // Texte arabe mot par mot + traduction Hamidullah
+    getSimpleChapters(), // Index des 114 sourates, pour le tiroir de navigation
+  ]);
 
   if (!data) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 text-red-600">
-        Erreur lors du chargement des versets ou chapitre introuvable.
-      </div>
-    );
+    notFound();
   }
 
-  const verses = data.verses || [];
+  const verses = mergeVersesWithWbw(data.verses || [], surahWbw);
   const infoSourate = [data.id, data.transliteration, data.translation];
 
   // Trouve toutes les données audio pour cette sourate
@@ -29,7 +31,7 @@ export default async function Sourate({ params }: SouratePageProps) {
   const audioParts = currentAudioTafsir?.parts || [];
 
   return (
-    <div className="container mx-auto mt-1 bg-white p-2 md:p-4">
+    <div className="container mx-auto mt-1 bg-[#FBF3E4] p-2 md:p-4">
       {/* Le bouton de retour est un Client Component qui lit ses propres searchParams */}
 
       {/* Passe toutes les données nécessaires au Client Component interactif */}
@@ -38,6 +40,7 @@ export default async function Sourate({ params }: SouratePageProps) {
         audioParts={audioParts}
         infoSourate={infoSourate}
         chapterId={chapterId}
+        allChapters={allChapters}
       />
     </div>
   );

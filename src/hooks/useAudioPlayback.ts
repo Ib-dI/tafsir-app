@@ -19,6 +19,9 @@ interface UseAudioPlaybackOptions {
   onFinished?: () => void;
 }
 
+const PLAYBACK_RATE_STORAGE_KEY = "tafsir:playbackRate";
+const VALID_PLAYBACK_RATES = [1, 1.25, 1.5, 1.75, 2];
+
 function hasIsPlaying(obj: unknown): obj is { isPlaying: () => boolean } {
   return (
     typeof obj === "object" &&
@@ -44,9 +47,27 @@ export function useAudioPlayback({
   const [duration, setDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentVerseId, setCurrentVerseId] = useState<number | null>(null);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [currentWordIndex, setCurrentWordIndex] = useState<number | null>(
+    null,
+  );
+  // Initialiseur paresseux (pas un effet séparé) : lu une seule fois, à la
+  // toute première évaluation du render, avant qu'un quelconque effet de
+  // sauvegarde puisse s'exécuter. Un hydrate-effect + write-effect séparés
+  // ont une fenêtre de course : le write-effect du premier montage peut
+  // encore utiliser la valeur par défaut avant que le hydrate-effect ait eu
+  // le temps de la corriger, et si le composant est démonté entre-temps
+  // (montage/démontage double de StrictMode en dev, ou un remount précoce
+  // pendant que l'audio se résout), la correction n'a jamais lieu — observé
+  // en pratique : la vitesse revenait toujours à x1 après rechargement.
+  const [playbackRate, setPlaybackRate] = useState(() => {
+    if (typeof window === "undefined") return 1;
+    const stored = window.localStorage.getItem(PLAYBACK_RATE_STORAGE_KEY);
+    const parsed = stored !== null ? Number(stored) : null;
+    return parsed !== null && VALID_PLAYBACK_RATES.includes(parsed) ? parsed : 1;
+  });
   const [audioError, setAudioError] = useState(false);
-  const [restoredPosition, setRestoredPosition] = useState<PlaybackPosition | null>(null);
+  const [restoredPosition, setRestoredPosition] =
+    useState<PlaybackPosition | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
   const [isTouching, setIsTouching] = useState(false);
@@ -63,13 +84,30 @@ export function useAudioPlayback({
   const rafIdRef = useRef<number | null>(null);
 
   const findVerseAtTime = useCallback(
-    (time: number): VerseHighlight | null => {
+    (
+      time: number,
+    ): { verse: VerseHighlight; wordIndex: number | null } | null => {
       for (const verse of verses) {
         if (verse.noAudio) continue;
-        const match = verse.occurrences.find(
+        const occurrence = verse.occurrences.find(
           (occ) => time >= occ.startTime && time <= occ.endTime,
         );
-        if (match) return verse;
+        if (!occurrence) continue;
+
+        // Un mot peut avoir plusieurs occurrences dans le même passage
+        // (le cheikh le redit en l'expliquant) — on vérifie toutes les
+        // plages de chaque mot, pas juste la première.
+        let wordIndex: number | null = null;
+        if (occurrence.words) {
+          const index = occurrence.words.findIndex((wordOccurrences) =>
+            wordOccurrences.some(
+              (w) => time >= w.startTime && time <= w.endTime,
+            ),
+          );
+          wordIndex = index === -1 ? null : index;
+        }
+
+        return { verse, wordIndex };
       }
       return null;
     },
@@ -78,8 +116,9 @@ export function useAudioPlayback({
 
   const updateCurrentVerse = useCallback(
     (time: number) => {
-      const foundVerse = findVerseAtTime(time);
-      setCurrentVerseId(foundVerse ? foundVerse.id : null);
+      const found = findVerseAtTime(time);
+      setCurrentVerseId(found ? found.verse.id : null);
+      setCurrentWordIndex(found ? found.wordIndex : null);
     },
     [findVerseAtTime],
   );
@@ -103,6 +142,9 @@ export function useAudioPlayback({
   const updateCurrentVerseRef = useRef(updateCurrentVerse);
   updateCurrentVerseRef.current = updateCurrentVerse;
 
+  const playbackRateRef = useRef(playbackRate);
+  playbackRateRef.current = playbackRate;
+
   const resetPlaybackPosition = useCallback(() => {
     clearPlaybackPosition();
     setRestoredPosition(null);
@@ -124,6 +166,7 @@ export function useAudioPlayback({
     setDuration(0);
     setAudioError(false);
     setCurrentVerseId(null);
+    setCurrentWordIndex(null);
     setDragTime(null);
     setRestoredPosition(null);
     finishHandledRef.current = false;
@@ -133,9 +176,9 @@ export function useAudioPlayback({
 
     const wavesurfer = WaveSurfer.create({
       container: waveformRef.current,
-      waveColor: "#e2e8f0",
-      progressColor: "#1961fc",
-      cursorColor: "#ff611dff",
+      waveColor: "#cbb694",
+      progressColor: "#d28820",
+      cursorColor: "#3D3226",
       barWidth: 2,
       barRadius: 3,
       cursorWidth: 3,
@@ -165,6 +208,11 @@ export function useAudioPlayback({
       wavesurferRef.current = wavesurfer;
       setDuration(wavesurfer.getDuration());
       setIsLoading(false);
+      // Chaque nouvelle instance WaveSurfer (changement de sourate/partie)
+      // redémarre à la vitesse x1 par défaut : on réapplique la vitesse
+      // choisie par l'utilisateur, qui ne change pas d'elle-même donc ne
+      // redéclencherait pas l'effet dédié (ligne ci-dessous, dép. [playbackRate]).
+      wavesurfer.setPlaybackRate(playbackRateRef.current);
 
       const position = loadPlaybackPosition(currentChapterId);
       if (position && position.currentPartIndex === currentPartIndex) {
@@ -237,6 +285,7 @@ export function useAudioPlayback({
         finishHandledRef.current = true;
         setIsPlaying(false);
         setCurrentVerseId(null);
+        setCurrentWordIndex(null);
         onFinishedRef.current?.();
       }
     });
@@ -266,6 +315,7 @@ export function useAudioPlayback({
 
   useEffect(() => {
     wavesurferRef.current?.setPlaybackRate(playbackRate);
+    window.localStorage.setItem(PLAYBACK_RATE_STORAGE_KEY, String(playbackRate));
   }, [playbackRate]);
 
   // Sauvegarde régulière de la position de lecture pendant la lecture.
@@ -302,7 +352,14 @@ export function useAudioPlayback({
       }
     }, 1500);
     return () => clearTimeout(debounceTimer);
-  }, [currentTime, isDragging, currentChapterId, partId, audioUrl, currentPartIndex]);
+  }, [
+    currentTime,
+    isDragging,
+    currentChapterId,
+    partId,
+    audioUrl,
+    currentPartIndex,
+  ]);
 
   const togglePlayPause = useCallback(() => {
     if (wavesurferRef.current && !audioError) {
@@ -335,6 +392,7 @@ export function useAudioPlayback({
       ws.seekTo(seekPosition);
       setCurrentTime(seekTime);
       setCurrentVerseId(verse.id);
+      setCurrentWordIndex(null);
 
       setTimeout(() => {
         const t = wavesurferRef.current?.getCurrentTime() || 0;
@@ -381,7 +439,9 @@ export function useAudioPlayback({
         const playingViaMedia = !!mediaEl && !mediaEl.paused;
         const playingViaWs = hasIsPlaying(ws) ? ws.isPlaying() : false;
 
-        wasPlayingRef.current = Boolean(playingViaWs || playingViaMedia || isPlayingRef.current);
+        wasPlayingRef.current = Boolean(
+          playingViaWs || playingViaMedia || isPlayingRef.current,
+        );
 
         const t = ws.getCurrentTime();
         setDragTime(t);
@@ -405,7 +465,8 @@ export function useAudioPlayback({
         0,
         Math.min(containerRect.width, clientX - containerRect.left),
       );
-      const seekPosition = containerRect.width > 0 ? relativeX / containerRect.width : 0;
+      const seekPosition =
+        containerRect.width > 0 ? relativeX / containerRect.width : 0;
       const dur = ws.getDuration() || 0;
       const newTime = dur * seekPosition;
 
@@ -550,10 +611,18 @@ export function useAudioPlayback({
       if (rafIdRef.current) {
         cancelAnimationFrame(rafIdRef.current);
       }
-      container.removeEventListener("touchstart", handleTouchStart, eventOptions);
+      container.removeEventListener(
+        "touchstart",
+        handleTouchStart,
+        eventOptions,
+      );
       container.removeEventListener("touchmove", handleTouchMove, eventOptions);
       container.removeEventListener("touchend", handleTouchEnd, eventOptions);
-      container.removeEventListener("touchcancel", handleTouchCancel, eventOptions);
+      container.removeEventListener(
+        "touchcancel",
+        handleTouchCancel,
+        eventOptions,
+      );
     };
   }, [isMobile, updateCurrentVerse]);
 
@@ -567,6 +636,7 @@ export function useAudioPlayback({
     audioError,
     isLoading,
     currentVerseId,
+    currentWordIndex,
     restoredPosition,
     drag: { isDragging, isTouching, dragTime },
     togglePlayPause,

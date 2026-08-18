@@ -8,7 +8,8 @@
     "dev-ht": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare-quran-data": "node tools/prepare-quran-wbw-data.mjs"
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.2.5",
@@ -18,8 +19,6 @@
     "clsx": "^2.1.1",
     "dotenv": "^17.2.1",
     "firebase": "^11.10.0",
-    "firebase-admin": "^13.4.0",
-    "firebase-functions": "^6.4.0",
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.525.0",
     "next": "16.0.7",

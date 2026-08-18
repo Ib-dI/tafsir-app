@@ -1,24 +1,42 @@
 @font-face {
-  font-family: 'Uthmanic';
-  src: url('/fonts/UthmanicHafs1Ver18.woff2') format('woff2');
+  font-family: "Uthmanic";
+  src: url("/fonts/UthmanicHafs1Ver18.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IndoPak';
-  src: url('/fonts/indopak.woff2') format('woff2');
+  /* indopack-v2.woff2 (ported from extractor-quran) is required, not the
+     older indopak.woff2 it replaces: the IndoPak word data
+     (src/lib/data/quran-wbw/raw/indopak-nastaleeq.json) encodes the
+     ayah-end ornament as this font's own Private Use Area codepoints
+     (e.g. U+F61E) — indopak.woff2 doesn't map them and rendered an empty
+     circle. */
+  font-family: "IndoPak";
+  src: url("/fonts/indopack-v2.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Surah';
-  src: url('/fonts/surah-name-v4.ttf') format('truetype');
+  font-family: "Surah";
+  src: url("/fonts/surah-name-v4.ttf") format("truetype");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: 'SurahColors';
-  src: url('/fonts/surah_names_colors.ttf') format('truetype');
+  font-family: "SurahColors";
+  src: url("/fonts/surah_names_colors.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DigitalKhattV1";
+  src: url("/fonts/DigitalKhattQuranicV1.otf") format("opentype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DigitalKhattV2";
+  src: url("/fonts/DigitalKhattV2.otf") format("opentype");
   font-weight: 400;
   font-display: swap;
 }
@@ -29,7 +47,6 @@
 
 @custom-variant dark (&:is(.dark *));
 @theme {
-
   --font-uthmanic: Uthmanic;
   --font-indopak: IndoPak;
   --font-sura: Surah;
@@ -39,12 +56,120 @@
 .verse-arabic-text {
   font-size: var(--verse-arabic-font-size-mobile, 23.5px);
   font-family: var(--verse-arabic-font-family, Uthmanic);
+  /* Porté d'extractor-quran/src/app/globals.css (.verse-card__arabic), puis
+    réduit : leur valeur (2.4) laisse assez de place aux diacritiques
+    (harakat) au-dessus/en dessous des lettres, mais nos versets sont assez
+    courts pour tenir sur 1-2 lignes, où un line-height aussi grand crée un
+    espace disproportionné entre les deux lignes d'un même verset qui
+    retourne à la ligne. IndoPak (data-script) garde des diacritiques plus
+     hauts, donc une valeur un peu plus généreuse. */
+  line-height: 1.9;
+}
+
+.verse-arabic-text[data-script="indopak"] {
+  line-height: 2;
+}
+
+.verse-translation-text {
+  font-size: var(--verse-translation-font-size, 16px);
+}
+
+/* Scrollbar fine et discrète pour la liste des versets (au lieu de la barre
+   grise épaisse par défaut, trop visible maintenant que le conteneur n'a
+   plus de bordure pour la "contenir" visuellement). */
+.verses-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(61, 50, 38, 0.2) transparent;
+}
+
+.verses-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.verses-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.verses-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(61, 50, 38, 0.2);
+  border-radius: 999px;
+}
+
+.verses-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(61, 50, 38, 0.35);
 }
 
 @media (min-width: 768px) {
   .verse-arabic-text {
     font-size: var(--verse-arabic-font-size-desktop, 30px);
   }
+}
+
+/*
+ * Ported from extractor-quran/src/app/globals.css: both DigitalKhatt files
+ * ship a space (U+0020) glyph with a zero advance width baked into the
+ * font's own metrics, so plain inter-word spaces collapse to nothing.
+ * word-spacing works around it (adds a fixed length to every word-separator
+ * character regardless of the glyph's own advance width). 0.22em matches
+ * UthmanicHafs's natural word gap at the same font-size. Both files are also
+ * missing several Quranic Uthmani diacritics from their cmap, so Uthmanic is
+ * kept as the fallback family rather than an arbitrary system serif.
+ * Excluded for IndoPak ([data-script="indopak"]): that script always uses
+ * its own dedicated font regardless of the selected font style.
+ */
+:root[data-font-style="digitalkhatt-v1"]
+  .verse-arabic-text:not([data-script="indopak"]) {
+  font-family: DigitalKhattV1, Uthmanic, serif;
+  word-spacing: 0.22em;
+}
+
+:root[data-font-style="digitalkhatt-v2"]
+  .verse-arabic-text:not([data-script="indopak"]) {
+  font-family: DigitalKhattV2, Uthmanic, serif;
+  word-spacing: 0.22em;
+}
+
+/* Couleurs des règles de tajweed — portées telles quelles depuis extractor-quran/src/app/globals.css */
+.tajweed-rule--ham_wasl,
+.tajweed-rule--laam_shamsiyah,
+.tajweed-rule--slnt {
+  opacity: 0.5;
+}
+
+.tajweed-rule--ghunnah {
+  color: #e08a3c;
+}
+
+.tajweed-rule--idgham_ghunnah,
+.tajweed-rule--idgham_shafawi {
+  color: #3fa34d;
+}
+
+.tajweed-rule--idgham_wo_ghunnah,
+.tajweed-rule--idgham_mutajanisayn,
+.tajweed-rule--idgham_mutaqaribayn {
+  color: #2f9e6b;
+}
+
+.tajweed-rule--ikhafa,
+.tajweed-rule--ikhafa_shafawi {
+  color: #c77b2c;
+}
+
+.tajweed-rule--iqlab {
+  color: #a15fc9;
+}
+
+.tajweed-rule--qalaqah {
+  color: #3b82c4;
+}
+
+.tajweed-rule--madda_normal,
+.tajweed-rule--madda_necessary,
+.tajweed-rule--madda_obligatory_monfasel,
+.tajweed-rule--madda_obligatory_mottasel,
+.tajweed-rule--madda_permissible {
+  color: #d1453b;
 }
 
 @theme inline {
@@ -185,7 +310,8 @@
 }
 
 @keyframes successPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
