@@ -277,80 +277,93 @@ export default function SourateInteractiveContent({
   );
 
   // Modification principale : versesToDisplay pour gérer les multiples occurrences
-  const versesToDisplay = selectedPart
-    ? (() => {
-        if (selectedPart.id === "remaining-verses") {
-          // Pour les versets restants sans audio
-          const coveredVerseIds = new Set(
-            initialAudioParts.flatMap((part) =>
-              part.timings.map((timing) => timing.id),
-            ),
-          );
-          return initialVerses
-            .filter((verse) => !coveredVerseIds.has(verse.id))
-            .map((verse) => ({
-              ...verse,
-              startTime: 0,
-              endTime: 0,
-              verset: verse.text,
-              noAudio: true,
-              occurrences: [], // pas d'audio donc pas d'occurrence
-            }));
-        } else {
-          // 🔑 Grouper par verse.id
-          const verseById = new Map(initialVerses.map((v) => [v.id, v]));
-          const verseMap = new Map<
-            number,
-            {
-              id: number;
-              text: string;
-              translation: string;
-              transliteration: string;
-              words: Verse["words"];
-              noAudio: boolean;
-              verset: string;
-              occurrences: {
-                startTime: number;
-                endTime: number;
-                words?: TafsirAudioTiming["words"];
-              }[];
-            }
-          >();
+  //
+  // Mémoïsé : sans ça, ce tableau est recréé à chaque render de ce composant
+  // (ex. onAtTopChange déclenché par le scroll manuel dans AVH), ce qui
+  // change la référence de `verses` passée à AVH et redéclenche son effet
+  // de scrollIntoView({block:"center"}) sur le verset actif à chaque render
+  // au lieu de seulement au changement de verset — empêchant tout défilement
+  // manuel pendant que l'audio joue.
+  const versesToDisplay = useMemo(
+    () =>
+      selectedPart
+        ? (() => {
+            if (selectedPart.id === "remaining-verses") {
+              // Pour les versets restants sans audio
+              const coveredVerseIds = new Set(
+                initialAudioParts.flatMap((part) =>
+                  part.timings.map((timing) => timing.id),
+                ),
+              );
+              return initialVerses
+                .filter((verse) => !coveredVerseIds.has(verse.id))
+                .map((verse) => ({
+                  ...verse,
+                  startTime: 0,
+                  endTime: 0,
+                  verset: verse.text,
+                  noAudio: true,
+                  occurrences: [], // pas d'audio donc pas d'occurrence
+                }));
+            } else {
+              // 🔑 Grouper par verse.id
+              const verseById = new Map(initialVerses.map((v) => [v.id, v]));
+              const verseMap = new Map<
+                number,
+                {
+                  id: number;
+                  text: string;
+                  translation: string;
+                  transliteration: string;
+                  words: Verse["words"];
+                  noAudio: boolean;
+                  verset: string;
+                  occurrences: {
+                    startTime: number;
+                    endTime: number;
+                    words?: TafsirAudioTiming["words"];
+                  }[];
+                }
+              >();
 
-          selectedPart.timings.forEach((timing) => {
-            const originalVerse = verseById.get(timing.id);
-            if (!originalVerse) {
-              console.warn(`Verset ${timing.id} non trouvé dans initialVerses`);
-              return;
-            }
+              selectedPart.timings.forEach((timing) => {
+                const originalVerse = verseById.get(timing.id);
+                if (!originalVerse) {
+                  console.warn(
+                    `Verset ${timing.id} non trouvé dans initialVerses`,
+                  );
+                  return;
+                }
 
-            if (!verseMap.has(timing.id)) {
-              verseMap.set(timing.id, {
-                ...originalVerse,
-                noAudio: false,
-                verset: originalVerse.text,
-                occurrences: [],
+                if (!verseMap.has(timing.id)) {
+                  verseMap.set(timing.id, {
+                    ...originalVerse,
+                    noAudio: false,
+                    verset: originalVerse.text,
+                    occurrences: [],
+                  });
+                }
+
+                // Ajouter toutes les occurrences au même verset
+                verseMap.get(timing.id)!.occurrences.push({
+                  startTime: timing.startTime,
+                  endTime: timing.endTime,
+                  words: timing.words,
+                });
               });
+
+              return Array.from(verseMap.values());
             }
-
-            // Ajouter toutes les occurrences au même verset
-            verseMap.get(timing.id)!.occurrences.push({
-              startTime: timing.startTime,
-              endTime: timing.endTime,
-              words: timing.words,
-            });
-          });
-
-          return Array.from(verseMap.values());
-        }
-      })()
-    : initialVerses.map((verse) => ({
-        ...verse,
-        startTime: 0,
-        endTime: 0,
-        verset: verse.text,
-        occurrences: [],
-      }));
+          })()
+        : initialVerses.map((verse) => ({
+            ...verse,
+            startTime: 0,
+            endTime: 0,
+            verset: verse.text,
+            occurrences: [],
+          })),
+    [selectedPart, initialVerses, initialAudioParts],
+  );
 
   // Déterminer l'URL audio à passer
   const currentAudioUrl = selectedPart?.url || "";
