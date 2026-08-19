@@ -151,16 +151,23 @@ export default function SourateInteractiveContent({
   );
   const [isSourateDrawerOpen, setIsSourateDrawerOpen] = useState(false);
 
+  // Démarre toujours sur la première partie (identique au rendu serveur) :
+  // `loadPlaybackPosition` lit le localStorage, donc l'appeler ici de façon
+  // synchrone désynchroniserait l'hydratation. La position sauvegardée est
+  // appliquée juste après, dans un effet.
   const [selectedPart, setSelectedPart] = useState<TafsirAudioPart | null>(
-    () => {
-      const parts = buildAudioParts(initialAudioParts, initialVerses);
-      const savedPosition = loadPlaybackPosition(chapterId);
-      const savedPart = savedPosition
-        ? parts[savedPosition.currentPartIndex]
-        : undefined;
-      return savedPart ?? parts[0] ?? null;
-    },
+    () => audioParts[0] ?? null,
   );
+
+  useEffect(() => {
+    const savedPosition = loadPlaybackPosition(chapterId);
+    const savedPart =
+      savedPosition !== null ? audioParts[savedPosition.currentPartIndex] : undefined;
+    if (savedPart) {
+      setSelectedPart(savedPart);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chapterId]);
   const { userId, isAuthReady } = useUserId();
   const isMobile = useMediaQuery("(max-width: 767px)");
   const completedPartIds = useChapterProgress(chapterId, userId);
@@ -447,17 +454,7 @@ export default function SourateInteractiveContent({
 
   return (
     <div className="container mx-auto">
-      {!isAuthReady || !userId ? (
-        <div className="flex min-h-screen items-center justify-center bg-[#FBF3E4] text-[#3D3226]">
-          <LoadingSpinner
-            size="lg"
-            color="gold"
-            text="
-        Initialisation de la connexion..."
-          />
-        </div>
-      ) : (
-        <>
+      <>
           {/* Header premium avec navigation entre chapitres */}
           <div className="mb-2 flex flex-col gap-2">
             {/* Barre de navigation chapitres - UI premium */}
@@ -816,16 +813,20 @@ export default function SourateInteractiveContent({
                         textShadow: "0 2px 6px rgba(0,0,0,0.18)",
                       }}
                     >
-                      {`surah${Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}${Number(infoSourate[0])}`}
-                      surah-icon
+                      <span aria-hidden="true">
+                        {`surah${Number(infoSourate[0]) < 10 ? "00" : Number(infoSourate[0]) < 100 ? "0" : ""}${Number(infoSourate[0])}`}
+                        surah-icon
+                      </span>
+                      <span className="sr-only">
+                        {`Sourate ${infoSourate[0]} - ${infoSourate[1]} (${infoSourate[2]})`}
+                      </span>
                     </h1>
                   </div>
                 </div>
               </div>
             </AudioVerseHighlighter>
           </div>
-        </>
-      )}
+      </>
       <SourateDrawer
         chapters={allChapters}
         currentChapterId={chapterId}

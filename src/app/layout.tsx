@@ -5,6 +5,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { FontSettingsProvider } from "@/context/FontSettingsContext";
 import { TranslationDisplayProvider } from "@/context/TranslationDisplayContext";
 import { WordByWordProvider } from "@/context/WordByWordContext";
+import { SITE_URL } from "@/lib/site";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
@@ -21,8 +22,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tafsir",
-  description: "Application de tafsir audio",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Tafsir du Coran en Shi-Maoré | Tafsir",
+    template: "%s | Tafsir",
+  },
+  description:
+    "Étudiez le tafsir du Coran verset par verset, avec l'audio en Shi-Maoré synchronisé au texte coranique.",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "Tafsir",
+  },
 };
 
 export default function RootLayout({
@@ -41,6 +52,20 @@ export default function RootLayout({
           type="font/woff2"
           href="/fonts/UthmanicHafs1Ver18.woff2"
           crossOrigin="anonymous"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Tafsir",
+              url: SITE_URL,
+              description:
+                "Étudiez le tafsir du Coran verset par verset, avec l'audio en Shi-Maoré synchronisé au texte coranique.",
+              inLanguage: "fr",
+            }),
+          }}
         />
       </head>
       <body

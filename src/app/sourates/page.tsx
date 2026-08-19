@@ -1,6 +1,14 @@
 import { getSimpleChapters } from "@/lib/quranSimpleApi";
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import SouratesClient from "./SouratesClient";
+
+export const metadata: Metadata = {
+  title: "Sourates du Coran",
+  description:
+    "Parcourez les 114 sourates du Coran et accédez au tafsir audio verset par verset en Shi-Maoré.",
+  alternates: { canonical: "/sourates" },
+};
 
 function firstParam(
   value: string | string[] | undefined,

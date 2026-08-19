@@ -3,6 +3,7 @@
 import { audiosTafsir } from "@/lib/data/audios";
 import { computeChapterProgress } from "@/lib/chapterProgress";
 import Image from "next/image"
+import Link from "next/link";
 import QuickAccessBanner from "@/components/QuickAccessBanner";
 import { resetChapterProgress as resetChapterProgressInFirestore } from "@/lib/data/progress";
 import { useUserId } from "@/hooks/useUserId";
@@ -427,13 +428,14 @@ export default function SouratesClient({
               const { totalParts, completedParts, isFullyCompleted, progressPercent } =
                 computeChapterProgress(audioData?.parts ?? [], completedChaptersByPartId);
               const isFavorite = favoriteChapters.has(chapter.id);
+              const chapterHref = `/sourates/${chapter.id}${!showOnlyWithAudio ? "?showAudio=all" : ""}`;
 
               return (
                 <motion.li
                   key={chapter.id}
                   variants={itemVariants}
                   layout={!isFilterActive}
-                  className={`group relative w-full cursor-pointer overflow-hidden rounded-xl px-2 py-4 border shadow-xs md:w-80 will-change-transform will-change-opacity ${
+                  className={`group relative w-full overflow-hidden rounded-xl px-2 py-4 border shadow-xs md:w-80 will-change-transform will-change-opacity ${
                     isFullyCompleted
                       ? "border-emerald-200 ring-1 ring-emerald-100/60 hover:opacity-95"
                       : "border-[#3D3226]/15 bg-white hover:bg-[#3D3226]/5"
@@ -445,15 +447,13 @@ export default function SouratesClient({
                       ? { duration: 0 }
                       : { type: "spring", stiffness: 400, damping: 20 }
                   }
-                  onClick={() =>
-                    router.push(
-                      `/sourates/${chapter.id}${!showOnlyWithAudio ? "?showAudio=all" : ""}`,
-                    )
-                  }
-                  tabIndex={0}
-                  role="button"
-                  style={{ textDecoration: "none", willChange: "transform" }}
+                  style={{ willChange: "transform" }}
                 >
+                  <Link
+                    href={chapterHref}
+                    className="absolute inset-0 z-10 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d28820]"
+                    aria-label={`Sourate ${chapter.id} : ${chapter.transliteration} (${chapter.translation})`}
+                  />
                   <motion.div
                     aria-hidden
                     className="pointer-events-none absolute inset-0 -z-10 bg-card-gradient"

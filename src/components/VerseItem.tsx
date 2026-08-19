@@ -1,4 +1,8 @@
-import { useFontSettings } from "@/context/FontSettingsContext";
+import {
+  DEFAULT_ARABIC_FONT_STYLE,
+  DEFAULT_ARABIC_SCRIPT,
+  useFontSettings,
+} from "@/context/FontSettingsContext";
 import { useTranslationDisplay } from "@/context/TranslationDisplayContext";
 import { useWordByWord } from "@/context/WordByWordContext";
 import { applyOrnamentFor, isDigitalKhattFontStyle } from "@/lib/ayahMarker";
@@ -7,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { VerseHighlight } from "@/types/types";
 import { motion } from "framer-motion";
 import { Tooltip } from "radix-ui";
-import React, { type ReactNode, useState } from "react";
+import React, { type ReactNode, useEffect, useState } from "react";
 
 // Fonction pour convertir un nombre en chiffres arabes
 export const toArabicNumerals = (n: number): string => {
@@ -104,7 +108,21 @@ const VerseItem = React.memo(
     const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
     const { wordByWordEnabled } = useWordByWord();
     const { showTranslation, showTransliteration } = useTranslationDisplay();
-    const { arabicScript, fontStyle } = useFontSettings();
+    const {
+      arabicScript: preferredArabicScript,
+      fontStyle: preferredFontStyle,
+    } = useFontSettings();
+    // `AudioVerseHighlighter` est chargé via `next/dynamic` : son hydratation
+    // est retardée le temps que le chunk se charge, ce qui laisse au
+    // FontSettingsProvider (racine de l'app) le temps de restaurer le script
+    // préféré depuis localStorage *avant* que ce composant n'hydrate. On
+    // reste donc figé sur les valeurs par défaut (identiques au rendu
+    // serveur) jusqu'au premier montage client, puis on bascule sur la
+    // vraie préférence.
+    const [hasMounted, setHasMounted] = useState(false);
+    useEffect(() => setHasMounted(true), []);
+    const arabicScript = hasMounted ? preferredArabicScript : DEFAULT_ARABIC_SCRIPT;
+    const fontStyle = hasMounted ? preferredFontStyle : DEFAULT_ARABIC_FONT_STYLE;
     const applyOrnament = applyOrnamentFor(fontStyle);
     const useDigitalKhattText =
       arabicScript === "uthmani" && isDigitalKhattFontStyle(fontStyle);

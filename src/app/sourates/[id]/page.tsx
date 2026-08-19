@@ -1,12 +1,36 @@
 import { audiosTafsir } from "@/lib/data/audios";
 import { getSimpleChapters, getSimpleChapterVerses } from "@/lib/quranSimpleApi";
 import { getSurahWbw, mergeVersesWithWbw } from "@/lib/quranWbw";
+import { SITE_URL } from "@/lib/site";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SourateInteractiveContent from "./SourateInteractiveContent";
 
 // Définition des types des props pour un Server Component
 interface SouratePageProps {
   params: Promise<{ id: string }>; // Le paramètre dynamique est directement disponible ici
+}
+
+export async function generateMetadata({
+  params,
+}: SouratePageProps): Promise<Metadata> {
+  const { id } = await params;
+  const chapters = await getSimpleChapters();
+  const chapter = chapters.find((c) => c.id === Number(id));
+
+  if (!chapter) {
+    return {};
+  }
+
+  const title = `Sourate ${chapter.id} - ${chapter.transliteration} (${chapter.translation})`;
+  const description = `Tafsir audio en Shi-Maoré de la sourate ${chapter.transliteration} (${chapter.translation}), ${chapter.total_verses} versets, verset par verset.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/sourates/${chapter.id}` },
+    openGraph: { title, description },
+  };
 }
 
 export default async function Sourate({ params }: SouratePageProps) {
@@ -30,8 +54,32 @@ export default async function Sourate({ params }: SouratePageProps) {
   const currentAudioTafsir = audiosTafsir.find((a) => a.id === chapterId);
   const audioParts = currentAudioTafsir?.parts || [];
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Sourates",
+        item: `${SITE_URL}/sourates`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: `Sourate ${data.id} - ${data.transliteration}`,
+        item: `${SITE_URL}/sourates/${data.id}`,
+      },
+    ],
+  };
+
   return (
     <div className="container mx-auto mt-1 bg-[#FBF3E4] p-2 md:p-4">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Le bouton de retour est un Client Component qui lit ses propres searchParams */}
 
       {/* Passe toutes les données nécessaires au Client Component interactif */}
