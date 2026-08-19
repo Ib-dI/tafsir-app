@@ -23,16 +23,6 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring" as const, stiffness: 100, damping: 10 },
-  },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
-};
-
 export type SouratesClientProps = {
   initialChapters: SimpleChapterIndexEntry[];
   chaptersLoadError: boolean;
@@ -161,6 +151,24 @@ export default function SouratesClient({
     sourateIdsWithWordTiming,
     completedChaptersByPartId,
   ]);
+
+  const isSearchActive = searchTerm !== "";
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: isSearchActive
+        ? { duration: 0 }
+        : { type: "spring" as const, stiffness: 100, damping: 10 },
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      transition: { duration: isSearchActive ? 0 : 0.2 },
+    },
+  };
 
   // Défilement vers le haut de la page au montage
   useEffect(() => {
@@ -398,7 +406,7 @@ export default function SouratesClient({
                 <motion.li
                   key={chapter.id}
                   variants={itemVariants}
-                  layout
+                  layout={!isSearchActive}
                   className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-xs transition-colors duration-200 md:w-80 will-change-transform will-change-opacity ${
                     isFullyCompleted
                       ? "bg-card-gradient border border-emerald-200 ring-1 ring-emerald-100/60 hover:opacity-95"
@@ -406,7 +414,11 @@ export default function SouratesClient({
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  transition={
+                    isSearchActive
+                      ? { duration: 0 }
+                      : { type: "spring", stiffness: 400, damping: 20 }
+                  }
                   onClick={() =>
                     router.push(
                       `/sourates/${chapter.id}${!showOnlyWithAudio ? "?showAudio=all" : ""}`,
