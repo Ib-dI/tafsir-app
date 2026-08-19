@@ -293,7 +293,7 @@ export default function SouratesClient({
                 ref={searchInputRef}
                 type="text"
                 placeholder="Rechercher une sourate..."
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#3D3226]/15 rounded-full shadow-sm text-sm text-[#3D3226] placeholder-[#3D3226]/40 focus:outline-none focus:ring-2 focus:ring-[#d28820] focus:border-transparent transition-all duration-200"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#3D3226]/15 rounded-full shadow-sm text-sm text-[#3D3226] placeholder-[#3D3226]/40 focus:outline-none focus:ring-2 focus:ring-[#d28820] focus:border-transparent transition-colors duration-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onFocus={handleFocus}
@@ -304,7 +304,7 @@ export default function SouratesClient({
             {!allHaveAudio && (
               <button
                 onClick={toggleShowOnlyWithAudio}
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-colors duration-200 ${
                   showOnlyWithAudio
                     ? "bg-[#d28820] border-[#d28820] text-white shadow-sm"
                     : "border-[#3D3226]/15 bg-white text-[#3D3226]/60 hover:bg-[#3D3226]/5 hover:border-[#3D3226]/25"
@@ -318,7 +318,7 @@ export default function SouratesClient({
             {/* Non complétés */}
             <button
               onClick={toggleShowOnlyIncomplete}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-colors duration-200 ${
                 showOnlyIncomplete
                   ? "bg-amber-500 border-amber-500 text-white shadow-sm"
                   : "border-[#3D3226]/15 bg-white text-[#3D3226]/60 hover:bg-[#3D3226]/5 hover:border-[#3D3226]/25"
@@ -331,7 +331,7 @@ export default function SouratesClient({
             {/* Favoris */}
             <button
               onClick={toggleShowOnlyFavorites}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-colors duration-200 ${
                 showOnlyFavorites
                   ? "bg-rose-500 border-rose-500 text-white shadow-sm"
                   : "border-[#3D3226]/15 bg-white text-[#3D3226]/60 hover:bg-[#3D3226]/5 hover:border-[#3D3226]/25"
@@ -344,7 +344,7 @@ export default function SouratesClient({
             {/* Mot par mot synchronisé */}
             <button
               onClick={toggleShowOnlyWithWordTiming}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-colors duration-200 ${
                 showOnlyWithWordTiming
                   ? "bg-emerald-600 border-emerald-600 text-white shadow-sm"
                   : "border-[#3D3226]/15 bg-white text-[#3D3226]/60 hover:bg-[#3D3226]/5 hover:border-[#3D3226]/25"
@@ -433,7 +433,7 @@ export default function SouratesClient({
                   {/* Bouton favori */}
                   <button
                     onClick={(e) => toggleFavorite(chapter.id, e)}
-                    className={`absolute top-0 right-2 z-20 p-1.5 rounded-full transition-all duration-200 hover:scale-110 ${
+                    className={`absolute top-0 right-2 z-20 p-1.5 rounded-full transition-[color,background-color,transform] duration-200 hover:scale-110 ${
                       isFavorite
                         ? "text-rose-500 hover:text-rose-600"
                         : `${isFullyCompleted ? "text-white" : "text-[#3D3226]/40"} hover:text-rose-500`
@@ -459,7 +459,7 @@ export default function SouratesClient({
                           trigger={
                             <button
                               title="Réinitialiser la progression"
-                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium shadow-xs transition-all duration-200 hover:scale-105 active:scale-95 ${
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium shadow-xs transition-[color,background-color,border-color,transform] duration-200 hover:scale-105 active:scale-95 ${
                                 isFullyCompleted
                                   ? "border border-red-200 bg-white text-red-500 hover:bg-red-50 hover:text-red-600"
                                   : "border border-red-200 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700"
@@ -479,12 +479,12 @@ export default function SouratesClient({
                         }`}
                       >
                         <div
-                          className={`h-full rounded-full transition-all ${
+                          className={`h-full w-full origin-left rounded-full transition-transform duration-300 ease-out ${
                             isFullyCompleted
                               ? "bg-progress-gradient"
                               : "border-amber-50 bg-green-500"
                           }`}
-                          style={{ width: `${progressPercent}%` }}
+                          style={{ transform: `scaleX(${progressPercent / 100})` }}
                         />
                       </div>
                       <span
