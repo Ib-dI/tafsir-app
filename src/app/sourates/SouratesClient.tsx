@@ -172,7 +172,12 @@ export default function SouratesClient({
     completedChaptersByPartId,
   ]);
 
-  const isSearchActive = searchTerm !== "";
+  const isFilterActive =
+    searchTerm !== "" ||
+    showOnlyWithAudio ||
+    showOnlyIncomplete ||
+    showOnlyFavorites ||
+    showOnlyWithWordTiming;
 
   const itemVariants = {
     hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
@@ -180,14 +185,14 @@ export default function SouratesClient({
       opacity: 1,
       y: 0,
       transition:
-        isSearchActive || shouldReduceMotion
+        isFilterActive || shouldReduceMotion
           ? { duration: shouldReduceMotion ? 0.15 : 0 }
           : { type: "spring" as const, stiffness: 100, damping: 10 },
     },
     exit: {
       opacity: 0,
       y: shouldReduceMotion ? 0 : -20,
-      transition: { duration: isSearchActive ? 0 : shouldReduceMotion ? 0.1 : 0.2 },
+      transition: { duration: isFilterActive ? 0 : shouldReduceMotion ? 0.1 : 0.2 },
     },
   };
 
@@ -427,7 +432,7 @@ export default function SouratesClient({
                 <motion.li
                   key={chapter.id}
                   variants={itemVariants}
-                  layout={!isSearchActive}
+                  layout={!isFilterActive}
                   className={`group relative w-full cursor-pointer overflow-hidden rounded-xl px-2 py-4 border shadow-xs md:w-80 will-change-transform will-change-opacity ${
                     isFullyCompleted
                       ? "border-emerald-200 ring-1 ring-emerald-100/60 hover:opacity-95"
@@ -436,7 +441,7 @@ export default function SouratesClient({
                   whileHover={{ scale: 1.02, transition: { type: "spring", stiffness: 400, damping: 20 } }}
                   whileTap={{ scale: 0.98, transition: { duration: 0.12, ease: "easeOut" } }}
                   transition={
-                    isSearchActive
+                    isFilterActive
                       ? { duration: 0 }
                       : { type: "spring", stiffness: 400, damping: 20 }
                   }
