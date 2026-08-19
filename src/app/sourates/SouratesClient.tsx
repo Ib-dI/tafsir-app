@@ -9,7 +9,7 @@ import { useUserId } from "@/hooks/useUserId";
 import { useAllProgress } from "@/hooks/useAllProgress";
 import { useFavorites } from "@/hooks/useFavorites";
 import type { SimpleChapterIndexEntry } from "@/lib/quranSimpleApi";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import ResetProgressDialog from "@/components/ResetProgressDialog";
 import { AudioLines, Hourglass, RotateCcw, Search, Heart, WholeWord } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -39,6 +39,7 @@ export default function SouratesClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const chapters = initialChapters;
+  const shouldReduceMotion = useReducedMotion();
 
   // Computed from static data — safe to do before hooks
   const audioCount = audiosTafsir.filter(
@@ -155,18 +156,19 @@ export default function SouratesClient({
   const isSearchActive = searchTerm !== "";
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
     show: {
       opacity: 1,
       y: 0,
-      transition: isSearchActive
-        ? { duration: 0 }
-        : { type: "spring" as const, stiffness: 100, damping: 10 },
+      transition:
+        isSearchActive || shouldReduceMotion
+          ? { duration: shouldReduceMotion ? 0.15 : 0 }
+          : { type: "spring" as const, stiffness: 100, damping: 10 },
     },
     exit: {
       opacity: 0,
-      y: -20,
-      transition: { duration: isSearchActive ? 0 : 0.2 },
+      y: shouldReduceMotion ? 0 : -20,
+      transition: { duration: isSearchActive ? 0 : shouldReduceMotion ? 0.1 : 0.2 },
     },
   };
 
