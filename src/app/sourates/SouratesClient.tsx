@@ -11,7 +11,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import type { SimpleChapterIndexEntry } from "@/lib/quranSimpleApi";
 import { AnimatePresence, motion } from "framer-motion";
 import ResetProgressDialog from "@/components/ResetProgressDialog";
-import { AudioLines, Hourglass, RotateCcw, Search, Heart } from "lucide-react";
+import { AudioLines, Hourglass, RotateCcw, Search, Heart, WholeWord } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -62,6 +62,7 @@ export default function SouratesClient({
   );
   const [showOnlyFavorites, setShowOnlyFavorites] = useState<boolean>(initialShowFavorites);
   const [showOnlyIncomplete, setShowOnlyIncomplete] = useState<boolean>(false);
+  const [showOnlyWithWordTiming, setShowOnlyWithWordTiming] = useState<boolean>(false);
 
   const { userId } = useUserId();
   const completedChaptersByPartId = useAllProgress(userId);
@@ -73,6 +74,23 @@ export default function SouratesClient({
       new Set<number>(
         audiosTafsir
           .filter((audio) => audio.parts && audio.parts.length > 0 && audio.parts[0].url)
+          .map((audio) => audio.id),
+      ),
+    [],
+  );
+
+  const sourateIdsWithWordTiming = useMemo(
+    () =>
+      new Set<number>(
+        audiosTafsir
+          .filter((audio) =>
+            audio.parts.some((part) =>
+              part.timings.some((timing) => {
+                const words = (timing as { words?: unknown[] }).words;
+                return Array.isArray(words) && words.length > 0;
+              }),
+            ),
+          )
           .map((audio) => audio.id),
       ),
     [],
@@ -100,6 +118,7 @@ export default function SouratesClient({
       setShowOnlyIncomplete(searchParams.get("showIncomplete") === "true");
     }
     setShowOnlyFavorites(searchParams.get("showFavorites") === "true");
+    setShowOnlyWithWordTiming(searchParams.get("showWordTiming") === "true");
   }, [searchParams, allHaveAudio]);
 
   const filteredChapters = useMemo(() => {
@@ -118,6 +137,9 @@ export default function SouratesClient({
     if (showOnlyFavorites) {
       current = current.filter((chapter) => favoriteChapters.has(chapter.id));
     }
+    if (showOnlyWithWordTiming) {
+      current = current.filter((chapter) => sourateIdsWithWordTiming.has(chapter.id));
+    }
     if (searchTerm === "") return current;
     const q = searchTerm.toLowerCase();
     return current.filter(
@@ -132,9 +154,11 @@ export default function SouratesClient({
     showOnlyWithAudio,
     showOnlyIncomplete,
     showOnlyFavorites,
+    showOnlyWithWordTiming,
     searchTerm,
     favoriteChapters,
     sourateIdsWithAudio,
+    sourateIdsWithWordTiming,
     completedChaptersByPartId,
   ]);
 
@@ -156,6 +180,7 @@ export default function SouratesClient({
     showAudio?: string;
     showFavorites?: string;
     showIncomplete?: string;
+    showWordTiming?: string;
   }) => {
     const currentParams = new URLSearchParams(searchParams.toString());
     Object.entries(params).forEach(([key, value]) => {
@@ -181,6 +206,12 @@ export default function SouratesClient({
     const newState = !showOnlyIncomplete;
     setShowOnlyIncomplete(newState);
     updateURLParams({ showIncomplete: newState ? "true" : undefined });
+  };
+
+  const toggleShowOnlyWithWordTiming = () => {
+    const newState = !showOnlyWithWordTiming;
+    setShowOnlyWithWordTiming(newState);
+    updateURLParams({ showWordTiming: newState ? "true" : undefined });
   };
 
   const toggleFavorite = async (chapterId: number, event: React.MouseEvent) => {
@@ -299,6 +330,19 @@ export default function SouratesClient({
               <Heart size={15} fill={showOnlyFavorites ? "white" : "none"} />
               Favoris
             </button>
+
+            {/* Mot par mot synchronisé */}
+            <button
+              onClick={toggleShowOnlyWithWordTiming}
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold border transition-all duration-200 ${
+                showOnlyWithWordTiming
+                  ? "bg-emerald-600 border-emerald-600 text-white shadow-sm"
+                  : "border-[#3D3226]/15 bg-white text-[#3D3226]/60 hover:bg-[#3D3226]/5 hover:border-[#3D3226]/25"
+              }`}
+            >
+              <WholeWord size={15} />
+              Mot par mot
+            </button>
           </div>
 
           {/* Statistiques */}
@@ -325,6 +369,11 @@ export default function SouratesClient({
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-rose-400" />
               <span>{favoriteChapters.size} favoris</span>
+            </div>
+            <div className="h-3 w-px bg-[#3D3226]/20" />
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-emerald-600" />
+              <span>{sourateIdsWithWordTiming.size} mot par mot</span>
             </div>
           </div>
         </motion.div>
