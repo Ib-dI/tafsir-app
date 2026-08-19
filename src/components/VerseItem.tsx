@@ -1,8 +1,4 @@
-import {
-  DEFAULT_ARABIC_FONT_STYLE,
-  DEFAULT_ARABIC_SCRIPT,
-  useFontSettings,
-} from "@/context/FontSettingsContext";
+import { useFontSettings } from "@/context/FontSettingsContext";
 import { useTranslationDisplay } from "@/context/TranslationDisplayContext";
 import { useWordByWord } from "@/context/WordByWordContext";
 import { applyOrnamentFor, isDigitalKhattFontStyle } from "@/lib/ayahMarker";
@@ -11,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { VerseHighlight } from "@/types/types";
 import { motion } from "framer-motion";
 import { Tooltip } from "radix-ui";
-import React, { type ReactNode, useEffect, useState } from "react";
+import React, { type ReactNode, useState } from "react";
 
 // Fonction pour convertir un nombre en chiffres arabes
 export const toArabicNumerals = (n: number): string => {
@@ -36,6 +32,16 @@ export const toArabicNumerals = (n: number): string => {
 // interne (`overflow-y-auto`), donc une bulle positionnée localement se fait
 // soit rogner (au-dessus du mot), soit chevaucher la translitération
 // en-dessous. Le portail échappe aux deux.
+//
+// z-index délibérément entre celui de la liste de versets (z-20) et celui de
+// la section des contrôles audio (z-30, voir AudioVerseHighlighter.tsx) :
+// la bulle doit s'afficher au-dessus du verset auquel elle appartient, mais
+// se faire couvrir par la barre audio si elle déborde dessus en haut de
+// liste — même logique que le scroll des versets, qui disparaissent sous
+// cette même barre. Reste aussi sous les drawers/dialogs (z-50, sheet.tsx,
+// alert-dialog.tsx) : à z-index égal entre deux portails distincts dans
+// document.body, c'est l'ordre de montage dans le DOM qui déciderait lequel
+// s'affiche au-dessus, pas un ordre visuel fiable.
 export function InteractiveWord({
   content,
   translation,
@@ -81,7 +87,7 @@ export function InteractiveWord({
           sideOffset={8}
           collisionPadding={8}
           style={{ direction: "ltr" }}
-          className="z-50 rounded-lg bg-[#3D3226] px-2.5 py-1.5 text-[0.8rem] leading-[1.3] font-medium whitespace-nowrap text-[#FBF3E4] shadow-lg"
+          className="z-[25] rounded-lg bg-[#3D3226] px-2.5 py-1.5 text-[0.8rem] leading-[1.3] font-medium whitespace-nowrap text-[#FBF3E4] shadow-lg"
         >
           {translation}
           <Tooltip.Arrow className="fill-[#3D3226]" />
@@ -108,21 +114,9 @@ const VerseItem = React.memo(
     const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
     const { wordByWordEnabled } = useWordByWord();
     const { showTranslation, showTransliteration } = useTranslationDisplay();
-    const {
-      arabicScript: preferredArabicScript,
-      fontStyle: preferredFontStyle,
-    } = useFontSettings();
-    // `AudioVerseHighlighter` est chargé via `next/dynamic` : son hydratation
-    // est retardée le temps que le chunk se charge, ce qui laisse au
-    // FontSettingsProvider (racine de l'app) le temps de restaurer le script
-    // préféré depuis localStorage *avant* que ce composant n'hydrate. On
-    // reste donc figé sur les valeurs par défaut (identiques au rendu
-    // serveur) jusqu'au premier montage client, puis on bascule sur la
-    // vraie préférence.
-    const [hasMounted, setHasMounted] = useState(false);
-    useEffect(() => setHasMounted(true), []);
-    const arabicScript = hasMounted ? preferredArabicScript : DEFAULT_ARABIC_SCRIPT;
-    const fontStyle = hasMounted ? preferredFontStyle : DEFAULT_ARABIC_FONT_STYLE;
+    // Valeurs "effectives" (figées aux défauts jusqu'au montage) fournies par
+    // AudioVerseHighlighter — voir le commentaire là-bas pour le pourquoi.
+    const { arabicScript, fontStyle } = useFontSettings();
     const applyOrnament = applyOrnamentFor(fontStyle);
     const useDigitalKhattText =
       arabicScript === "uthmani" && isDigitalKhattFontStyle(fontStyle);

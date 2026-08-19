@@ -455,6 +455,14 @@ export default function SourateInteractiveContent({
   return (
     <div className="container mx-auto">
       <>
+          {/* z-30 + fond opaque déborde à gauche/droite au-delà de la colonne
+              de contenu centrée : couvre la bulle de traduction mot-à-mot
+              (z-[25] dans VerseItem.tsx, voir aussi le même motif dans
+              AudioVerseHighlighter.tsx pour la section des contrôles audio)
+              quand elle déborde en haut de la liste de versets, sur toute la
+              zone d'en-tête (barre de chapitre, sélecteur de partie, badge de
+              complétion) et pas seulement la section audio en dessous. */}
+          <div className="relative z-30 -mx-1 bg-[#FBF3E4] sm:-mx-4 lg:-mx-32">
           {/* Header premium avec navigation entre chapitres */}
           <div className="mb-2 flex flex-col gap-2">
             {/* Barre de navigation chapitres - UI premium */}
@@ -782,6 +790,7 @@ export default function SourateInteractiveContent({
               et vos règles de sécurité.
             </div>
           )}
+          </div>
 
           {/* Le composant AudioVerseHighlighter */}
           <div className="container mx-auto">

@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Tooltip } from "radix-ui";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSound from "use-sound";
 import { PauseIcon } from "./icons/PauseIcon";
 import { PlayIcon } from "./icons/PlayIcon";
@@ -15,6 +15,25 @@ import VerseItem from "./VerseItem";
 
 import { useAudioPlayback } from "@/hooks/useAudioPlayback";
 import { useWakeLock } from "@/hooks/useWakeLock";
+import {
+  DEFAULT_ARABIC_FONT_STYLE,
+  DEFAULT_ARABIC_SCRIPT,
+  DEFAULT_FONT_SCALE_INDEX,
+  FontSettingsContext,
+  useFontSettings,
+} from "@/context/FontSettingsContext";
+import {
+  DEFAULT_SHOW_TRANSLATION,
+  DEFAULT_SHOW_TRANSLITERATION,
+  DEFAULT_TRANSLATION_SCALE_INDEX,
+  TranslationDisplayContext,
+  useTranslationDisplay,
+} from "@/context/TranslationDisplayContext";
+import {
+  DEFAULT_WORD_BY_WORD_ENABLED,
+  WordByWordContext,
+  useWordByWord,
+} from "@/context/WordByWordContext";
 import {
   clearPlaybackPosition,
   savePlaybackPosition,
@@ -331,7 +350,60 @@ const AudioVerseHighlighter = ({
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
+  // Ce composant est chargé via `next/dynamic` (voir SourateInteractiveContent) :
+  // son hydratation est retardée le temps que le chunk se charge côté client,
+  // ce qui laisse aux providers de préférences (racine de l'app — script
+  // arabe, mot par mot, affichage traduction/translitération) le temps de
+  // restaurer leurs valeurs depuis localStorage *avant* que ce sous-arbre
+  // n'hydrate. Sans ça, la comparaison d'hydratation se ferait contre un HTML
+  // serveur généré avec les valeurs par défaut, alors que le contexte a déjà
+  // changé — d'où des mismatches (texte, structure conditionnelle, jusqu'aux
+  // ids générés par Radix qui se décalent). On fournit donc ici, une seule
+  // fois pour tout le sous-arbre, des valeurs "effectives" figées aux
+  // défauts jusqu'au premier montage client, puis on bascule sur les
+  // vraies valeurs — les setters, eux, pointent toujours vers l'état réel.
+  const realFontSettings = useFontSettings();
+  const realWordByWord = useWordByWord();
+  const realTranslationDisplay = useTranslationDisplay();
+  const [hasMountedPreferences, setHasMountedPreferences] = useState(false);
+  useEffect(() => setHasMountedPreferences(true), []);
+
+  const effectiveFontSettings = useMemo(
+    () =>
+      hasMountedPreferences
+        ? realFontSettings
+        : {
+            ...realFontSettings,
+            arabicScript: DEFAULT_ARABIC_SCRIPT,
+            fontStyle: DEFAULT_ARABIC_FONT_STYLE,
+            fontScaleIndex: DEFAULT_FONT_SCALE_INDEX,
+          },
+    [hasMountedPreferences, realFontSettings],
+  );
+  const effectiveWordByWord = useMemo(
+    () =>
+      hasMountedPreferences
+        ? realWordByWord
+        : { ...realWordByWord, wordByWordEnabled: DEFAULT_WORD_BY_WORD_ENABLED },
+    [hasMountedPreferences, realWordByWord],
+  );
+  const effectiveTranslationDisplay = useMemo(
+    () =>
+      hasMountedPreferences
+        ? realTranslationDisplay
+        : {
+            ...realTranslationDisplay,
+            showTranslation: DEFAULT_SHOW_TRANSLATION,
+            showTransliteration: DEFAULT_SHOW_TRANSLITERATION,
+            translationScaleIndex: DEFAULT_TRANSLATION_SCALE_INDEX,
+          },
+    [hasMountedPreferences, realTranslationDisplay],
+  );
+
   return (
+    <FontSettingsContext.Provider value={effectiveFontSettings}>
+    <WordByWordContext.Provider value={effectiveWordByWord}>
+    <TranslationDisplayContext.Provider value={effectiveTranslationDisplay}>
     <Tooltip.Provider delayDuration={200}>
       <div
         className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible bg-[#FBF3E4] p-1 sm:p-4"
@@ -362,7 +434,20 @@ const AudioVerseHighlighter = ({
 
 
         {/* Section des contrôles audio */}
-        <div className="relative mt-3 flex shrink-0 flex-col md:mt-6">
+        {/* z-30 + fond opaque déborde largement à gauche/droite (-mx-*) au-delà
+            de la colonne de contenu centrée (max-w-4xl) : couvre la bulle de
+            traduction mot-à-mot (z-[25] dans VerseItem.tsx) quand elle déborde
+            en haut de la liste de versets — même effet visuel que le scroll
+            qui fait disparaître les versets sous cette même barre, sans
+            logique de repositionnement. Une bulle longue peut être plus large
+            que la colonne elle-même ; sans ce débord, ses bords resteraient
+            visibles au-delà du fond opaque. Le fond doit être opaque (pas
+            juste le z-index) : sinon les zones transparentes entre les
+            contrôles laisseraient la bulle transparaître. Le contenu visuel
+            (waveform, boutons...) reste centré via le wrapper interne
+            max-w-4xl, inchangé par rapport à avant.  */}
+        <div className="relative z-30 -mx-1 bg-[#FBF3E4] sm:-mx-4 lg:-mx-32">
+          <div className="mx-auto mt-3 flex w-full max-w-4xl shrink-0 flex-col md:mt-6">
           {audioUrl && (
             <div
               ref={audioPlayback.containerRef}
@@ -486,6 +571,7 @@ const AudioVerseHighlighter = ({
               </div>
             </motion.div>
           )}
+          </div>
         </div>
 
         {/* Section des versets */}
@@ -533,6 +619,9 @@ const AudioVerseHighlighter = ({
         </div>
       </div>
     </Tooltip.Provider>
+    </TranslationDisplayContext.Provider>
+    </WordByWordContext.Provider>
+    </FontSettingsContext.Provider>
   );
 };
 
