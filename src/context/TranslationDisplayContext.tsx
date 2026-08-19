@@ -33,7 +33,10 @@ interface TranslationDisplayContextValue {
   resetTranslationScale: () => void;
 }
 
-const TranslationDisplayContext =
+// Exporté (pas seulement le hook) pour permettre à AudioVerseHighlighter de
+// fournir une valeur "effective" localement le temps de l'hydratation — voir
+// AudioVerseHighlighter.tsx.
+export const TranslationDisplayContext =
   createContext<TranslationDisplayContextValue | null>(null);
 
 export function TranslationDisplayProvider({

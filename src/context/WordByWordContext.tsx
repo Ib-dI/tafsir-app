@@ -11,7 +11,11 @@ interface WordByWordContextValue {
   setWordByWordEnabled: (enabled: boolean) => void;
 }
 
-const WordByWordContext = createContext<WordByWordContextValue | null>(null);
+// Exporté (pas seulement le hook) pour permettre à AudioVerseHighlighter de
+// fournir une valeur "effective" localement le temps de l'hydratation — voir
+// AudioVerseHighlighter.tsx.
+export const WordByWordContext =
+  createContext<WordByWordContextValue | null>(null);
 
 export function WordByWordProvider({ children }: { children: ReactNode }) {
   const [wordByWordEnabled, setWordByWordEnabled] = useState(DEFAULT_WORD_BY_WORD_ENABLED);

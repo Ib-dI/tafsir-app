@@ -48,9 +48,11 @@ interface FontSettingsContextValue {
   setFontStyle: (fontStyle: ArabicFontStyle) => void;
 }
 
-const FontSettingsContext = createContext<FontSettingsContextValue | null>(
-  null,
-);
+// Exporté (pas seulement le hook) pour permettre à AudioVerseHighlighter de
+// fournir une valeur "effective" localement le temps de l'hydratation — voir
+// AudioVerseHighlighter.tsx.
+export const FontSettingsContext =
+  createContext<FontSettingsContextValue | null>(null);
 
 export function FontSettingsProvider({ children }: { children: ReactNode }) {
   const [fontScaleIndex, setFontScaleIndex] = useState(
