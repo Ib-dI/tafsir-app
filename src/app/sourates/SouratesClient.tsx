@@ -23,6 +23,25 @@ const containerVariants = {
   },
 };
 
+function AnimatedCount({ value }: { value: number }) {
+  return (
+    <span className="inline-grid overflow-hidden">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={value}
+          initial={{ y: 8, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -8, opacity: 0 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+          className="[grid-area:1/1]"
+        >
+          {value}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
 export type SouratesClientProps = {
   initialChapters: SimpleChapterIndexEntry[];
   chaptersLoadError: boolean;
@@ -361,29 +380,29 @@ export default function SouratesClient({
               <>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-[#d28820]" />
-                  <span>{sourateIdsWithAudio.size} avec audio</span>
+                  <span><AnimatedCount value={sourateIdsWithAudio.size} /> avec audio</span>
                 </div>
                 <div className="h-3 w-px bg-[#3D3226]/20" />
               </>
             )}
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-amber-400" />
-              <span>{incompleteCount} non complétés</span>
+              <span><AnimatedCount value={incompleteCount} /> non complétés</span>
             </div>
             <div className="h-3 w-px bg-[#3D3226]/20" />
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>{completedCount} complétés</span>
+              <span><AnimatedCount value={completedCount} /> complétés</span>
             </div>
             <div className="h-3 w-px bg-[#3D3226]/20" />
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-rose-400" />
-              <span>{favoriteChapters.size} favoris</span>
+              <span><AnimatedCount value={favoriteChapters.size} /> favoris</span>
             </div>
             <div className="h-3 w-px bg-[#3D3226]/20" />
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-emerald-600" />
-              <span>{sourateIdsWithWordTiming.size} mot par mot</span>
+              <span><AnimatedCount value={sourateIdsWithWordTiming.size} /> mot par mot</span>
             </div>
           </div>
         </motion.div>
@@ -409,10 +428,10 @@ export default function SouratesClient({
                   key={chapter.id}
                   variants={itemVariants}
                   layout={!isSearchActive}
-                  className={`group relative w-full cursor-pointer rounded-xl px-2 py-4 border shadow-xs transition-colors duration-200 md:w-80 will-change-transform will-change-opacity ${
+                  className={`group relative w-full cursor-pointer overflow-hidden rounded-xl px-2 py-4 border shadow-xs md:w-80 will-change-transform will-change-opacity ${
                     isFullyCompleted
-                      ? "bg-card-gradient border border-emerald-200 ring-1 ring-emerald-100/60 hover:opacity-95"
-                      : "bg-white border-[#3D3226]/15 hover:bg-[#3D3226]/5"
+                      ? "border-emerald-200 ring-1 ring-emerald-100/60 hover:opacity-95"
+                      : "border-[#3D3226]/15 bg-white hover:bg-[#3D3226]/5"
                   }`}
                   whileHover={{ scale: 1.02, transition: { type: "spring", stiffness: 400, damping: 20 } }}
                   whileTap={{ scale: 0.98, transition: { duration: 0.12, ease: "easeOut" } }}
@@ -430,6 +449,13 @@ export default function SouratesClient({
                   role="button"
                   style={{ textDecoration: "none", willChange: "transform" }}
                 >
+                  <motion.div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 -z-10 bg-card-gradient"
+                    initial={false}
+                    animate={{ opacity: isFullyCompleted ? 1 : 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                  />
                   {/* Bouton favori */}
                   <button
                     onClick={(e) => toggleFavorite(chapter.id, e)}
@@ -440,13 +466,21 @@ export default function SouratesClient({
                     }`}
                     title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
                   >
-                    <Heart
-                      className={`${!isFavorite && isFullyCompleted ? "drop-shadow-sm" : ""}`}
-                      size={18}
-                      fill={isFavorite || isFullyCompleted ? "currentColor" : "none"}
-                      stroke="currentColor"
-                      strokeWidth={1}
-                    />
+                    <motion.span
+                      key={isFavorite ? "favorited" : "not-favorited"}
+                      initial={{ scale: isFavorite ? 0.6 : 1 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                      className="block"
+                    >
+                      <Heart
+                        className={`${!isFavorite && isFullyCompleted ? "drop-shadow-sm" : ""}`}
+                        size={18}
+                        fill={isFavorite || isFullyCompleted ? "currentColor" : "none"}
+                        stroke="currentColor"
+                        strokeWidth={1}
+                      />
+                    </motion.span>
                   </button>
 
                   {/* Barre de progression + reset */}
