@@ -182,7 +182,7 @@ export default function SouratesClient({
       transition:
         isSearchActive || shouldReduceMotion
           ? { duration: shouldReduceMotion ? 0.15 : 0 }
-          : { type: "spring" as const, stiffness: 100, damping: 15 },
+          : { type: "spring" as const, stiffness: 100, damping: 10 },
     },
     exit: {
       opacity: 0,
