@@ -44,3 +44,6 @@ next-env.d.ts
 /src/lib/data/quran-wbw/generated/
 
 service_key.json
+
+# plan de /improve-animation
+/plans
