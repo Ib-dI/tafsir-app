@@ -163,7 +163,7 @@ export default function SouratesClient({
       transition:
         isSearchActive || shouldReduceMotion
           ? { duration: shouldReduceMotion ? 0.15 : 0 }
-          : { type: "spring" as const, stiffness: 100, damping: 10 },
+          : { type: "spring" as const, stiffness: 100, damping: 15 },
     },
     exit: {
       opacity: 0,
@@ -414,8 +414,8 @@ export default function SouratesClient({
                       ? "bg-card-gradient border border-emerald-200 ring-1 ring-emerald-100/60 hover:opacity-95"
                       : "bg-white border-[#3D3226]/15 hover:bg-[#3D3226]/5"
                   }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.02, transition: { type: "spring", stiffness: 400, damping: 20 } }}
+                  whileTap={{ scale: 0.98, transition: { duration: 0.12, ease: "easeOut" } }}
                   transition={
                     isSearchActive
                       ? { duration: 0 }
