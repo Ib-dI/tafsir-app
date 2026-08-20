@@ -462,12 +462,17 @@ export default function SourateInteractiveContent({
               quand elle déborde en haut de la liste de versets, sur toute la
               zone d'en-tête (barre de chapitre, sélecteur de partie, badge de
               complétion) et pas seulement la section audio en dessous. Le
-              contenu visuel reste centré via le wrapper interne max-w-4xl
-              (même largeur que AudioVerseHighlighter), sinon le débord
-              élargit aussi la barre visible et la fait sortir de la colonne
-              de contenu principale. */}
+              wrapper interne annule exactement le débord (mêmes valeurs en
+              positif) pour retrouver la largeur du conteneur parent (celle
+              de la liste de versets, posée par page.tsx :
+              `container mx-auto p-2 md:p-4` sous le max-w-225 de
+              AppShell.tsx) — sans quoi le débord élargit aussi la barre
+              visible et la fait sortir de la colonne de contenu principale.
+              Une largeur fixe (max-w-4xl, max-w-225...) ne suffit pas : la
+              largeur réelle de la colonne dépend du padding de page.tsx, pas
+              d'une seule valeur de max-w. */}
           <div className="relative z-30 -mx-1 bg-[#FBF3E4] sm:-mx-4 lg:-mx-32">
-          <div className="mx-auto w-full max-w-4xl">
+          <div className="mx-1 sm:mx-4 lg:mx-32">
           {/* Header premium avec navigation entre chapitres */}
           <div className="mb-2 flex flex-col gap-2">
             {/* Barre de navigation chapitres - UI premium */}
