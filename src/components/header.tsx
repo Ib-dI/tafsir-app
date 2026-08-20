@@ -65,7 +65,7 @@ export default function Header() {
         }}
         className="top-0 right-0 left-0 z-50 border-b border-[#3D3226]/10 backdrop-blur-md"
       >
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-2 py-4 md:px-4">
           <div className="flex items-center justify-between">
             {/* Logo + nom */}
             <Link href="/" className="group flex items-center gap-3">
@@ -183,7 +183,7 @@ export default function Header() {
         transition={{ duration: 0.3 }}
         className="fixed top-[73px] right-0 left-0 z-40 overflow-hidden border-b border-[#3D3226]/10 bg-[#FBF3E4]/95 backdrop-blur-md md:hidden"
       >
-        <nav className="container mx-auto px-4 py-4">
+        <nav className="container mx-auto px-2 py-4 md:px-4">
           <ul className="space-y-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
