@@ -435,19 +435,23 @@ const AudioVerseHighlighter = ({
 
         {/* Section des contrôles audio */}
         {/* z-30 + fond opaque déborde largement à gauche/droite (-mx-*) au-delà
-            de la colonne de contenu centrée (max-w-4xl) : couvre la bulle de
-            traduction mot-à-mot (z-[25] dans VerseItem.tsx) quand elle déborde
-            en haut de la liste de versets — même effet visuel que le scroll
-            qui fait disparaître les versets sous cette même barre, sans
-            logique de repositionnement. Une bulle longue peut être plus large
-            que la colonne elle-même ; sans ce débord, ses bords resteraient
+            de la colonne de contenu centrée : couvre la bulle de traduction
+            mot-à-mot (z-[25] dans VerseItem.tsx) quand elle déborde en haut
+            de la liste de versets — même effet visuel que le scroll qui fait
+            disparaître les versets sous cette même barre, sans logique de
+            repositionnement. Une bulle longue peut être plus large que la
+            colonne elle-même ; sans ce débord, ses bords resteraient
             visibles au-delà du fond opaque. Le fond doit être opaque (pas
             juste le z-index) : sinon les zones transparentes entre les
-            contrôles laisseraient la bulle transparaître. Le contenu visuel
-            (waveform, boutons...) reste centré via le wrapper interne
-            max-w-4xl, inchangé par rapport à avant.  */}
+            contrôles laisseraient la bulle transparaître. Le wrapper interne
+            annule exactement le débord (mêmes valeurs en positif) pour
+            retrouver la largeur du conteneur parent (celui du wrapper
+            racine ci-dessus, une fois sa propre marge p-1 sm:p-4 retirée) —
+            une largeur fixe (max-w-4xl...) ne suffit pas, elle serait plus
+            large que la vraie colonne (même bug que
+            SourateInteractiveContent.tsx, voir son commentaire). */}
         <div className="relative z-30 -mx-1 bg-[#FBF3E4] sm:-mx-4 lg:-mx-32">
-          <div className="mx-auto mt-3 flex w-full max-w-4xl shrink-0 flex-col md:mt-6">
+          <div className="mx-1 mt-3 flex shrink-0 flex-col sm:mx-4 md:mt-6 lg:mx-32">
           {audioUrl && (
             <div
               ref={audioPlayback.containerRef}
