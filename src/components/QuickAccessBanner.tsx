@@ -5,7 +5,7 @@ import { loadLastPlaybackPosition } from "@/lib/data/playbackPosition";
 import type { SimpleChapterIndexEntry } from "@/lib/quranSimpleApi";
 import type { PlaybackPosition } from "@/types/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Play, Sparkles } from "lucide-react";
+import { Clock, Play, WholeWord } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -39,6 +39,16 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
   const lastAddedChapter = lastAddedAudio
     ? chapters.find((c) => c.id === lastAddedAudio.id)
     : null;
+  const lastAddedPartsWithAudio = lastAddedAudio?.parts.filter((p) => p.url) ?? [];
+  const lastAddedPartsWithWordTiming = lastAddedPartsWithAudio.filter((part) =>
+    part.timings.some((timing) => {
+      const words = (timing as { words?: unknown[] }).words;
+      return Array.isArray(words) && words.length > 0;
+    }),
+  );
+  const lastAddedFullyWordSynced =
+    lastAddedPartsWithAudio.length > 0 &&
+    lastAddedPartsWithWordTiming.length === lastAddedPartsWithAudio.length;
 
   const lastListenedChapter = lastListened
     ? chapters.find((c) => c.id === lastListened.chapterId)
@@ -127,7 +137,11 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
             </span>
 
             <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-emerald-400 shadow-sm transition-colors group-hover:bg-emerald-500">
-              <Sparkles size={15} className="text-white" />
+              {lastAddedPartsWithWordTiming.length > 0 ? (
+                <WholeWord size={16} className="text-white" />
+              ) : (
+                <Play size={15} className="ml-0.5 text-white" fill="white" />
+              )}
             </div>
 
             <div className="relative min-w-0 flex-1">
@@ -138,14 +152,15 @@ export default function QuickAccessBanner({ chapters }: QuickAccessBannerProps) 
                 {lastAddedChapter.transliteration}
               </p>
               <p className="text-xs text-emerald-700/70">
-                {lastAddedAudio.parts.filter((p) => p.url).length} partie
-                {lastAddedAudio.parts.filter((p) => p.url).length > 1
-                  ? "s"
-                  : ""}{" "}
-                audio disponible
-                {lastAddedAudio.parts.filter((p) => p.url).length > 1
-                  ? "s"
-                  : ""}
+                {lastAddedFullyWordSynced
+                  ? "Lecture synchronisée mot par mot"
+                  : lastAddedPartsWithWordTiming.length > 0
+                    ? `${lastAddedPartsWithWordTiming.length}/${lastAddedPartsWithAudio.length} partie${
+                        lastAddedPartsWithAudio.length > 1 ? "s" : ""
+                      } synchronisée${lastAddedPartsWithWordTiming.length > 1 ? "s" : ""} mot par mot`
+                    : `${lastAddedPartsWithAudio.length} partie${
+                        lastAddedPartsWithAudio.length > 1 ? "s" : ""
+                      } audio disponible${lastAddedPartsWithAudio.length > 1 ? "s" : ""}`}
               </p>
             </div>
           </motion.button>
