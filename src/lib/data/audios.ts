@@ -6177,7 +6177,7 @@ export const audiosTafsir = [
       {
         id: "al-ahzab-3",
         title: "Al-Ahzab - Partie 3",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ahzab-part3-cf.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Ahzab-part3.ogg",
         timings: [
           { id: 20, startTime: 39.51, endTime: 112.88 },
           { id: 21, startTime: 112.88, endTime: 250.49 },
