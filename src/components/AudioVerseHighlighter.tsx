@@ -353,15 +353,16 @@ const AudioVerseHighlighter = ({
   // plus haut que la zone visible, les mots du bas sortent de l'écran sans
   // être suivis. Ici on n'agit que quand le mot actif est réellement rogné
   // en haut (retour sur une occurrence répétée, scroll manuel) ou sort par
-  // le bas (>80 % de la hauteur visible) — on le ramène alors vers ~35 %.
+  // le bas (>80 % de la hauteur visible) — on le ramène alors vers ~35 %,
+  // en "smooth" comme le scroll par-verset (le déclencheur est assez rare
+  // pour ne pas donner d'effet de course).
   // On NE touche PAS au cas "mot en haut de la bande" : juste après un
   // changement de verset, l'effet par-verset vient de caler le début du
   // verset en haut (block:"start"), et le contrarier ici provoquait un
   // double défilement visible. `lastWordScrollVerseRef` saute d'ailleurs
   // le tout premier run après chaque changement de verset — c'est l'effet
-  // par-verset qui en est propriétaire. Nudge instantané (mots parfois
-  // espacés de <400 ms → "smooth" = effet de course permanent). No-op
-  // naturel sur les versets qui tiennent dans la zone visible.
+  // par-verset qui en est propriétaire. No-op naturel sur les versets qui
+  // tiennent dans la zone visible.
   const lastWordScrollVerseRef = useRef<number | null>(null);
   useEffect(() => {
     const container = versesRef.current;
@@ -392,7 +393,7 @@ const AudioVerseHighlighter = ({
     if (relativeTop < 0 || relativeBottom > visibleHeight * 0.8) {
       container.scrollBy({
         top: relativeTop - visibleHeight * 0.35,
-        behavior: "auto",
+        behavior: "smooth",
       });
     }
   }, [audioPlayback.currentVerseId, audioPlayback.currentWordIndex]);
