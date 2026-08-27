@@ -43,26 +43,37 @@ export const toArabicNumerals = (n: number): string => {
 // document.body, c'est l'ordre de montage dans le DOM qui déciderait lequel
 // s'affiche au-dessus, pas un ordre visuel fiable.
 export function InteractiveWord({
+  id,
   content,
   translation,
   isOpen,
   onOpenChange,
   highlighted,
+  collisionBoundary,
 }: {
+  // `verse-<verseId>-word-<index>` : cible du suivi de scroll au mot pendant
+  // la lecture (voir AudioVerseHighlighter).
+  id?: string;
   content: ReactNode;
   translation: string | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   highlighted?: boolean;
+  // Conteneur scrollable de la liste de versets (fourni par
+  // AudioVerseHighlighter). Confine la bulle à ce rectangle — sous la barre
+  // audio — au lieu de la laisser flotter derrière elle pour un mot en haut
+  // de liste. `null` tant que le nœud n'est pas monté : Radix l'ignore.
+  collisionBoundary?: Element | null;
 }) {
   if (!translation) {
-    return <span>{content}</span>;
+    return <span id={id}>{content}</span>;
   }
 
   return (
     <Tooltip.Root open={isOpen} onOpenChange={onOpenChange}>
       <Tooltip.Trigger asChild>
         <span
+          id={id}
           role="button"
           tabIndex={0}
           onClick={(e) => {
@@ -86,8 +97,9 @@ export function InteractiveWord({
           side="top"
           sideOffset={8}
           collisionPadding={8}
+          collisionBoundary={collisionBoundary ?? undefined}
           style={{ direction: "ltr" }}
-          className="z-[25] rounded-lg bg-[#3D3226] px-2.5 py-1.5 text-[0.8rem] leading-[1.3] font-medium whitespace-nowrap text-[#FBF3E4] shadow-lg"
+          className="z-25 rounded-lg bg-[#3D3226] px-2.5 py-1.5 text-[0.8rem] leading-[1.3] font-medium whitespace-nowrap text-[#FBF3E4] shadow-lg"
         >
           {translation}
           <Tooltip.Arrow className="fill-[#3D3226]" />
@@ -104,12 +116,14 @@ const VerseItem = React.memo(
     activeWordIndex,
     audioUrl,
     seekToVerse,
+    collisionBoundary,
   }: {
     verse: VerseHighlight;
     isActive: boolean;
     activeWordIndex?: number | null;
     audioUrl: string;
     seekToVerse: (verse: VerseHighlight) => void;
+    collisionBoundary?: Element | null;
   }) => {
     const [openWordIndex, setOpenWordIndex] = useState<number | null>(null);
     const { wordByWordEnabled } = useWordByWord();
@@ -166,6 +180,7 @@ const VerseItem = React.memo(
                       wordByWordEnabled ? (
                         <InteractiveWord
                           key={index}
+                          id={`verse-${verse.id}-word-${index}`}
                           content={content}
                           translation={word.translation}
                           isOpen={openWordIndex === index || isWordActive}
@@ -173,10 +188,12 @@ const VerseItem = React.memo(
                             setOpenWordIndex(open ? index : null)
                           }
                           highlighted={isWordActive}
+                          collisionBoundary={collisionBoundary}
                         />
                       ) : (
                         <span
                           key={index}
+                          id={`verse-${verse.id}-word-${index}`}
                           className={
                             isWordActive
                               ? "-mx-0.5 rounded bg-[#d28820]/35 px-0.5 transition-colors duration-150"

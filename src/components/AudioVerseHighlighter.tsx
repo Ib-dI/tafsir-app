@@ -69,6 +69,21 @@ const AudioVerseHighlighter = ({
   totalChapters?: number;
 }) => {
   const versesRef = useRef<HTMLDivElement>(null);
+  // Élément DOM du conteneur scrollable des versets, exposé en state (et pas
+  // seulement via la ref) pour forcer un re-render au montage : il sert de
+  // `collisionBoundary` à la bulle de traduction mot-à-mot (VerseItem →
+  // InteractiveWord). Radix confine alors la bulle au rectangle de la liste
+  // — entièrement sous la barre audio — au lieu de la laisser flotter
+  // derrière la barre opaque quand le mot actif est en haut de la liste
+  // (verset long calé en block:"start"). Radix ignore une boundary `null`,
+  // d'où le besoin d'un re-render une fois le nœud réellement monté.
+  const [versesScrollEl, setVersesScrollEl] = useState<HTMLDivElement | null>(
+    null,
+  );
+  const setVersesRef = useCallback((node: HTMLDivElement | null) => {
+    versesRef.current = node;
+    setVersesScrollEl(node);
+  }, []);
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [playSuccessSound] = useSound("/sounds/success.m4a", { volume: 0.5 });
@@ -333,6 +348,55 @@ const AudioVerseHighlighter = ({
     });
   }, [audioPlayback.currentVerseId, verses, isMobile]);
 
+  // Suivi fin au niveau du mot. Le défilement par verset ci-dessus ne se
+  // redéclenche pas tant qu'on reste dans le même verset : sur un verset
+  // plus haut que la zone visible, les mots du bas sortent de l'écran sans
+  // être suivis. Ici on n'agit que quand le mot actif est réellement rogné
+  // en haut (retour sur une occurrence répétée, scroll manuel) ou sort par
+  // le bas (>80 % de la hauteur visible) — on le ramène alors vers ~35 %.
+  // On NE touche PAS au cas "mot en haut de la bande" : juste après un
+  // changement de verset, l'effet par-verset vient de caler le début du
+  // verset en haut (block:"start"), et le contrarier ici provoquait un
+  // double défilement visible. `lastWordScrollVerseRef` saute d'ailleurs
+  // le tout premier run après chaque changement de verset — c'est l'effet
+  // par-verset qui en est propriétaire. Nudge instantané (mots parfois
+  // espacés de <400 ms → "smooth" = effet de course permanent). No-op
+  // naturel sur les versets qui tiennent dans la zone visible.
+  const lastWordScrollVerseRef = useRef<number | null>(null);
+  useEffect(() => {
+    const container = versesRef.current;
+    if (
+      container === null ||
+      audioPlayback.currentVerseId === null ||
+      audioPlayback.currentWordIndex === null
+    ) {
+      return;
+    }
+
+    if (lastWordScrollVerseRef.current !== audioPlayback.currentVerseId) {
+      lastWordScrollVerseRef.current = audioPlayback.currentVerseId;
+      return;
+    }
+
+    const wordElement = document.getElementById(
+      `verse-${audioPlayback.currentVerseId}-word-${audioPlayback.currentWordIndex}`,
+    );
+    if (!wordElement) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const wordRect = wordElement.getBoundingClientRect();
+    const relativeTop = wordRect.top - containerRect.top;
+    const relativeBottom = wordRect.bottom - containerRect.top;
+    const visibleHeight = containerRect.height;
+
+    if (relativeTop < 0 || relativeBottom > visibleHeight * 0.8) {
+      container.scrollBy({
+        top: relativeTop - visibleHeight * 0.35,
+        behavior: "auto",
+      });
+    }
+  }, [audioPlayback.currentVerseId, audioPlayback.currentWordIndex]);
+
   // Défilement vers le haut lors du changement d'URL audio
   useEffect(() => {
     if (versesRef.current) {
@@ -580,7 +644,7 @@ const AudioVerseHighlighter = ({
 
         {/* Section des versets */}
         <div
-          ref={versesRef}
+          ref={setVersesRef}
           className="verses-scroll relative z-20 mt-1 flex-1 overflow-y-auto p-2"
           style={{ minHeight: 0 }}
           onScroll={(e) => onAtTopChange?.(e.currentTarget.scrollTop < 10)}
@@ -618,6 +682,7 @@ const AudioVerseHighlighter = ({
               }
               audioUrl={audioUrl}
               seekToVerse={audioPlayback.seekToVerse}
+              collisionBoundary={versesScrollEl}
             />
           ))}
         </div>
