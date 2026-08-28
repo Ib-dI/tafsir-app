@@ -9339,7 +9339,7 @@ export const audiosTafsir = [
       {
         id: "al-jinn-1",
         title: "Al-Jinn - Partie 1",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Jinn-part1.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Jinn-part1-v2.ogg",
         timings: [
           {
             id: 1,
