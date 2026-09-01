@@ -95,6 +95,12 @@ const AudioVerseHighlighter = ({
   const [showCompletionOverlay, setShowCompletionOverlay] = useState(false);
   const [completionVisible, setCompletionVisible] = useState(false);
 
+  // Vrai dès que la liste de versets est défilée : pilote l'apparition du
+  // bandeau flou en haut de la zone, qui « avale » les versets déjà lus
+  // quand ils remontent sous la barre audio. Masqué en haut de liste (rien
+  // n'est encore passé dessous).
+  const [scrolled, setScrolled] = useState(false);
+
   const isLastPart = !totalParts || currentPartIndex >= totalParts - 1;
 
   // Appelé par useAudioPlayback, sans distinction de partie, quand la
@@ -339,8 +345,7 @@ const AudioVerseHighlighter = ({
       (v) => v.id === audioPlayback.currentVerseId,
     );
     const overlayThreshold = isMobile ? 290 : 410;
-    const isLongVerse =
-      (currentVerse?.text.length ?? 0) > overlayThreshold;
+    const isLongVerse = (currentVerse?.text.length ?? 0) > overlayThreshold;
 
     verseElement.scrollIntoView({
       behavior: "smooth",
@@ -449,7 +454,10 @@ const AudioVerseHighlighter = ({
     () =>
       hasMountedPreferences
         ? realWordByWord
-        : { ...realWordByWord, wordByWordEnabled: DEFAULT_WORD_BY_WORD_ENABLED },
+        : {
+            ...realWordByWord,
+            wordByWordEnabled: DEFAULT_WORD_BY_WORD_ENABLED,
+          },
     [hasMountedPreferences, realWordByWord],
   );
   const effectiveTranslationDisplay = useMemo(
@@ -467,39 +475,38 @@ const AudioVerseHighlighter = ({
 
   return (
     <FontSettingsContext.Provider value={effectiveFontSettings}>
-    <WordByWordContext.Provider value={effectiveWordByWord}>
-    <TranslationDisplayContext.Provider value={effectiveTranslationDisplay}>
-    <Tooltip.Provider delayDuration={200}>
-      <div
-        className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible bg-[#FBF3E4] p-1 sm:p-4"
-        style={{ height: "100vh", maxHeight: "100dvh" }}
-      >
-        <ProgressIndicator
-          restoredPosition={audioPlayback.restoredPosition}
-          resetPlaybackPosition={audioPlayback.resetPlaybackPosition}
-          audioUrl={audioUrl}
-          isMobile={isMobile}
-        />
+      <WordByWordContext.Provider value={effectiveWordByWord}>
+        <TranslationDisplayContext.Provider value={effectiveTranslationDisplay}>
+          <Tooltip.Provider delayDuration={200}>
+            <div
+              className="relative mx-auto flex w-full max-w-4xl flex-col overflow-visible bg-[#FBF3E4] p-1 sm:p-4"
+              style={{ height: "100vh", maxHeight: "100dvh" }}
+            >
+              <ProgressIndicator
+                restoredPosition={audioPlayback.restoredPosition}
+                resetPlaybackPosition={audioPlayback.resetPlaybackPosition}
+                audioUrl={audioUrl}
+                isMobile={isMobile}
+              />
 
-        {/* Overlay de completion */}
-        <AnimatePresence>
-          {completionVisible && (
-            <SuccessCard
-              replayChapter={replayChapter}
-              hasNextChapter={hasNextChapter}
-              hasPreviousChapter={hasPreviousChapter}
-              infoSourate={infoSourate}
-              closeOverlay={closeOverlay}
-              goToPreviousChapter={goToPreviousChapter}
-              goToNextChapter={goToNextChapter}
-              isMobile={isMobile}
-            />
-          )}
-        </AnimatePresence>
+              {/* Overlay de completion */}
+              <AnimatePresence>
+                {completionVisible && (
+                  <SuccessCard
+                    replayChapter={replayChapter}
+                    hasNextChapter={hasNextChapter}
+                    hasPreviousChapter={hasPreviousChapter}
+                    infoSourate={infoSourate}
+                    closeOverlay={closeOverlay}
+                    goToPreviousChapter={goToPreviousChapter}
+                    goToNextChapter={goToNextChapter}
+                    isMobile={isMobile}
+                  />
+                )}
+              </AnimatePresence>
 
-
-        {/* Section des contrôles audio */}
-        {/* z-30 + fond opaque déborde largement à gauche/droite (-mx-*) au-delà
+              {/* Section des contrôles audio */}
+              {/* z-30 + fond opaque déborde largement à gauche/droite (-mx-*) au-delà
             de la colonne de contenu centrée : couvre la bulle de traduction
             mot-à-mot (z-[25] dans VerseItem.tsx) quand elle déborde en haut
             de la liste de versets — même effet visuel que le scroll qui fait
@@ -515,182 +522,216 @@ const AudioVerseHighlighter = ({
             une largeur fixe (max-w-4xl...) ne suffit pas, elle serait plus
             large que la vraie colonne (même bug que
             SourateInteractiveContent.tsx, voir son commentaire). */}
-        <div className="relative z-30 -mx-1 bg-[#FBF3E4] sm:-mx-4 lg:-mx-32">
-          <div className="mx-1 mt-3 flex shrink-0 flex-col sm:mx-4 md:mt-6 lg:mx-32">
-          {audioUrl && (
-            <div
-              ref={audioPlayback.containerRef}
-              className={`relative w-full transition-opacity duration-300 ${
-                audioPlayback.drag.isDragging || audioPlayback.drag.isTouching
-                  ? "cursor-grabbing"
-                  : "cursor-grab"
-              } hover:opacity-80`}
-              style={{
-                minHeight: 50,
-                userSelect: "none",
-                WebkitUserSelect: "none",
-                touchAction: "none",
-                WebkitTouchCallout: "none",
-                WebkitTapHighlightColor: "transparent",
-                msContentZooming: "none",
-                msTouchAction: "none",
-              }}
-              title={
-                isMobile
-                  ? "Touchez ou glissez pour naviguer"
-                  : "Cliquez ou glissez pour naviguer dans l'audio"
-              }
-            >
-              <div
-                ref={audioPlayback.waveformRef}
-                className="h-full w-full"
-                style={{
-                  pointerEvents:
-                    isMobile &&
-                    (audioPlayback.drag.isDragging ||
-                      audioPlayback.drag.isTouching)
-                      ? "none"
-                      : "auto",
-                }}
-              />
-              {/* Indicateur visuel avec mise à jour en temps réel */}
-              {isMobile &&
-                (audioPlayback.drag.isDragging ||
-                  audioPlayback.drag.isTouching) &&
-                audioPlayback.drag.dragTime !== null && (
-                  <div className="pointer-events-none absolute inset-0 z-50 -mt-px flex h-10.5 items-center justify-center rounded-lg border-2 border-[#d28820]/50 bg-[#d28820]/20">
-                    <div className="rounded-lg bg-[#d28820] px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
-                      {formatTime(audioPlayback.drag.dragTime)}
+              <div className="relative z-30 -mx-1 bg-[#FBF3E4] sm:-mx-4 lg:-mx-32">
+                <div className="mx-1 mt-3 flex shrink-0 flex-col sm:mx-4 md:mt-6 lg:mx-32">
+                  {audioUrl && (
+                    <div
+                      ref={audioPlayback.containerRef}
+                      className={`relative w-full transition-opacity duration-300 ${
+                        audioPlayback.drag.isDragging ||
+                        audioPlayback.drag.isTouching
+                          ? "cursor-grabbing"
+                          : "cursor-grab"
+                      } hover:opacity-80`}
+                      style={{
+                        minHeight: 50,
+                        userSelect: "none",
+                        WebkitUserSelect: "none",
+                        touchAction: "none",
+                        WebkitTouchCallout: "none",
+                        WebkitTapHighlightColor: "transparent",
+                        msContentZooming: "none",
+                        msTouchAction: "none",
+                      }}
+                      title={
+                        isMobile
+                          ? "Touchez ou glissez pour naviguer"
+                          : "Cliquez ou glissez pour naviguer dans l'audio"
+                      }
+                    >
+                      <div
+                        ref={audioPlayback.waveformRef}
+                        className="h-full w-full"
+                        style={{
+                          pointerEvents:
+                            isMobile &&
+                            (audioPlayback.drag.isDragging ||
+                              audioPlayback.drag.isTouching)
+                              ? "none"
+                              : "auto",
+                        }}
+                      />
+                      {/* Indicateur visuel avec mise à jour en temps réel */}
+                      {isMobile &&
+                        (audioPlayback.drag.isDragging ||
+                          audioPlayback.drag.isTouching) &&
+                        audioPlayback.drag.dragTime !== null && (
+                          <div className="pointer-events-none absolute inset-0 z-50 -mt-px flex h-10.5 items-center justify-center rounded-lg border-2 border-[#d28820]/50 bg-[#d28820]/20">
+                            <div className="rounded-lg bg-[#d28820] px-2 py-1 font-mono text-base font-bold text-white shadow-xl">
+                              {formatTime(audioPlayback.drag.dragTime)}
+                            </div>
+                          </div>
+                        )}
                     </div>
-                  </div>
-                )}
-            </div>
-          )}
+                  )}
 
-          {/* État de chargement amélioré */}
-          <AudioLoadingState
-            isLoading={audioPlayback.isLoading}
-            audioError={audioPlayback.audioError}
-          />
+                  {/* État de chargement amélioré */}
+                  <AudioLoadingState
+                    isLoading={audioPlayback.isLoading}
+                    audioError={audioPlayback.audioError}
+                  />
 
-          {/* Contrôles audio */}
-          {audioUrl && (
-            <div
-              className={`flex w-full items-center justify-between transition-opacity duration-300 ${
-                audioPlayback.isLoading || audioPlayback.audioError
-                  ? "pointer-events-none opacity-0"
-                  : ""
-              }`}
-            >
-              <button
-                onClick={audioPlayback.togglePlayPause}
-                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#d28820] text-white hover:bg-[#d28820]/90"
-              >
-                {audioPlayback.isPlaying ? <PauseIcon /> : <PlayIcon />}
-              </button>
+                  {/* Contrôles audio */}
+                  {audioUrl && (
+                    <div
+                      className={`flex w-full items-center justify-between transition-opacity duration-300 ${
+                        audioPlayback.isLoading || audioPlayback.audioError
+                          ? "pointer-events-none opacity-0"
+                          : ""
+                      }`}
+                    >
+                      <button
+                        onClick={audioPlayback.togglePlayPause}
+                        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#d28820] text-white hover:bg-[#d28820]/90"
+                      >
+                        {audioPlayback.isPlaying ? <PauseIcon /> : <PlayIcon />}
+                      </button>
 
-              <div className="flex items-center gap-2 text-[#3D3226]/70">
-                <span className="font-sura -mt-1 text-xl">
-                  surah
-                  {Number(infoSourate[0]) < 10
-                    ? "00"
-                    : Number(infoSourate[0]) < 100
-                      ? "0"
-                      : ""}
-                  {infoSourate[0]}
-                </span>
-                <span>|</span>
-                <div className="spacing-[0.86px] font-mono text-xs whitespace-nowrap md:text-sm">
-                  {infoSourate[0]}.{infoSourate[1]}
+                      <div className="flex items-center gap-2 text-[#3D3226]/70">
+                        <span className="font-sura -mt-1 text-xl">
+                          surah
+                          {Number(infoSourate[0]) < 10
+                            ? "00"
+                            : Number(infoSourate[0]) < 100
+                              ? "0"
+                              : ""}
+                          {infoSourate[0]}
+                        </span>
+                        <span>|</span>
+                        <div className="spacing-[0.86px] font-mono text-xs whitespace-nowrap md:text-sm">
+                          {infoSourate[0]}.{infoSourate[1]}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <div className="font-mono text-xs whitespace-nowrap text-[#3D3226]/70 md:text-sm">
+                          {formatTime(audioPlayback.currentTime)} /{" "}
+                          {formatTime(audioPlayback.duration)}
+                        </div>
+                        <SettingsDrawer
+                          playbackRate={audioPlayback.playbackRate}
+                          onPlaybackRateChange={audioPlayback.setPlaybackRate}
+                          previewVerse={verses.find((v) => v.words.length > 0)}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Message quand pas d'audio */}
+                  {!audioUrl && !audioPlayback.isLoading && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 10,
+                        delay: 0.1,
+                      }}
+                      className="-mt-3 flex h-15 w-full items-center justify-center"
+                    >
+                      <div className="relative mx-auto inline-flex w-fit max-w-full items-center gap-2 rounded-lg border border-[#2563eb]/30 bg-blue-50/80 px-3 py-1 font-medium text-gray-900 shadow-lg ring-1 shadow-blue-400/20 ring-black/10 filter backdrop-blur-[1px] transition-colors hover:bg-blue-100/80 focus:outline-hidden sm:text-sm">
+                        <Info className="mr-2 h-5 w-5 shrink-0 text-[#2563eb] drop-shadow" />
+                        <p className="inline-block w-full truncate text-center text-[#2563eb]">
+                          Tafsir audio non disponible !
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div className="font-mono text-xs whitespace-nowrap text-[#3D3226]/70 md:text-sm">
-                  {formatTime(audioPlayback.currentTime)} /{" "}
-                  {formatTime(audioPlayback.duration)}
+              {/* Section des versets */}
+              {/* Wrapper positionné : ancre le bandeau flou au bord haut visuel de
+            la liste (frère du scroller, pas dedans — il ne défile donc pas
+            avec le contenu). `flex-1` / `minHeight:0` portés ici pour que le
+            scroller interne prenne toute la hauteur restante. */}
+              <div
+                className="relative z-20 mt-1 flex-1"
+                style={{ minHeight: 0 }}
+              >
+                <div
+                  ref={setVersesRef}
+                  className="verses-scroll h-full overflow-y-auto p-2"
+                  onScroll={(e) => {
+                    const el = e.currentTarget;
+                    onAtTopChange?.(el.scrollTop < 10);
+                    setScrolled(el.scrollTop > 10);
+                  }}
+                >
+                  {/* Skeleton loader pendant le chargement initial */}
+                  {audioPlayback.isLoading && !children && (
+                    <LoadingSkeleton count={5} />
+                  )}
+
+                  {children}
+                  {/* Bismillah pour les sourates qui en ont besoin */}
+                  {Number(infoSourate[0]) !== 1 &&
+                    Number(infoSourate[0]) !== 9 &&
+                    verses[0]?.id === 1 && (
+                      <div className="mt-2 flex w-full justify-center">
+                        <p
+                          className="font-sura-colors mt-4 text-center text-xl leading-relaxed text-gray-900 md:text-[32px]"
+                          style={{ direction: "rtl" }}
+                        >
+                          ﲪﲫﲮﲴ
+                        </p>
+                      </div>
+                    )}
+
+                  {/* Liste des versets */}
+                  {verses.map((verse: VerseHighlight) => (
+                    <VerseItem
+                      key={`verse-${verse.id}`}
+                      verse={verse}
+                      isActive={verse.id === audioPlayback.currentVerseId}
+                      activeWordIndex={
+                        verse.id === audioPlayback.currentVerseId
+                          ? audioPlayback.currentWordIndex
+                          : null
+                      }
+                      audioUrl={audioUrl}
+                      seekToVerse={audioPlayback.seekToVerse}
+                      collisionBoundary={versesScrollEl}
+                    />
+                  ))}
                 </div>
-                <SettingsDrawer
-                  playbackRate={audioPlayback.playbackRate}
-                  onPlaybackRateChange={audioPlayback.setPlaybackRate}
-                  previewVerse={verses.find((v) => v.words.length > 0)}
+
+                {/* Bandeau flou : collé sous la barre audio, il floute (backdrop) +
+              voile légèrement (dégradé #FBF3E4) les versets déjà lus qui
+              remontent. `mask-image` : flou plein sur les 40 % du haut puis
+              fondu à zéro, pour ne pas mordre sur le verset courant (calé en
+              haut via block:"start" quand il est long). `pointer-events-none`
+              : n'intercepte pas les taps de seek. */}
+                <div
+                  aria-hidden
+                  className={`pointer-events-none absolute inset-x-0 top-0 h-11 backdrop-blur-[4px] transition-opacity duration-200 md:h-14 ${
+                    scrolled ? "opacity-100" : "opacity-0"
+                  }`}
+                  style={{
+                    background:
+                      "linear-gradient(to bottom, #FBF3E4 0%, rgba(251, 243, 228, 0.85) 45%, transparent 100%)",
+                    WebkitMaskImage:
+                      "linear-gradient(to bottom, black 0 40%, transparent 100%)",
+                    maskImage:
+                      "linear-gradient(to bottom, black 0 40%, transparent 100%)",
+                  }}
                 />
               </div>
             </div>
-          )}
-
-          {/* Message quand pas d'audio */}
-          {!audioUrl && !audioPlayback.isLoading && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 100,
-                damping: 10,
-                delay: 0.1,
-              }}
-              className="-mt-3 flex h-15 w-full items-center justify-center"
-            >
-              <div className="relative mx-auto inline-flex w-fit max-w-full items-center gap-2 rounded-lg border border-[#2563eb]/30 bg-blue-50/80 px-3 py-1 font-medium text-gray-900 shadow-lg ring-1 shadow-blue-400/20 ring-black/10 filter backdrop-blur-[1px] transition-colors hover:bg-blue-100/80 focus:outline-hidden sm:text-sm">
-                <Info className="mr-2 h-5 w-5 shrink-0 text-[#2563eb] drop-shadow" />
-                <p className="inline-block w-full truncate text-center text-[#2563eb]">
-                  Tafsir audio non disponible !
-                </p>
-              </div>
-            </motion.div>
-          )}
-          </div>
-        </div>
-
-        {/* Section des versets */}
-        <div
-          ref={setVersesRef}
-          className="verses-scroll relative z-20 mt-1 flex-1 overflow-y-auto p-2"
-          style={{ minHeight: 0 }}
-          onScroll={(e) => onAtTopChange?.(e.currentTarget.scrollTop < 10)}
-        >
-          {/* Skeleton loader pendant le chargement initial */}
-          {audioPlayback.isLoading && !children && (
-            <LoadingSkeleton count={5} />
-          )}
-
-          {children}
-          {/* Bismillah pour les sourates qui en ont besoin */}
-          {Number(infoSourate[0]) !== 1 &&
-            Number(infoSourate[0]) !== 9 &&
-            verses[0]?.id === 1 && (
-              <div className="mt-2 flex w-full justify-center">
-                <p
-                  className="font-sura-colors mt-4 text-center text-xl leading-relaxed text-gray-900 md:text-[32px]"
-                  style={{ direction: "rtl" }}
-                >
-                  ﲪﲫﲮﲴ
-                </p>
-              </div>
-            )}
-
-          {/* Liste des versets */}
-          {verses.map((verse: VerseHighlight) => (
-            <VerseItem
-              key={`verse-${verse.id}`}
-              verse={verse}
-              isActive={verse.id === audioPlayback.currentVerseId}
-              activeWordIndex={
-                verse.id === audioPlayback.currentVerseId
-                  ? audioPlayback.currentWordIndex
-                  : null
-              }
-              audioUrl={audioUrl}
-              seekToVerse={audioPlayback.seekToVerse}
-              collisionBoundary={versesScrollEl}
-            />
-          ))}
-        </div>
-      </div>
-    </Tooltip.Provider>
-    </TranslationDisplayContext.Provider>
-    </WordByWordContext.Provider>
+          </Tooltip.Provider>
+        </TranslationDisplayContext.Provider>
+      </WordByWordContext.Provider>
     </FontSettingsContext.Provider>
   );
 };
