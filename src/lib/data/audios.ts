@@ -1,6 +1,6 @@
 // Mettre à jour cette liste à chaque fois qu'un nouvel audio est ajouté (du plus récent au plus ancien)
 export const recentlyAddedIds: number[] = [
-  67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83,
+  66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83,
 ];
 
 export const audiosTafsir = [
@@ -11124,32 +11124,742 @@ export const audiosTafsir = [
         title: "At-Tahrim - Partie 1",
         url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tahrim-part1.ogg",
         timings: [
-          { id: 1, startTime: 6.06, endTime: 69.59 },
-          { id: 2, startTime: 76.46, endTime: 226.31 },
-          { id: 3, startTime: 228.7, endTime: 378.05 },
-          { id: 4, startTime: 379.87, endTime: 759.45 },
-          { id: 5, startTime: 762.84, endTime: 1095.54 },
+          {
+            id: 1,
+            startTime: 6.06,
+            endTime: 76.46,
+            words: [
+              [{ startTime: 6.06, endTime: 7.81 }],
+              [{ startTime: 7.81, endTime: 11.28 }],
+              [
+                { startTime: 11.28, endTime: 12.06 },
+                { startTime: 16.42, endTime: 16.85 },
+              ],
+              [
+                { startTime: 12.06, endTime: 13.57 },
+                { startTime: 16.85, endTime: 21.5 },
+              ],
+              [
+                { startTime: 13.57, endTime: 14.15 },
+                { startTime: 21.5, endTime: 21.79 },
+              ],
+              [
+                { startTime: 14.15, endTime: 14.72 },
+                { startTime: 21.79, endTime: 22.37 },
+              ],
+              [
+                { startTime: 14.72, endTime: 15.34 },
+                { startTime: 22.37, endTime: 22.96 },
+              ],
+              [
+                { startTime: 15.34, endTime: 29.36 },
+                { startTime: 22.96, endTime: 29.36 },
+              ],
+              [{ startTime: 29.36, endTime: 33.79 }],
+              [{ startTime: 33.79, endTime: 34.69 }],
+              [{ startTime: 34.69, endTime: 52.39 }],
+              [{ startTime: 52.39, endTime: 53.14 }],
+              [{ startTime: 53.14, endTime: 59.13 }],
+              [{ startTime: 59.13, endTime: 76.46 }],
+            ],
+          },
+          {
+            id: 2,
+            startTime: 76.46,
+            endTime: 228.7,
+            words: [
+              [
+                { startTime: 76.46, endTime: 77.22 },
+                { startTime: 83.22, endTime: 83.76 },
+              ],
+              [
+                { startTime: 77.22, endTime: 77.73 },
+                { startTime: 83.76, endTime: 84.37 },
+              ],
+              [
+                { startTime: 77.73, endTime: 84.81 },
+                { startTime: 84.37, endTime: 84.81 },
+              ],
+              [{ startTime: 84.81, endTime: 91.22 }],
+              [
+                { startTime: 91.22, endTime: 92.1 },
+                { startTime: 98.71, endTime: 99.61 },
+              ],
+              [
+                { startTime: 92.1, endTime: 106.25 },
+                { startTime: 99.61, endTime: 106.25 },
+              ],
+              [{ startTime: 106.25, endTime: 106.9 }],
+              [{ startTime: 106.9, endTime: 114.06 }],
+              [{ startTime: 114.06, endTime: 114.78 }],
+              [{ startTime: 114.78, endTime: 115.38 }],
+              [{ startTime: 115.38, endTime: 228.7 }],
+            ],
+          },
+          {
+            id: 3,
+            startTime: 228.7,
+            endTime: 379.87,
+            words: [
+              [{ startTime: 228.7, endTime: 229.31 }],
+              [{ startTime: 229.31, endTime: 230.04 }],
+              [{ startTime: 230.04, endTime: 234.46 }],
+              [{ startTime: 234.46, endTime: 234.6 }],
+              [{ startTime: 234.6, endTime: 235.22 }],
+              [{ startTime: 235.22, endTime: 238.57 }],
+              [{ startTime: 238.57, endTime: 252.99 }],
+              [{ startTime: 252.99, endTime: 253.86 }],
+              [{ startTime: 253.86, endTime: 254.8 }],
+              [{ startTime: 254.8, endTime: 262.23 }],
+              [{ startTime: 262.23, endTime: 263.31 }],
+              [{ startTime: 263.31, endTime: 263.93 }],
+              [{ startTime: 263.93, endTime: 279.36 }],
+              [{ startTime: 279.36, endTime: 279.96 }],
+              [{ startTime: 279.96, endTime: 293.11 }],
+              [{ startTime: 293.11, endTime: 293.96 }],
+              [{ startTime: 293.96, endTime: 294.37 }],
+              [{ startTime: 294.37, endTime: 302.46 }],
+              [{ startTime: 302.46, endTime: 303.5 }],
+              [{ startTime: 303.5, endTime: 304.48 }],
+              [{ startTime: 304.48, endTime: 325.76 }],
+              [{ startTime: 325.76, endTime: 329.33 }],
+              [{ startTime: 329.33, endTime: 329.91 }],
+              [{ startTime: 329.91, endTime: 330.72 }],
+              [{ startTime: 330.72, endTime: 342.43 }],
+              [{ startTime: 342.43, endTime: 345.99 }],
+              [
+                { startTime: 345.99, endTime: 347.16 },
+                { startTime: 349.05, endTime: 351.19 },
+              ],
+              [
+                { startTime: 347.16, endTime: 348.33 },
+                { startTime: 351.19, endTime: 359.95 },
+              ],
+              [
+                { startTime: 348.33, endTime: 349.05 },
+                { startTime: 359.95, endTime: 379.87 },
+              ],
+            ],
+          },
+          {
+            id: 4,
+            startTime: 379.87,
+            endTime: 762.84,
+            words: [
+              [{ startTime: 379.87, endTime: 380.53 }],
+              [{ startTime: 380.53, endTime: 381.65 }],
+              [{ startTime: 381.65, endTime: 382.21 }],
+              [{ startTime: 382.21, endTime: 403.72 }],
+              [
+                { startTime: 403.72, endTime: 404.3 },
+                { startTime: 417.32, endTime: 418.19 },
+              ],
+              [
+                { startTime: 404.3, endTime: 405.22 },
+                { startTime: 418.19, endTime: 419.92 },
+              ],
+              [
+                { startTime: 405.22, endTime: 446.86 },
+                { startTime: 419.92, endTime: 446.86 },
+              ],
+              [{ startTime: 446.86, endTime: 447.46 }],
+              [{ startTime: 447.46, endTime: 448.55 }],
+              [{ startTime: 448.55, endTime: 459.13 }],
+              [{ startTime: 459.13, endTime: 460.34 }],
+              [{ startTime: 460.34, endTime: 463.84 }],
+              [{ startTime: 463.84, endTime: 464.06 }],
+              [{ startTime: 464.06, endTime: 475.83 }],
+              [{ startTime: 475.83, endTime: 486.76 }],
+              [{ startTime: 486.76, endTime: 487.67 }],
+              [{ startTime: 487.67, endTime: 516.3 }],
+              [{ startTime: 516.3, endTime: 518.0 }],
+              [{ startTime: 518.0, endTime: 518.37 }],
+              [{ startTime: 518.37, endTime: 522.82 }],
+              [{ startTime: 522.82, endTime: 762.84 }],
+            ],
+          },
+          {
+            id: 5,
+            startTime: 762.84,
+            endTime: 1095.54,
+            words: [
+              [
+                { startTime: 762.84, endTime: 763.73 },
+                { startTime: 800.36, endTime: 801.16 },
+                { startTime: 836.22, endTime: 836.68 },
+              ],
+              [
+                { startTime: 763.73, endTime: 808.55 },
+                { startTime: 801.16, endTime: 808.55 },
+                { startTime: 836.68, endTime: 841.85 },
+              ],
+              [
+                { startTime: 808.55, endTime: 809.03 },
+                { startTime: 841.85, endTime: 842.0 },
+              ],
+              [
+                { startTime: 809.03, endTime: 812.16 },
+                { startTime: 842.0, endTime: 844.43 },
+              ],
+              [
+                { startTime: 812.16, endTime: 812.55 },
+                { startTime: 844.43, endTime: 844.99 },
+              ],
+              [
+                { startTime: 812.55, endTime: 818.6 },
+                { startTime: 844.99, endTime: 848.66 },
+              ],
+              [
+                { startTime: 818.6, endTime: 820.26 },
+                { startTime: 848.66, endTime: 850.21 },
+              ],
+              [
+                { startTime: 820.26, endTime: 821.21 },
+                { startTime: 850.21, endTime: 851.42 },
+              ],
+              [
+                { startTime: 821.21, endTime: 863.72 },
+                { startTime: 851.42, endTime: 863.72 },
+              ],
+              [
+                { startTime: 863.72, endTime: 874.56 },
+                { startTime: 977.32, endTime: 978.61 },
+              ],
+              [
+                { startTime: 874.56, endTime: 886.59 },
+                { startTime: 978.61, endTime: 979.84 },
+              ],
+              [
+                { startTime: 886.59, endTime: 901.07 },
+                { startTime: 979.84, endTime: 980.99 },
+              ],
+              [
+                { startTime: 901.07, endTime: 918.33 },
+                { startTime: 982.2, endTime: 1016.96 },
+              ],
+              [
+                { startTime: 918.33, endTime: 928.99 },
+                { startTime: 981.05, endTime: 982.2 },
+              ],
+              [{ startTime: 928.99, endTime: 952.34 }],
+              [
+                { startTime: 952.34, endTime: 956.69 },
+                { startTime: 964.79, endTime: 965.87 },
+              ],
+              [
+                { startTime: 956.69, endTime: 964.79 },
+                { startTime: 965.87, endTime: 977.32 },
+                { startTime: 1016.96, endTime: 1095.54 },
+              ],
+            ],
+          },
         ],
       },
       {
         id: "at-tahrim-2",
         title: "At-Tahrim - Partie 2",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tahrim-part2.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tahrim-part2-v2.ogg",
         timings: [
-          { id: 6, startTime: 57.27, endTime: 473.21 },
-          { id: 7, startTime: 479.81, endTime: 573.67 },
-          { id: 8, startTime: 575.62, endTime: 1083.96 },
+          {
+            id: 6,
+            startTime: 57.27,
+            endTime: 479.81,
+            words: [
+              [{ startTime: 57.27, endTime: 58.71 }],
+              [{ startTime: 58.71, endTime: 59.39 }],
+              [{ startTime: 59.39, endTime: 72.47 }],
+              [{ startTime: 72.47, endTime: 73.29 }],
+              [{ startTime: 73.29, endTime: 87.29 }],
+              [{ startTime: 87.29, endTime: 97.55 }],
+              [{ startTime: 97.55, endTime: 167.84 }],
+              [
+                { startTime: 167.84, endTime: 169.02 },
+                { startTime: 172.1, endTime: 176.81 },
+                { startTime: 271.54, endTime: 272.46 },
+              ],
+              [
+                { startTime: 169.02, endTime: 179.16 },
+                { startTime: 176.81, endTime: 179.16 },
+                { startTime: 272.46, endTime: 275.69 },
+              ],
+              [
+                { startTime: 179.16, endTime: 278.08 },
+                { startTime: 275.69, endTime: 278.08 },
+              ],
+              [{ startTime: 278.08, endTime: 282.84 }],
+              [{ startTime: 282.84, endTime: 285.86 }],
+              [
+                { startTime: 285.86, endTime: 296.87 },
+                { startTime: 347.44, endTime: 348.46 },
+              ],
+              [
+                { startTime: 296.87, endTime: 356.91 },
+                { startTime: 348.46, endTime: 356.91 },
+              ],
+              [
+                { startTime: 356.91, endTime: 357.19 },
+                { startTime: 359.92, endTime: 360.53 },
+                { startTime: 433.01, endTime: 433.39 },
+              ],
+              [
+                { startTime: 357.19, endTime: 358.0 },
+                { startTime: 360.53, endTime: 361.24 },
+                { startTime: 433.39, endTime: 433.88 },
+              ],
+              [
+                { startTime: 358.0, endTime: 358.57 },
+                { startTime: 361.24, endTime: 365.3 },
+                { startTime: 433.88, endTime: 434.35 },
+              ],
+              [
+                { startTime: 358.57, endTime: 358.75 },
+                { startTime: 365.3, endTime: 365.85 },
+                { startTime: 434.35, endTime: 434.6 },
+              ],
+              [
+                { startTime: 358.75, endTime: 453.88 },
+                { startTime: 365.85, endTime: 433.01 },
+                { startTime: 434.6, endTime: 453.88 },
+              ],
+              [{ startTime: 453.88, endTime: 454.97 }],
+              [{ startTime: 454.97, endTime: 455.25 }],
+              [{ startTime: 455.25, endTime: 479.81 }],
+            ],
+          },
+          {
+            id: 7,
+            startTime: 479.81,
+            endTime: 575.62,
+            words: [
+              [
+                { startTime: 479.81, endTime: 480.94 },
+                { startTime: 486.97, endTime: 487.76 },
+              ],
+              [
+                { startTime: 480.94, endTime: 481.51 },
+                { startTime: 487.76, endTime: 488.46 },
+              ],
+              [
+                { startTime: 481.51, endTime: 498.33 },
+                { startTime: 488.46, endTime: 498.33 },
+              ],
+              [
+                { startTime: 498.33, endTime: 498.94 },
+                { startTime: 520.92, endTime: 521.87 },
+              ],
+              [
+                { startTime: 498.94, endTime: 499.69 },
+                { startTime: 521.87, endTime: 522.76 },
+              ],
+              [
+                { startTime: 499.69, endTime: 528.17 },
+                { startTime: 522.76, endTime: 528.17 },
+              ],
+              [{ startTime: 528.17, endTime: 528.85 }],
+              [{ startTime: 528.85, endTime: 532.03 }],
+              [{ startTime: 532.03, endTime: 532.71 }],
+              [{ startTime: 532.71, endTime: 533.29 }],
+              [{ startTime: 533.29, endTime: 575.62 }],
+            ],
+          },
+          {
+            id: 8,
+            startTime: 575.62,
+            endTime: 1083.96,
+            words: [
+              [
+                { startTime: 575.62, endTime: 576.49 },
+                { startTime: 589.53, endTime: 590.62 },
+              ],
+              [
+                { startTime: 576.49, endTime: 576.99 },
+                { startTime: 590.62, endTime: 591.23 },
+              ],
+              [
+                { startTime: 576.99, endTime: 596.17 },
+                { startTime: 591.23, endTime: 596.17 },
+              ],
+              [
+                { startTime: 596.17, endTime: 596.9 },
+                { startTime: 734.55, endTime: 735.02 },
+              ],
+              [
+                { startTime: 596.9, endTime: 597.35 },
+                { startTime: 735.02, endTime: 735.39 },
+              ],
+              [
+                { startTime: 597.35, endTime: 603.9 },
+                { startTime: 735.39, endTime: 735.8 },
+              ],
+              [
+                { startTime: 603.9, endTime: 608.36 },
+                { startTime: 612.08, endTime: 612.79 },
+                { startTime: 636.65, endTime: 637.47 },
+                { startTime: 643.69, endTime: 644.18 },
+                { startTime: 735.8, endTime: 736.3 },
+                { startTime: 742.6, endTime: 743.24 },
+              ],
+              [
+                { startTime: 608.36, endTime: 745.96 },
+                { startTime: 612.79, endTime: 636.65 },
+                { startTime: 637.47, endTime: 643.69 },
+                { startTime: 644.18, endTime: 734.55 },
+                { startTime: 736.3, endTime: 742.6 },
+                { startTime: 743.24, endTime: 745.96 },
+              ],
+              [
+                { startTime: 745.96, endTime: 746.6 },
+                { startTime: 752.98, endTime: 753.42 },
+                { startTime: 770.52, endTime: 770.94 },
+              ],
+              [
+                { startTime: 746.6, endTime: 758.73 },
+                { startTime: 753.42, endTime: 758.73 },
+                { startTime: 770.94, endTime: 774.87 },
+              ],
+              [
+                { startTime: 758.73, endTime: 759.13 },
+                { startTime: 774.87, endTime: 775.22 },
+              ],
+              [
+                { startTime: 759.13, endTime: 759.81 },
+                { startTime: 775.22, endTime: 775.85 },
+              ],
+              [
+                { startTime: 759.81, endTime: 760.35 },
+                { startTime: 775.85, endTime: 783.76 },
+              ],
+              [
+                { startTime: 760.35, endTime: 790.09 },
+                { startTime: 783.76, endTime: 790.09 },
+              ],
+              [{ startTime: 790.09, endTime: 791.19 }],
+              [{ startTime: 791.19, endTime: 795.93 }],
+              [
+                { startTime: 795.93, endTime: 800.2 },
+                { startTime: 826.24, endTime: 828.1 },
+              ],
+              [
+                { startTime: 800.2, endTime: 800.55 },
+                { startTime: 828.1, endTime: 828.27 },
+              ],
+              [
+                { startTime: 800.55, endTime: 802.99 },
+                { startTime: 828.27, endTime: 830.29 },
+              ],
+              [
+                { startTime: 802.99, endTime: 833.76 },
+                { startTime: 830.29, endTime: 833.76 },
+              ],
+              [
+                { startTime: 833.76, endTime: 834.21 },
+                { startTime: 841.57, endTime: 843.09 },
+                { startTime: 921.23, endTime: 921.67 },
+              ],
+              [
+                { startTime: 834.21, endTime: 834.64 },
+                { startTime: 843.09, endTime: 843.64 },
+                { startTime: 921.67, endTime: 922.06 },
+              ],
+              [
+                { startTime: 834.64, endTime: 835.07 },
+                { startTime: 843.64, endTime: 844.18 },
+                { startTime: 922.06, endTime: 922.4 },
+              ],
+              [
+                { startTime: 835.07, endTime: 835.72 },
+                { startTime: 844.18, endTime: 844.81 },
+                { startTime: 922.4, endTime: 923.13 },
+              ],
+              [
+                { startTime: 835.72, endTime: 851.78 },
+                { startTime: 844.81, endTime: 851.78 },
+                { startTime: 923.13, endTime: 928.96 },
+              ],
+              [
+                { startTime: 851.78, endTime: 852.69 },
+                { startTime: 928.96, endTime: 929.78 },
+              ],
+              [
+                { startTime: 852.69, endTime: 854.05 },
+                { startTime: 929.78, endTime: 930.89 },
+              ],
+              [
+                { startTime: 854.05, endTime: 936.58 },
+                { startTime: 930.89, endTime: 936.58 },
+              ],
+              [{ startTime: 936.58, endTime: 950.78 }],
+              [{ startTime: 950.78, endTime: 952.36 }],
+              [{ startTime: 952.36, endTime: 952.74 }],
+              [{ startTime: 952.74, endTime: 955.41 }],
+              [{ startTime: 955.41, endTime: 968.34 }],
+              [{ startTime: 968.34, endTime: 969.3 }],
+              [{ startTime: 969.3, endTime: 980.76 }],
+              [{ startTime: 980.76, endTime: 981.45 }],
+              [{ startTime: 981.45, endTime: 981.95 }],
+              [{ startTime: 981.95, endTime: 995.83 }],
+              [{ startTime: 995.83, endTime: 996.51 }],
+              [{ startTime: 996.51, endTime: 1000.27 }],
+              [{ startTime: 1000.27, endTime: 1001.28 }],
+              [{ startTime: 1001.28, endTime: 1001.7 }],
+              [{ startTime: 1001.7, endTime: 1002.19 }],
+              [{ startTime: 1002.19, endTime: 1002.4 }],
+              [{ startTime: 1002.4, endTime: 1083.96 }],
+            ],
+          },
         ],
       },
       {
         id: "at-tahrim-3",
         title: "At-Tahrim - Partie 3",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tahrim-part3-fixed.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Tahrim-part3-v2.ogg",
         timings: [
-          { id: 9, startTime: 74.17, endTime: 218.69 },
-          { id: 10, startTime: 218.69, endTime: 506.41 },
-          { id: 11, startTime: 506.41, endTime: 673.1 },
-          { id: 12, startTime: 673.1, endTime: 995.02 },
+          {
+            id: 9,
+            startTime: 74.17,
+            endTime: 218.69,
+            words: [
+              [{ startTime: 74.17, endTime: 75.51 }],
+              [{ startTime: 75.51, endTime: 79.55 }],
+              [
+                { startTime: 79.55, endTime: 80.39 },
+                { startTime: 112.02, endTime: 112.98 },
+              ],
+              [
+                { startTime: 80.39, endTime: 87.2 },
+                { startTime: 112.98, endTime: 118.67 },
+              ],
+              [
+                { startTime: 87.2, endTime: 121.31 },
+                { startTime: 118.67, endTime: 121.31 },
+              ],
+              [
+                { startTime: 121.31, endTime: 122.64 },
+                { startTime: 125.45, endTime: 126.4 },
+              ],
+              [
+                { startTime: 122.64, endTime: 139.92 },
+                { startTime: 126.4, endTime: 139.92 },
+              ],
+              [
+                { startTime: 139.92, endTime: 141.18 },
+                { startTime: 145.03, endTime: 146.21 },
+              ],
+              [
+                { startTime: 141.18, endTime: 149.21 },
+                { startTime: 146.21, endTime: 149.21 },
+              ],
+              [{ startTime: 149.21, endTime: 150.33 }],
+              [{ startTime: 150.33, endTime: 218.69 }],
+            ],
+          },
+          {
+            id: 10,
+            startTime: 218.69,
+            endTime: 506.41,
+            words: [
+              [
+                { startTime: 218.69, endTime: 219.45 },
+                { startTime: 287.74, endTime: 288.51 },
+              ],
+              [
+                { startTime: 219.45, endTime: 219.89 },
+                { startTime: 288.51, endTime: 288.82 },
+              ],
+              [
+                { startTime: 219.89, endTime: 226.15 },
+                { startTime: 288.82, endTime: 291.85 },
+              ],
+              [
+                { startTime: 226.15, endTime: 227.14 },
+                { startTime: 291.85, endTime: 292.56 },
+              ],
+              [
+                { startTime: 227.14, endTime: 232.34 },
+                { startTime: 292.56, endTime: 294.83 },
+              ],
+              [
+                { startTime: 232.34, endTime: 233.0 },
+                { startTime: 294.83, endTime: 295.32 },
+              ],
+              [
+                { startTime: 233.0, endTime: 235.92 },
+                { startTime: 295.32, endTime: 296.61 },
+              ],
+              [
+                { startTime: 235.92, endTime: 236.59 },
+                { startTime: 296.61, endTime: 297.19 },
+              ],
+              [
+                { startTime: 236.59, endTime: 299.07 },
+                { startTime: 297.19, endTime: 299.07 },
+              ],
+              [{ startTime: 299.07, endTime: 301.82 }],
+              [{ startTime: 301.82, endTime: 302.23 }],
+              [{ startTime: 302.23, endTime: 306.82 }],
+              [{ startTime: 306.82, endTime: 307.32 }],
+              [{ startTime: 307.32, endTime: 307.96 }],
+              [{ startTime: 307.96, endTime: 335.64 }],
+              [{ startTime: 335.64, endTime: 341.31 }],
+              [
+                { startTime: 341.31, endTime: 341.85 },
+                { startTime: 376.16, endTime: 376.51 },
+                { startTime: 394.1, endTime: 394.9 },
+              ],
+              [
+                { startTime: 341.85, endTime: 342.57 },
+                { startTime: 376.51, endTime: 380.86 },
+                { startTime: 394.9, endTime: 396.69 },
+              ],
+              [
+                { startTime: 342.57, endTime: 347.08 },
+                { startTime: 380.86, endTime: 382.06 },
+                { startTime: 396.69, endTime: 399.39 },
+              ],
+              [
+                { startTime: 347.08, endTime: 347.55 },
+                { startTime: 382.06, endTime: 382.24 },
+                { startTime: 399.39, endTime: 399.57 },
+              ],
+              [
+                { startTime: 347.55, endTime: 349.13 },
+                { startTime: 382.24, endTime: 383.03 },
+                { startTime: 399.57, endTime: 400.59 },
+              ],
+              [
+                { startTime: 349.13, endTime: 403.32 },
+                { startTime: 383.03, endTime: 394.1 },
+                { startTime: 400.59, endTime: 403.32 },
+              ],
+              [{ startTime: 403.32, endTime: 404.73 }],
+              [{ startTime: 404.73, endTime: 405.15 }],
+              [{ startTime: 405.15, endTime: 407.03 }],
+              [{ startTime: 407.03, endTime: 407.48 }],
+              [{ startTime: 407.48, endTime: 506.41 }],
+            ],
+          },
+          {
+            id: 11,
+            startTime: 506.41,
+            endTime: 673.1,
+            words: [
+              [
+                { startTime: 506.41, endTime: 507.25 },
+                { startTime: 567.95, endTime: 568.54 },
+              ],
+              [
+                { startTime: 507.25, endTime: 507.68 },
+                { startTime: 568.54, endTime: 569.1 },
+              ],
+              [
+                { startTime: 507.68, endTime: 510.63 },
+                { startTime: 569.1, endTime: 572.87 },
+              ],
+              [
+                { startTime: 510.63, endTime: 511.34 },
+                { startTime: 572.87, endTime: 573.56 },
+              ],
+              [
+                { startTime: 511.34, endTime: 513.13 },
+                { startTime: 573.56, endTime: 575.19 },
+              ],
+              [
+                { startTime: 513.13, endTime: 514.06 },
+                { startTime: 575.19, endTime: 575.72 },
+              ],
+              [
+                { startTime: 514.06, endTime: 580.41 },
+                { startTime: 575.72, endTime: 580.41 },
+              ],
+              [{ startTime: 580.41, endTime: 580.95 }],
+              [{ startTime: 580.95, endTime: 585.63 }],
+              [
+                { startTime: 585.63, endTime: 593.0 },
+                { startTime: 605.8, endTime: 606.37 },
+              ],
+              [
+                { startTime: 593.0, endTime: 593.66 },
+                { startTime: 606.37, endTime: 606.68 },
+              ],
+              [
+                { startTime: 593.66, endTime: 596.23 },
+                { startTime: 606.68, endTime: 606.94 },
+              ],
+              [
+                { startTime: 596.23, endTime: 597.42 },
+                { startTime: 606.94, endTime: 607.72 },
+              ],
+              [
+                { startTime: 597.42, endTime: 598.61 },
+                { startTime: 607.72, endTime: 608.3 },
+              ],
+              [
+                { startTime: 598.61, endTime: 598.81 },
+                { startTime: 608.3, endTime: 608.49 },
+              ],
+              [
+                { startTime: 598.81, endTime: 630.67 },
+                { startTime: 608.49, endTime: 630.67 },
+              ],
+              [{ startTime: 630.67, endTime: 634.7 }],
+              [{ startTime: 634.7, endTime: 635.27 }],
+              [{ startTime: 635.27, endTime: 636.73 }],
+              [{ startTime: 636.73, endTime: 643.51 }],
+              [{ startTime: 643.51, endTime: 645.92 }],
+              [{ startTime: 645.92, endTime: 646.44 }],
+              [{ startTime: 646.44, endTime: 646.9 }],
+              [{ startTime: 646.9, endTime: 673.1 }],
+            ],
+          },
+          {
+            id: 12,
+            startTime: 673.1,
+            endTime: 995.02,
+            words: [
+              [{ startTime: 673.1, endTime: 674.28 }],
+              [{ startTime: 674.28, endTime: 674.81 }],
+              [{ startTime: 674.81, endTime: 675.38 }],
+              [{ startTime: 675.38, endTime: 691.76 }],
+              [{ startTime: 691.76, endTime: 692.71 }],
+              [{ startTime: 692.71, endTime: 698.47 }],
+              [
+                { startTime: 698.47, endTime: 699.65 },
+                { startTime: 700.9, endTime: 701.67 },
+                { startTime: 740.0, endTime: 741.74 },
+              ],
+              [
+                { startTime: 699.65, endTime: 706.11 },
+                { startTime: 701.67, endTime: 706.11 },
+                { startTime: 741.74, endTime: 743.31 },
+              ],
+              [
+                { startTime: 706.11, endTime: 706.97 },
+                { startTime: 710.03, endTime: 710.28 },
+                { startTime: 743.31, endTime: 743.68 },
+              ],
+              [
+                { startTime: 706.97, endTime: 746.45 },
+                { startTime: 710.28, endTime: 740.0 },
+                { startTime: 743.68, endTime: 746.45 },
+              ],
+              [
+                { startTime: 746.45, endTime: 748.2 },
+                { startTime: 760.92, endTime: 762.38 },
+              ],
+              [
+                { startTime: 748.2, endTime: 749.24 },
+                { startTime: 762.38, endTime: 763.18 },
+              ],
+              [
+                { startTime: 749.24, endTime: 765.19 },
+                { startTime: 763.18, endTime: 765.19 },
+              ],
+              [{ startTime: 765.19, endTime: 776.99 }],
+              [{ startTime: 776.99, endTime: 780.48 }],
+              [{ startTime: 780.48, endTime: 780.93 }],
+              [{ startTime: 780.93, endTime: 995.02 }],
+            ],
+          },
         ],
       },
     ],
