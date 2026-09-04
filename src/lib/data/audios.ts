@@ -11045,7 +11045,7 @@ export const audiosTafsir = [
       {
         id: "at-taghabun-1",
         title: "At-Taghabun - Partie 1",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Taghabun-part1.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/At-Taghabun-part1-v2.ogg",
         timings: [
           {
             id: 1,
