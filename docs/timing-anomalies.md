@@ -31,6 +31,7 @@ par la normalisation des ecarts (0.01s). A corriger manuellement dans
 | 20 | mot | 92 | al-layl-1 | 11 | #4 | 346.54 | 346.54 |
 
 Chapitre 2, al-baqarah-2, verset 19, mot #9 corrigé le 2026-09-14 (n'apparaît plus).
+Chapitre 107, al-maun-1, verset 3, mot #2 : introduit le 2026-09-14 lors de la correction du chevauchement du même chapitre, corrigé le jour même (n'apparaît plus).
 
 ## A part : versets sans mot correspondant a leur fin
 
