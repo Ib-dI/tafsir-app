@@ -12776,7 +12776,7 @@ export const audiosTafsir = [
       {
         id: "al-mujadila-2",
         title: "Al-Mujadila - Partie 2",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Mujadila-part2.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Al-Mujadila-part2-v2.ogg",
         timings: [
           {
             id: 8,
