@@ -194,11 +194,9 @@ const VerseItem = React.memo(
                         <span
                           key={index}
                           id={`verse-${verse.id}-word-${index}`}
-                          className={
-                            isWordActive
-                              ? "-mx-0.5 rounded bg-[#d28820]/35 px-0.5 transition-colors duration-150"
-                              : undefined
-                          }
+                          className={`-mx-0.5 rounded px-0.5 transition-colors duration-150 ${
+                            isWordActive ? "bg-[#d28820]/35" : "bg-transparent"
+                          }`}
                         >
                           {content}
                         </span>
