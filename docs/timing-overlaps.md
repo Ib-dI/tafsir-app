@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 548 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 537 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 548**
+**Progrès : 0 / 537**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -116,7 +116,7 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-baqarah-11, verset 102, mot #57 : occurrence 0 (826.9-840.28) chevauche occurrence 1 (838.1-840.28)
 - [ ] al-baqarah-11, verset 102, mot #63 : occurrence 0 (846.57-853.2) chevauche occurrence 1 (851.99-853.2)
 
-## Chapitre 58 — Al-Mujadila (29)
+## Chapitre 58 — Al-Mujadila (18)
 
 - [ ] al-mujadila-1, verset 1, mot #7 : occurrence 0 (269.2-277.73) chevauche occurrence 1 (273.41-277.73)
 - [ ] al-mujadila-1, verset 1, mot #10 : occurrence 0 (283.49-295.12) chevauche occurrence 1 (292.46-295.12)
@@ -136,17 +136,6 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-mujadila-1, verset 6, mot #3 : occurrence 0 (1043.95-1060.29) chevauche occurrence 1 (1054.13-1060.29)
 - [ ] al-mujadila-1, verset 7, mot #1 : occurrence 0 (1127.95-1140.38) chevauche occurrence 1 (1135.13-1140.38)
 - [ ] al-mujadila-1, verset 7, mot #27 : occurrence 0 (1189.3-1204.6) chevauche occurrence 1 (1198.39-1204.6)
-- [ ] al-mujadila-2, verset 8, mot #1 : occurrence 0 (76.67-84.95) chevauche occurrence 1 (81.97-84.95)
-- [ ] al-mujadila-2, verset 8, mot #6 : occurrence 0 (88.52-107.58) chevauche occurrence 1 (99.7-107.58)
-- [ ] al-mujadila-2, verset 8, mot #13 : occurrence 0 (125.35-137.73) chevauche occurrence 1 (134.86-137.73)
-- [ ] al-mujadila-2, verset 8, mot #24 : occurrence 0 (186.06-265.68) chevauche occurrence 1 (259.36-265.68)
-- [ ] al-mujadila-2, verset 8, mot #30 : occurrence 0 (279.06-295.24) chevauche occurrence 1 (290.29-295.24)
-- [ ] al-mujadila-2, verset 9, mot #2 : occurrence 0 (371.27-409.74) chevauche occurrence 1 (399.37-409.74)
-- [ ] al-mujadila-2, verset 10, mot #6 : occurrence 0 (508.9-548.35) chevauche occurrence 1 (531.92-548.35)
-- [ ] al-mujadila-2, verset 10, mot #12 : occurrence 0 (559.2-587.3) chevauche occurrence 1 (583.09-587.3)
-- [ ] al-mujadila-2, verset 12, mot #4 : occurrence 0 (1055.43-1062.58) chevauche occurrence 1 (1061.48-1062.58)
-- [ ] al-mujadila-2, verset 12, mot #8 : occurrence 0 (1069.87-1071.6) chevauche occurrence 1 (1071.27-1071.6)
-- [ ] al-mujadila-2, verset 12, mot #10 : occurrence 0 (1072.57-1163.82) chevauche occurrence 1 (1136.36-1163.82)
 
 ## Chapitre 59 — Al-Hashr (24)
 
