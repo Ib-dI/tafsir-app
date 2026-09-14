@@ -34,6 +34,45 @@ function loadData(source) {
   return eval(`(function(){ ${js}\n return { audiosTafsir }; })()`);
 }
 
+// Detecte les mots dont les occurrences (les passages du meme mot repete
+// par le cheikh) se chevauchent entre elles - ex: l'occurrence principale
+// dure 60s et engloutit les 2 autres occurrences du meme mot a l'interieur.
+// Signe quasi certain d'une erreur de marquage (la principale n'a jamais
+// ete refermee au bon moment) plutot qu'un ecart a normaliser : jamais
+// touche par ce script, juste remonte pour correction manuelle.
+function findSelfOverlaps(audiosTafsir) {
+  const overlaps = [];
+  for (const chapter of audiosTafsir) {
+    for (const part of chapter.parts || []) {
+      for (const verse of part.timings || []) {
+        if (!verse.words) continue;
+        for (let w = 0; w < verse.words.length; w++) {
+          const occs = verse.words[w];
+          for (let i = 0; i < occs.length; i++) {
+            for (let j = i + 1; j < occs.length; j++) {
+              const a = occs[i];
+              const b = occs[j];
+              if (a.startTime < b.endTime && b.startTime < a.endTime) {
+                overlaps.push({
+                  chapter: chapter.id,
+                  part: part.id,
+                  verse: verse.id,
+                  wordIndex: w,
+                  occA: i,
+                  occB: j,
+                  a: `${a.startTime}-${a.endTime}`,
+                  b: `${b.startTime}-${b.endTime}`,
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return overlaps;
+}
+
 function flatten(audiosTafsir) {
   const nodes = [];
   const skipped = [];
@@ -192,6 +231,7 @@ function main() {
   const source = fs.readFileSync(FILE, "utf8");
   const { audiosTafsir } = loadData(source);
   const { nodes, skipped } = flatten(audiosTafsir);
+  const overlaps = findSelfOverlaps(audiosTafsir);
   const { newSource, appliedCount } = applyToSource(source, nodes);
 
   const verseShrinks = nodes.filter((n) => n.type === "verse" && n.newEnd != null).length;
@@ -209,6 +249,15 @@ function main() {
           ? `chapitre ${s.chapter}, ${s.part}, verset ${s.verse}`
           : `chapitre ${s.chapter}, ${s.part}, verset ${s.verse}, mot #${s.wordIndex}`;
       console.log(`  - [${s.level}] ${where}: start=${s.start} end=${s.end} (${s.reason})`);
+    }
+  }
+
+  if (overlaps.length) {
+    console.log(`\nOccurrences du meme mot qui se chevauchent (${overlaps.length}) - a corriger manuellement dans versets-split:`);
+    for (const o of overlaps) {
+      console.log(
+        `  - chapitre ${o.chapter}, ${o.part}, verset ${o.verse}, mot #${o.wordIndex}: occurrence ${o.occA} (${o.a}) chevauche occurrence ${o.occB} (${o.b})`,
+      );
     }
   }
 
