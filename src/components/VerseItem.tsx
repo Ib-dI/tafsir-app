@@ -49,6 +49,8 @@ export function InteractiveWord({
   isOpen,
   onOpenChange,
   highlighted,
+  animateOnOpen,
+  activeLayoutId,
   collisionBoundary,
 }: {
   // `verse-<verseId>-word-<index>` : cible du suivi de scroll au mot pendant
@@ -59,6 +61,15 @@ export function InteractiveWord({
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   highlighted?: boolean;
+  // Vrai uniquement quand cette ouverture a été déclenchée par un clic/tap
+  // utilisateur (pas par l'activation automatique pendant la lecture) :
+  // seule cette ouverture-là doit s'animer, sinon chaque mot survolé par la
+  // lecture ferait clignoter la bulle en continu.
+  animateOnOpen?: boolean;
+  // Identifiant partagé (scopé par verset) de la boîte de surlignage
+  // glissante — voir `ActiveWordHighlight`. Absent dans les usages qui ne
+  // surlignent jamais de mot actif (aperçu statique de SettingsDrawer).
+  activeLayoutId?: string;
   // Conteneur scrollable de la liste de versets (fourni par
   // AudioVerseHighlighter). Confine la bulle à ce rectangle — sous la barre
   // audio — au lieu de la laisser flotter derrière elle pour un mot en haut
@@ -81,15 +92,15 @@ export function InteractiveWord({
             onOpenChange(!isOpen);
           }}
           className={cn(
-            "-mx-0.5 cursor-pointer rounded px-0.5 transition-colors duration-150",
-            isOpen
-              ? "bg-[#d28820]/18"
-              : highlighted
-                ? "bg-[#d28820]/35"
-                : "hover:bg-[#d28820]/18",
+            "relative -mx-0.5 cursor-pointer rounded px-0.5 transition-colors duration-150",
+            isOpen && !highlighted && "bg-[#d28820]/18",
+            !isOpen && !highlighted && "hover:bg-[#d28820]/18",
           )}
         >
-          {content}
+          {highlighted && activeLayoutId && (
+            <ActiveWordHighlight layoutId={activeLayoutId} />
+          )}
+          <span className="relative z-10">{content}</span>
         </span>
       </Tooltip.Trigger>
       <Tooltip.Portal>
@@ -99,13 +110,40 @@ export function InteractiveWord({
           collisionPadding={8}
           collisionBoundary={collisionBoundary ?? undefined}
           style={{ direction: "ltr" }}
-          className="z-25 rounded-lg bg-[#3D3226] px-2.5 py-1.5 text-[0.8rem] leading-[1.3] font-medium whitespace-nowrap text-[#FBF3E4] shadow-lg"
+          className={cn(
+            "z-25 origin-(--radix-tooltip-content-transform-origin) rounded-lg bg-[#3D3226] px-2.5 py-1.5 text-[0.8rem] leading-[1.3] font-medium whitespace-nowrap text-[#FBF3E4] shadow-lg",
+            // Tooltip.Content n'utilise jamais data-state="open" (contrairement
+            // à Select/Dialog) : ouvert vaut "instant-open" ou "delayed-open"
+            // selon le délai de survol — les deux doivent être ciblés.
+            animateOnOpen &&
+              "data-[state=instant-open]:animate-in data-[state=delayed-open]:animate-in data-[state=instant-open]:fade-in-0 data-[state=delayed-open]:fade-in-0 data-[state=instant-open]:zoom-in-95 data-[state=delayed-open]:zoom-in-95",
+          )}
         >
           {translation}
           <Tooltip.Arrow className="fill-[#3D3226]" />
         </Tooltip.Content>
       </Tooltip.Portal>
     </Tooltip.Root>
+  );
+}
+
+// Boîte de surlignage partagée : Framer anime son déplacement d'un mot à
+// l'autre (FLIP via layoutId) au lieu de deux fondus de couleur indépendants
+// sur deux éléments distincts. `layoutId` est scopé par verset (voir les
+// appelants) pour qu'un changement de verset ne fasse pas glisser le
+// surlignage à travers tout l'écran — il doit alors simplement réapparaître.
+function ActiveWordHighlight({ layoutId }: { layoutId: string }) {
+  return (
+    <motion.span
+      layoutId={layoutId}
+      className="absolute inset-0 -mx-0.5 rounded bg-[#d28820]/20"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        layout: { type: "spring", stiffness: 300, damping: 20 },
+        opacity: { duration: 0.1 },
+      }}
+    />
   );
 }
 
@@ -175,6 +213,7 @@ const VerseItem = React.memo(
                       applyOrnament,
                     );
                     const isWordActive = activeWordIndex === index;
+                    const isOpenByClick = openWordIndex === index;
                     const nodes: ReactNode[] = index > 0 ? [" "] : [];
                     nodes.push(
                       wordByWordEnabled ? (
@@ -183,22 +222,27 @@ const VerseItem = React.memo(
                           id={`verse-${verse.id}-word-${index}`}
                           content={content}
                           translation={word.translation}
-                          isOpen={openWordIndex === index || isWordActive}
+                          isOpen={isOpenByClick || isWordActive}
                           onOpenChange={(open) =>
                             setOpenWordIndex(open ? index : null)
                           }
                           highlighted={isWordActive}
+                          animateOnOpen={isOpenByClick}
+                          activeLayoutId={`word-highlight-${verse.id}`}
                           collisionBoundary={collisionBoundary}
                         />
                       ) : (
                         <span
                           key={index}
                           id={`verse-${verse.id}-word-${index}`}
-                          className={`-mx-0.5 rounded px-0.5 transition-colors duration-150 ${
-                            isWordActive ? "bg-[#d28820]/35" : "bg-transparent"
-                          }`}
+                          className="relative -mx-0.5 rounded px-0.5"
                         >
-                          {content}
+                          {isWordActive && (
+                            <ActiveWordHighlight
+                              layoutId={`word-highlight-${verse.id}`}
+                            />
+                          )}
+                          <span className="relative z-10">{content}</span>
                         </span>
                       ),
                     );
