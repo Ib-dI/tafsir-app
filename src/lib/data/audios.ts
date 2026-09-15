@@ -36451,19 +36451,19 @@ export const audiosTafsir = [
             startTime: 242.52,
             endTime: 262.58,
             words: [
-              [{ startTime: 242.52, endTime: 243.8 }],
-              [{ startTime: 243.81, endTime: 248.39 }],
+              [{ startTime: 242.52, endTime: 243.95 }],
+              [{ startTime: 243.96, endTime: 248.58 }],
               [
-                { startTime: 248.4, endTime: 249.13 },
-                { startTime: 252.99, endTime: 253.52 },
+                { startTime: 248.59, endTime: 249.34 },
+                { startTime: 253.47, endTime: 253.96 },
               ],
               [
-                { startTime: 249.14, endTime: 255.65 },
-                { startTime: 253.53, endTime: 255.65 },
+                { startTime: 249.35, endTime: 253.46 },
+                { startTime: 253.97, endTime: 255.99 },
               ],
-              [{ startTime: 255.66, endTime: 257.65 }],
-              [{ startTime: 257.66, endTime: 257.91 }],
-              [{ startTime: 257.92, endTime: 262.58 }],
+              [{ startTime: 255.99, endTime: 258.2 }],
+              [{ startTime: 258.21, endTime: 258.52 }],
+              [{ startTime: 258.53, endTime: 262.58 }],
             ],
           },
           {
