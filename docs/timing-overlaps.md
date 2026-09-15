@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 528 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 527 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 528**
+**Progrès : 0 / 527**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -637,10 +637,6 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 
 - [ ] al-layl-1, verset 19, mot #2 : occurrence 0 (601.29-640.92) chevauche occurrence 1 (638.5-640.92)
 - [ ] al-layl-1, verset 20, mot #3 : occurrence 0 (654.3-661.42) chevauche occurrence 1 (658.36-661.42)
-
-## Chapitre 98 — Al-Bayyinah (1)
-
-- [ ] al-bayyinah-1, verset 5, mot #7 : occurrence 0 (220.54-241.55) chevauche occurrence 1 (238.4-241.55)
 
 ## Chapitre 99 — Az-Zalzalah (2)
 
