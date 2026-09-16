@@ -23,15 +23,15 @@ par la normalisation des ecarts (0.01s). A corriger manuellement dans
 | 12 | mot | 68 | al-qalam-1 | 32 | #8 | 1975.39 | 1975.39 |
 | 13 | mot | 68 | al-qalam-1 | 32 | #9 | 1975.39 | 1975.39 |
 | 14 | mot | 73 | al-muzzammil-1 | 6 | #3 | 654.9 | 654.9 |
-| 15 | mot | 77 | al-mursalat-1 | 3 | #1 | 252.05 | 252.05 |
-| 16 | mot | 85 | al-buruj-1 | 5 | #2 | 139.11 | 133.4 |
-| 17 | mot | 87 | al-ala-1 | 1 | #1 | 61.7 | 61.59 |
-| 18 | mot | 92 | al-layl-1 | 11 | #2 | 346.54 | 346.54 |
-| 19 | mot | 92 | al-layl-1 | 11 | #3 | 346.54 | 346.54 |
-| 20 | mot | 92 | al-layl-1 | 11 | #4 | 346.54 | 346.54 |
+| 15 | mot | 85 | al-buruj-1 | 5 | #2 | 139.11 | 133.4 |
+| 16 | mot | 92 | al-layl-1 | 11 | #2 | 346.54 | 346.54 |
+| 17 | mot | 92 | al-layl-1 | 11 | #3 | 346.54 | 346.54 |
+| 18 | mot | 92 | al-layl-1 | 11 | #4 | 346.54 | 346.54 |
 
 Chapitre 2, al-baqarah-2, verset 19, mot #9 corrigé le 2026-09-14 (n'apparaît plus).
 Chapitre 107, al-maun-1, verset 3, mot #2 : introduit le 2026-09-14 lors de la correction du chevauchement du même chapitre, corrigé le jour même (n'apparaît plus).
+Chapitre 87, al-ala-1, verset 1, mot #1 corrigé le 2026-09-16 (re-marquage manuel, n'apparaît plus).
+Chapitre 77, al-mursalat-1, verset 3, mot #1 corrigé le 2026-09-16 (mot fantôme à durée nulle, jamais prononcé dans l'audio — entrée retirée plutôt que remarquée, n'apparaît plus).
 
 ## A part : versets sans mot correspondant a leur fin
 
