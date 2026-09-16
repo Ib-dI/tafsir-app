@@ -20919,7 +20919,7 @@ export const audiosTafsir = [
           {
             id: 32,
             startTime: 1945.91,
-            endTime: 1975.9,
+            endTime: 1975.38,
             words: [
               [
                 { startTime: 1945.91, endTime: 1946.67 },
@@ -20937,10 +20937,6 @@ export const audiosTafsir = [
               [{ startTime: 1953.67, endTime: 1954.6 }],
               [{ startTime: 1954.61, endTime: 1959.03 }],
               [{ startTime: 1959.04, endTime: 1975.38 }],
-              [{ startTime: 1975.39, endTime: 1975.39 }],
-              [{ startTime: 1975.39, endTime: 1975.39 }],
-              [{ startTime: 1975.39, endTime: 1975.39 }],
-              [{ startTime: 1975.39, endTime: 1975.39 }],
             ],
           },
           {
