@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 491 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 488 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 491**
+**Progrès : 0 / 488**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -571,9 +571,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] at-takwir-1, verset 22, mot #1 : occurrence 0 (728.26-740.76) chevauche occurrence 1 (738.13-740.76)
 - [ ] at-takwir-1, verset 24, mot #1 : occurrence 0 (795.78-805.39) chevauche occurrence 1 (802.23-805.39)
 - [ ] at-takwir-1, verset 27, mot #1 : occurrence 0 (876.59-884.05) chevauche occurrence 1 (880.56-884.05)
-
-## Chapitre 82 — Al-Infitar (3)
-
-- [ ] al-infitar-1, verset 1, mot #1 : occurrence 0 (47.03-54.39) chevauche occurrence 1 (51.6-54.39)
-- [ ] al-infitar-1, verset 6, mot #4 : occurrence 0 (208.55-237.96) chevauche occurrence 1 (234.68-237.96)
-- [ ] al-infitar-1, verset 16, mot #2 : occurrence 0 (475.92-481.82) chevauche occurrence 1 (480.14-481.82)
