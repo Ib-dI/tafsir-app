@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 484 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 482 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 484**
+**Progrès : 0 / 482**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -559,8 +559,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] an-naziat-1, verset 28, mot #1 : occurrence 0 (946.54-953.54) chevauche occurrence 1 (950.38-953.54)
 - [ ] an-naziat-1, verset 35, mot #2 : occurrence 0 (1127.68-1140.83) chevauche occurrence 1 (1137.47-1140.83)
 - [ ] an-naziat-1, verset 36, mot #1 : occurrence 0 (1155.88-1164.29) chevauche occurrence 1 (1162.14-1164.29)
-
-## Chapitre 80 — Abasa (2)
-
-- [ ] abasa-1, verset 24, mot #1 : occurrence 0 (813.93-841.52) chevauche occurrence 1 (838.49-841.52)
-- [ ] abasa-1, verset 25, mot #1 : occurrence 0 (851.47-860.47) chevauche occurrence 1 (858.51-860.47)
