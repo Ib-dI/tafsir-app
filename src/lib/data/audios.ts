@@ -32099,28 +32099,28 @@ export const audiosTafsir = [
             endTime: 252.35,
             words: [
               [{ startTime: 194.16, endTime: 195.96 }],
-              [{ startTime: 195.97, endTime: 201.12 }],
+              [{ startTime: 195.97, endTime: 201.16 }],
               [
-                { startTime: 201.13, endTime: 202.08 },
-                { startTime: 209.18, endTime: 210.09 },
+                { startTime: 201.17, endTime: 202.76 },
+                { startTime: 209.35, endTime: 210.6 },
               ],
               [
-                { startTime: 202.09, endTime: 203.67 },
-                { startTime: 210.1, endTime: 211.89 },
+                { startTime: 202.77, endTime: 204.27 },
+                { startTime: 210.61, endTime: 211.65 },
               ],
               [
-                { startTime: 203.68, endTime: 204.6 },
-                { startTime: 211.9, endTime: 212.39 },
+                { startTime: 204.28, endTime: 204.82 },
+                { startTime: 211.66, endTime: 212.58 },
               ],
               [
-                { startTime: 204.61, endTime: 205.43 },
-                { startTime: 212.4, endTime: 212.95 },
+                { startTime: 204.83, endTime: 205.86 },
+                { startTime: 212.59, endTime: 213.47 },
               ],
               [
-                { startTime: 205.44, endTime: 226.39 },
-                { startTime: 212.96, endTime: 226.39 },
+                { startTime: 205.87, endTime: 209.34 },
+                { startTime: 213.49, endTime: 226.98 },
               ],
-              [{ startTime: 226.4, endTime: 252.35 }],
+              [{ startTime: 226.99, endTime: 252.35 }],
             ],
           },
           {
@@ -32152,18 +32152,18 @@ export const audiosTafsir = [
             endTime: 322.89,
             words: [
               [
-                { startTime: 288.3, endTime: 295.08 },
-                { startTime: 305.9, endTime: 310.04 },
+                { startTime: 288.3, endTime: 294.98 },
+                { startTime: 306.68, endTime: 310.61 },
               ],
               [
-                { startTime: 295.09, endTime: 295.75 },
-                { startTime: 310.05, endTime: 310.63 },
+                { startTime: 294.99, endTime: 295.85 },
+                { startTime: 310.62, endTime: 311.12 },
               ],
               [
-                { startTime: 295.76, endTime: 315.81 },
-                { startTime: 310.64, endTime: 315.81 },
+                { startTime: 295.86, endTime: 306.67 },
+                { startTime: 311.13, endTime: 316.14 },
               ],
-              [{ startTime: 315.82, endTime: 322.89 }],
+              [{ startTime: 316.15, endTime: 322.89 }],
             ],
           },
           {
@@ -32172,23 +32172,23 @@ export const audiosTafsir = [
             endTime: 349.48,
             words: [
               [
-                { startTime: 322.9, endTime: 324.3 },
-                { startTime: 332.79, endTime: 334.04 },
+                { startTime: 322.9, endTime: 324.41 },
+                { startTime: 332.5, endTime: 334.42 },
               ],
               [
-                { startTime: 324.31, endTime: 324.7 },
-                { startTime: 334.05, endTime: 334.39 },
+                { startTime: 324.42, endTime: 324.86 },
+                { startTime: 334.43, endTime: 335.02 },
               ],
               [
-                { startTime: 324.71, endTime: 328.63 },
-                { startTime: 334.4, endTime: 337.16 },
+                { startTime: 324.87, endTime: 328.7 },
+                { startTime: 335.03, endTime: 337.48 },
               ],
               [
-                { startTime: 328.64, endTime: 342.85 },
-                { startTime: 337.17, endTime: 342.85 },
+                { startTime: 328.71, endTime: 332.49 },
+                { startTime: 337.49, endTime: 342.9 },
               ],
-              [{ startTime: 342.86, endTime: 344.34 }],
-              [{ startTime: 344.35, endTime: 349.48 }],
+              [{ startTime: 342.91, endTime: 344.75 }],
+              [{ startTime: 344.76, endTime: 349.48 }],
             ],
           },
           {
@@ -32233,7 +32233,7 @@ export const audiosTafsir = [
                 { startTime: 455.54, endTime: 456.4 },
               ],
               [
-                { startTime: 428.7, endTime: 429 },
+                { startTime: 428.7, endTime: 429.0 },
                 { startTime: 456.41, endTime: 456.72 },
               ],
               [
@@ -32342,15 +32342,15 @@ export const audiosTafsir = [
             endTime: 699.57,
             words: [
               [
-                { startTime: 674.92, endTime: 675.49 },
-                { startTime: 681.5, endTime: 682.44 },
+                { startTime: 674.92, endTime: 676.03 },
+                { startTime: 682.42, endTime: 682.99 },
               ],
               [
-                { startTime: 675.5, endTime: 689.02 },
-                { startTime: 682.45, endTime: 689.02 },
+                { startTime: 676.04, endTime: 682.41 },
+                { startTime: 683.0, endTime: 689.61 },
               ],
-              [{ startTime: 689.03, endTime: 689.67 }],
-              [{ startTime: 689.68, endTime: 699.57 }],
+              [{ startTime: 689.62, endTime: 690.07 }],
+              [{ startTime: 690.08, endTime: 699.57 }],
             ],
           },
           {
@@ -32407,17 +32407,17 @@ export const audiosTafsir = [
               [{ startTime: 777.18, endTime: 777.94 }],
               [{ startTime: 777.95, endTime: 787.91 }],
               [{ startTime: 787.92, endTime: 788.96 }],
-              [{ startTime: 788.97, endTime: 800.57 }],
+              [{ startTime: 788.97, endTime: 801.41 }],
               [
-                { startTime: 800.58, endTime: 801.49 },
-                { startTime: 804.29, endTime: 804.95 },
+                { startTime: 801.42, endTime: 802.01 },
+                { startTime: 804.71, endTime: 805.4 },
               ],
               [
-                { startTime: 801.5, endTime: 810.2 },
-                { startTime: 804.96, endTime: 810.2 },
+                { startTime: 802.02, endTime: 804.7 },
+                { startTime: 805.41, endTime: 810.83 },
               ],
-              [{ startTime: 810.21, endTime: 811.07 }],
-              [{ startTime: 811.08, endTime: 849.06 }],
+              [{ startTime: 810.84, endTime: 812.11 }],
+              [{ startTime: 812.12, endTime: 849.06 }],
             ],
           },
         ],

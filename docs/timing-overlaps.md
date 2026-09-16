@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 501 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 496 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 501**
+**Progrès : 0 / 496**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -585,11 +585,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-mutaffifin-1, verset 24, mot #2 : occurrence 0 (965.39-972.4) chevauche occurrence 1 (969.12-972.4)
 - [ ] al-mutaffifin-1, verset 31, mot #1 : occurrence 0 (1219.59-1233.51) chevauche occurrence 1 (1229.87-1233.51)
 - [ ] al-mutaffifin-1, verset 33, mot #1 : occurrence 0 (1290.23-1295.36) chevauche occurrence 1 (1292.72-1295.36)
-
-## Chapitre 84 — Al-Inshiqaq (5)
-
-- [ ] al-inshiqaq-1, verset 6, mot #6 : occurrence 0 (205.44-226.39) chevauche occurrence 1 (212.96-226.39)
-- [ ] al-inshiqaq-1, verset 9, mot #2 : occurrence 0 (295.76-315.81) chevauche occurrence 1 (310.64-315.81)
-- [ ] al-inshiqaq-1, verset 10, mot #3 : occurrence 0 (328.64-342.85) chevauche occurrence 1 (337.17-342.85)
-- [ ] al-inshiqaq-1, verset 20, mot #1 : occurrence 0 (675.5-689.02) chevauche occurrence 1 (682.45-689.02)
-- [ ] al-inshiqaq-1, verset 25, mot #6 : occurrence 0 (801.5-810.2) chevauche occurrence 1 (804.96-810.2)
