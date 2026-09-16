@@ -24708,7 +24708,6 @@ export const audiosTafsir = [
                 { startTime: 667.67, endTime: 674.68 },
               ],
               [
-                { startTime: 654.9, endTime: 654.9 },
                 { startTime: 674.69, endTime: 675.37 },
                 { startTime: 686.25, endTime: 686.77 },
                 { startTime: 725.46, endTime: 726.01 },

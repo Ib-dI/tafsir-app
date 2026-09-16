@@ -18,7 +18,6 @@ par la normalisation des ecarts (0.01s). A corriger manuellement dans
 | 7 | mot | 59 | al-hashr-2 | 17 | #3 | 936.21 | 936.19 |
 | 8 | mot | 59 | al-hashr-2 | 17 | #8 | 947.54 | 947.54 |
 | 9 | mot | 67 | al-mulk-2 | 23 | #11 | 558.64 | 514.16 |
-| 10 | mot | 73 | al-muzzammil-1 | 6 | #3 | 654.9 | 654.9 |
 
 Chapitre 2, al-baqarah-2, verset 19, mot #9 corrigé le 2026-09-14 (n'apparaît plus).
 Chapitre 107, al-maun-1, verset 3, mot #2 : introduit le 2026-09-14 lors de la correction du chevauchement du même chapitre, corrigé le jour même (n'apparaît plus).
@@ -26,6 +25,7 @@ Chapitre 87, al-ala-1, verset 1, mot #1 corrigé le 2026-09-16 (re-marquage manu
 Chapitre 77, al-mursalat-1, verset 3, mot #1 corrigé le 2026-09-16 (mot fantôme à durée nulle, jamais prononcé dans l'audio — entrée retirée plutôt que remarquée, n'apparaît plus).
 Chapitre 85, al-buruj-1, verset 5, mot #2 corrigé le 2026-09-16 lors de la correction du chevauchement du même chapitre (n'apparaît plus).
 Chapitre 68, al-qalam-1, verset 32, mots #6 à #9 corrigés le 2026-09-16 : mots fantômes jamais cités dans l'audio, entrées retirées, `endTime` du verset ramené à la fin du dernier vrai mot (1975.38, n'apparaît plus).
+Chapitre 73, al-muzzammil-1, verset 6, mot #3 corrigé le 2026-09-16 : saut de mot lors du premier passage (occurrence 0 à durée nulle), le mot est bien cité plus loin dans le verset (3 occurrences valides restantes) — occurrence fantôme retirée (n'apparaît plus).
 Chapitre 92, al-layl-1, verset 11, mots #2 à #4 corrigés le 2026-09-16 : le récitateur s'est arrêté après 2 mots pour reprendre le verset 10, mots fantômes forcés par l'ancienne limite de versets-split (impossible de terminer un verset sans marquer tous ses mots) — les 4 entrées fantômes retirées (dont le mot #5, `endTime` auto-calé sur la fin du verset par le même mécanisme), `endTime` du verset ramené à la fin du dernier vrai mot (346.53). Le verset 11 est correctement redit en entier juste après (occurrence suivante).
 
 ## A part : versets sans mot correspondant a leur fin
