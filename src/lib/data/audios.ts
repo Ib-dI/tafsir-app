@@ -34635,21 +34635,21 @@ export const audiosTafsir = [
             endTime: 399.04,
             words: [
               [{ startTime: 350.71, endTime: 358.54 }],
-              [{ startTime: 358.55, endTime: 364.12 }],
+              [{ startTime: 358.55, endTime: 364.4 }],
               [
-                { startTime: 364.13, endTime: 365.59 },
-                { startTime: 371.84, endTime: 373.22 },
+                { startTime: 364.41, endTime: 365.63 },
+                { startTime: 371.88, endTime: 373.19 },
               ],
               [
-                { startTime: 365.6, endTime: 369.45 },
-                { startTime: 373.23, endTime: 375.88 },
+                { startTime: 365.64, endTime: 369.37 },
+                { startTime: 373.2, endTime: 376.19 },
               ],
               [
-                { startTime: 369.46, endTime: 379.2 },
-                { startTime: 375.89, endTime: 379.2 },
+                { startTime: 369.38, endTime: 371.87 },
+                { startTime: 376.2, endTime: 379.23 },
               ],
-              [{ startTime: 379.21, endTime: 388.8 }],
-              [{ startTime: 388.81, endTime: 399.04 }],
+              [{ startTime: 379.23, endTime: 388.81 }],
+              [{ startTime: 388.82, endTime: 399.04 }],
             ],
           },
           {
