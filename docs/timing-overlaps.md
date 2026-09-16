@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 482 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 475 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 482**
+**Progrès : 0 / 475**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -549,13 +549,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] an-naba-1, verset 39, mot #2 : occurrence 0 (1207.03-1229.99) chevauche occurrence 1 (1213.82-1229.99)
 - [ ] an-naba-1, verset 40, mot #3 : occurrence 0 (1320.09-1361.8) chevauche occurrence 1 (1358.44-1361.8)
 - [ ] an-naba-1, verset 40, mot #9 : occurrence 0 (1370.55-1399.75) chevauche occurrence 1 (1396.79-1399.75)
-
-## Chapitre 79 — An-Nazi'at (7)
-
-- [ ] an-naziat-1, verset 11, mot #1 : occurrence 0 (417.99-424.03) chevauche occurrence 1 (420.68-424.03)
-- [ ] an-naziat-1, verset 14, mot #1 : occurrence 0 (493.67-497.7) chevauche occurrence 1 (496.42-497.7)
-- [ ] an-naziat-1, verset 16, mot #2 : occurrence 0 (523.55-533.73) chevauche occurrence 1 (528.85-533.73)
-- [ ] an-naziat-1, verset 26, mot #3 : occurrence 0 (839.04-854.08) chevauche occurrence 1 (847.69-854.08)
-- [ ] an-naziat-1, verset 28, mot #1 : occurrence 0 (946.54-953.54) chevauche occurrence 1 (950.38-953.54)
-- [ ] an-naziat-1, verset 35, mot #2 : occurrence 0 (1127.68-1140.83) chevauche occurrence 1 (1137.47-1140.83)
-- [ ] an-naziat-1, verset 36, mot #1 : occurrence 0 (1155.88-1164.29) chevauche occurrence 1 (1162.14-1164.29)
