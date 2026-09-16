@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 505 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 501 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 505**
+**Progrès : 0 / 501**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -593,10 +593,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-inshiqaq-1, verset 10, mot #3 : occurrence 0 (328.64-342.85) chevauche occurrence 1 (337.17-342.85)
 - [ ] al-inshiqaq-1, verset 20, mot #1 : occurrence 0 (675.5-689.02) chevauche occurrence 1 (682.45-689.02)
 - [ ] al-inshiqaq-1, verset 25, mot #6 : occurrence 0 (801.5-810.2) chevauche occurrence 1 (804.96-810.2)
-
-## Chapitre 85 — Al-Buruj (4)
-
-- [ ] al-buruj-1, verset 5, mot #0 : occurrence 0 (134.09-138.07) chevauche occurrence 1 (133.4-138)
-- [ ] al-buruj-1, verset 5, mot #1 : occurrence 0 (138.08-139.1) chevauche occurrence 1 (138.01-139.03)
-- [ ] al-buruj-1, verset 21, mot #1 : occurrence 0 (652.01-668.9) chevauche occurrence 1 (657.41-661.54)
-- [ ] al-buruj-1, verset 21, mot #1 : occurrence 0 (652.01-668.9) chevauche occurrence 2 (661.95-668.9)
