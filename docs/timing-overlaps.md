@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 496 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 491 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 496**
+**Progrès : 0 / 491**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -577,11 +577,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-infitar-1, verset 1, mot #1 : occurrence 0 (47.03-54.39) chevauche occurrence 1 (51.6-54.39)
 - [ ] al-infitar-1, verset 6, mot #4 : occurrence 0 (208.55-237.96) chevauche occurrence 1 (234.68-237.96)
 - [ ] al-infitar-1, verset 16, mot #2 : occurrence 0 (475.92-481.82) chevauche occurrence 1 (480.14-481.82)
-
-## Chapitre 83 — Al-Mutaffifin (5)
-
-- [ ] al-mutaffifin-1, verset 17, mot #1 : occurrence 0 (717.28-727.96) chevauche occurrence 1 (725.71-727.96)
-- [ ] al-mutaffifin-1, verset 18, mot #3 : occurrence 0 (815.45-834.01) chevauche occurrence 1 (829.63-834.01)
-- [ ] al-mutaffifin-1, verset 24, mot #2 : occurrence 0 (965.39-972.4) chevauche occurrence 1 (969.12-972.4)
-- [ ] al-mutaffifin-1, verset 31, mot #1 : occurrence 0 (1219.59-1233.51) chevauche occurrence 1 (1229.87-1233.51)
-- [ ] al-mutaffifin-1, verset 33, mot #1 : occurrence 0 (1290.23-1295.36) chevauche occurrence 1 (1292.72-1295.36)
