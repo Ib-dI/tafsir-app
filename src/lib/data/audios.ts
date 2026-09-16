@@ -34781,14 +34781,10 @@ export const audiosTafsir = [
           {
             id: 11,
             startTime: 344.08,
-            endTime: 346.57,
+            endTime: 346.53,
             words: [
               [{ startTime: 344.08, endTime: 344.91 }],
               [{ startTime: 344.92, endTime: 346.53 }],
-              [{ startTime: 346.54, endTime: 346.54 }],
-              [{ startTime: 346.54, endTime: 346.54 }],
-              [{ startTime: 346.54, endTime: 346.54 }],
-              [{ startTime: 346.54, endTime: 346.57 }],
             ],
           },
           {

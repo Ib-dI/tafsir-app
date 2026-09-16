@@ -24,14 +24,12 @@ par la normalisation des ecarts (0.01s). A corriger manuellement dans
 | 13 | mot | 68 | al-qalam-1 | 32 | #9 | 1975.39 | 1975.39 |
 | 14 | mot | 73 | al-muzzammil-1 | 6 | #3 | 654.9 | 654.9 |
 | 15 | mot | 85 | al-buruj-1 | 5 | #2 | 139.11 | 133.4 |
-| 16 | mot | 92 | al-layl-1 | 11 | #2 | 346.54 | 346.54 |
-| 17 | mot | 92 | al-layl-1 | 11 | #3 | 346.54 | 346.54 |
-| 18 | mot | 92 | al-layl-1 | 11 | #4 | 346.54 | 346.54 |
 
 Chapitre 2, al-baqarah-2, verset 19, mot #9 corrigé le 2026-09-14 (n'apparaît plus).
 Chapitre 107, al-maun-1, verset 3, mot #2 : introduit le 2026-09-14 lors de la correction du chevauchement du même chapitre, corrigé le jour même (n'apparaît plus).
 Chapitre 87, al-ala-1, verset 1, mot #1 corrigé le 2026-09-16 (re-marquage manuel, n'apparaît plus).
 Chapitre 77, al-mursalat-1, verset 3, mot #1 corrigé le 2026-09-16 (mot fantôme à durée nulle, jamais prononcé dans l'audio — entrée retirée plutôt que remarquée, n'apparaît plus).
+Chapitre 92, al-layl-1, verset 11, mots #2 à #4 corrigés le 2026-09-16 : le récitateur s'est arrêté après 2 mots pour reprendre le verset 10, mots fantômes forcés par l'ancienne limite de versets-split (impossible de terminer un verset sans marquer tous ses mots) — les 4 entrées fantômes retirées (dont le mot #5, `endTime` auto-calé sur la fin du verset par le même mécanisme), `endTime` du verset ramené à la fin du dernier vrai mot (346.53). Le verset 11 est correctement redit en entier juste après (occurrence suivante).
 
 ## A part : versets sans mot correspondant a leur fin
 
