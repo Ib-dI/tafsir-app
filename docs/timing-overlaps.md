@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 464 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 459 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 464**
+**Progrès : 0 / 459**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -527,11 +527,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-insan-2, verset 26, mot #3 : occurrence 0 (421.86-433.61) chevauche occurrence 1 (431.69-433.58)
 - [ ] al-insan-2, verset 30, mot #5 : occurrence 0 (588.56-643.66) chevauche occurrence 1 (618.88-643.66)
 - [ ] al-insan-2, verset 30, mot #9 : occurrence 0 (646.42-665.28) chevauche occurrence 1 (652.3-665.28)
-
-## Chapitre 77 — Al-Mursalat (5)
-
-- [ ] al-mursalat-1, verset 20, mot #1 : occurrence 0 (578.41-600.08) chevauche occurrence 1 (597.32-600.08)
-- [ ] al-mursalat-1, verset 27, mot #3 : occurrence 0 (847.97-890.79) chevauche occurrence 1 (882.48-890.79)
-- [ ] al-mursalat-2, verset 38, mot #3 : occurrence 0 (410.66-437.63) chevauche occurrence 1 (432.45-437.63)
-- [ ] al-mursalat-2, verset 41, mot #1 : occurrence 0 (530.55-548.91) chevauche occurrence 1 (544.93-548.78)
-- [ ] al-mursalat-2, verset 50, mot #1 : occurrence 0 (898.17-906.32) chevauche occurrence 1 (903.09-906.32)
