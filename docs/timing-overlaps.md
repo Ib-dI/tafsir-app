@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 435 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 418 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 435**
+**Progrès : 0 / 418**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -477,23 +477,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-muzzammil-1, verset 20, mot #24 : occurrence 0 (1609.12-1630.62) chevauche occurrence 1 (1627.65-1630.62)
 - [ ] al-muzzammil-1, verset 20, mot #33 : occurrence 0 (1681-1683.28) chevauche occurrence 1 (1682.45-1683.28)
 - [ ] al-muzzammil-1, verset 20, mot #47 : occurrence 0 (1715.97-1733.6) chevauche occurrence 1 (1732.2-1733.6)
-
-## Chapitre 74 — Al-Muddathir (17)
-
-- [ ] al-muddathir-1, verset 9, mot #1 : occurrence 0 (355.54-364.31) chevauche occurrence 1 (357.32-360.92)
-- [ ] al-muddathir-1, verset 9, mot #1 : occurrence 0 (355.54-364.31) chevauche occurrence 2 (362.82-364.31)
-- [ ] al-muddathir-1, verset 24, mot #4 : occurrence 0 (931.62-939.31) chevauche occurrence 1 (936.48-939.31)
-- [ ] al-muddathir-2, verset 31, mot #3 : occurrence 0 (102.97-116.94) chevauche occurrence 1 (109.05-116.94)
-- [ ] al-muddathir-2, verset 31, mot #12 : occurrence 0 (193.36-263.87) chevauche occurrence 1 (253.3-263.87)
-- [ ] al-muddathir-2, verset 31, mot #20 : occurrence 0 (303.32-345.07) chevauche occurrence 1 (331.08-345.07)
-- [ ] al-muddathir-2, verset 31, mot #23 : occurrence 0 (346.85-353.12) chevauche occurrence 1 (351.61-353.12)
-- [ ] al-muddathir-2, verset 31, mot #26 : occurrence 0 (359.06-420.56) chevauche occurrence 1 (400.63-420.56)
-- [ ] al-muddathir-2, verset 31, mot #28 : occurrence 0 (421.47-431.68) chevauche occurrence 1 (427.17-431.68)
-- [ ] al-muddathir-2, verset 31, mot #31 : occurrence 0 (432.91-475.35) chevauche occurrence 1 (445.31-461.09)
-- [ ] al-muddathir-2, verset 31, mot #31 : occurrence 0 (432.91-475.35) chevauche occurrence 2 (465.18-475.35)
-- [ ] al-muddathir-2, verset 31, mot #38 : occurrence 0 (536.35-557.81) chevauche occurrence 1 (555.76-557.81)
-- [ ] al-muddathir-2, verset 31, mot #51 : occurrence 0 (581.17-616) chevauche occurrence 1 (594.36-601.32)
-- [ ] al-muddathir-2, verset 31, mot #51 : occurrence 0 (581.17-616) chevauche occurrence 2 (607.49-616)
-- [ ] al-muddathir-2, verset 53, mot #3 : occurrence 0 (1443.86-1447.9) chevauche occurrence 1 (1445.84-1447.9)
-- [ ] al-muddathir-2, verset 56, mot #5 : occurrence 0 (1477.83-1512.72) chevauche occurrence 1 (1510.89-1512.72)
-- [ ] al-muddathir-2, verset 56, mot #8 : occurrence 0 (1513.63-1525.92) chevauche occurrence 1 (1522.92-1525.92)
