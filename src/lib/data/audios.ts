@@ -26334,7 +26334,7 @@ export const audiosTafsir = [
               [
                 { startTime: 39.31, endTime: 40.74 },
                 { startTime: 45.2, endTime: 47.45 },
-                { startTime: 82.08, endTime: 85 },
+                { startTime: 82.08, endTime: 85.0 },
               ],
               [
                 { startTime: 40.75, endTime: 41.37 },
@@ -26387,26 +26387,26 @@ export const audiosTafsir = [
             endTime: 279.94,
             words: [
               [
-                { startTime: 219.67, endTime: 220.72 },
-                { startTime: 226.3, endTime: 226.9 },
-                { startTime: 267.71, endTime: 268.46 },
+                { startTime: 219.67, endTime: 220.81 },
+                { startTime: 225.93, endTime: 226.93 },
+                { startTime: 267.48, endTime: 268.53 },
               ],
               [
-                { startTime: 220.73, endTime: 230.02 },
-                { startTime: 226.91, endTime: 230.02 },
-                { startTime: 268.47, endTime: 271.77 },
+                { startTime: 220.82, endTime: 225.92 },
+                { startTime: 226.94, endTime: 230.28 },
+                { startTime: 268.54, endTime: 271.34 },
               ],
               [
-                { startTime: 230.03, endTime: 230.9 },
-                { startTime: 271.78, endTime: 272.43 },
+                { startTime: 230.29, endTime: 231.05 },
+                { startTime: 271.35, endTime: 272.41 },
               ],
               [
-                { startTime: 230.91, endTime: 235.84 },
-                { startTime: 272.44, endTime: 275.92 },
+                { startTime: 231.06, endTime: 235.76 },
+                { startTime: 272.42, endTime: 275.88 },
               ],
               [
-                { startTime: 235.85, endTime: 267.71 },
-                { startTime: 275.93, endTime: 279.94 },
+                { startTime: 235.77, endTime: 267.47 },
+                { startTime: 275.89, endTime: 279.94 },
               ],
             ],
           },
@@ -26547,15 +26547,15 @@ export const audiosTafsir = [
             endTime: 555.96,
             words: [
               [
-                { startTime: 533.97, endTime: 535.37 },
-                { startTime: 540.64, endTime: 541.24 },
+                { startTime: 533.97, endTime: 535.4 },
+                { startTime: 540.74, endTime: 541.27 },
               ],
               [
-                { startTime: 535.38, endTime: 544.3 },
-                { startTime: 541.25, endTime: 544.3 },
+                { startTime: 535.41, endTime: 540.73 },
+                { startTime: 541.28, endTime: 544.23 },
               ],
-              [{ startTime: 544.31, endTime: 546.61 }],
-              [{ startTime: 546.62, endTime: 555.96 }],
+              [{ startTime: 544.24, endTime: 546.67 }],
+              [{ startTime: 546.68, endTime: 555.96 }],
             ],
           },
           {
@@ -26564,30 +26564,30 @@ export const audiosTafsir = [
             endTime: 657.25,
             words: [
               [
-                { startTime: 555.97, endTime: 556.79 },
-                { startTime: 561.9, endTime: 562.8 },
-                { startTime: 644.52, endTime: 645.2 },
+                { startTime: 555.97, endTime: 556.84 },
+                { startTime: 562.01, endTime: 562.9 },
+                { startTime: 644.64, endTime: 645.24 },
               ],
               [
-                { startTime: 556.8, endTime: 565.32 },
-                { startTime: 562.81, endTime: 565.32 },
-                { startTime: 645.21, endTime: 648.13 },
+                { startTime: 556.85, endTime: 562.0 },
+                { startTime: 562.91, endTime: 565.3 },
+                { startTime: 645.25, endTime: 648.23 },
               ],
               [
-                { startTime: 565.33, endTime: 567.16 },
-                { startTime: 648.14, endTime: 650.28 },
+                { startTime: 565.31, endTime: 567.22 },
+                { startTime: 648.24, endTime: 650.1 },
               ],
               [
-                { startTime: 567.17, endTime: 567.63 },
-                { startTime: 650.29, endTime: 650.98 },
+                { startTime: 567.23, endTime: 567.84 },
+                { startTime: 650.11, endTime: 650.95 },
               ],
               [
-                { startTime: 567.64, endTime: 570.56 },
-                { startTime: 650.99, endTime: 652.91 },
+                { startTime: 567.85, endTime: 570.63 },
+                { startTime: 650.96, endTime: 652.98 },
               ],
               [
-                { startTime: 570.57, endTime: 644.52 },
-                { startTime: 652.92, endTime: 657.25 },
+                { startTime: 570.64, endTime: 644.63 },
+                { startTime: 652.99, endTime: 657.25 },
               ],
             ],
           },
@@ -26646,17 +26646,17 @@ export const audiosTafsir = [
             endTime: 794.82,
             words: [
               [
-                { startTime: 778.43, endTime: 778.81 },
-                { startTime: 783.47, endTime: 784.07 },
+                { startTime: 778.43, endTime: 778.79 },
+                { startTime: 783.63, endTime: 784.05 },
               ],
               [
-                { startTime: 778.82, endTime: 786.48 },
-                { startTime: 784.08, endTime: 786.48 },
+                { startTime: 778.8, endTime: 783.62 },
+                { startTime: 784.06, endTime: 786.32 },
               ],
-              [{ startTime: 786.49, endTime: 788.52 }],
-              [{ startTime: 788.53, endTime: 790.73 }],
-              [{ startTime: 790.74, endTime: 791.44 }],
-              [{ startTime: 791.45, endTime: 794.82 }],
+              [{ startTime: 786.33, endTime: 788.59 }],
+              [{ startTime: 788.6, endTime: 790.73 }],
+              [{ startTime: 790.74, endTime: 791.43 }],
+              [{ startTime: 791.44, endTime: 794.82 }],
             ],
           },
           {
@@ -26665,18 +26665,18 @@ export const audiosTafsir = [
             endTime: 813.79,
             words: [
               [
-                { startTime: 794.83, endTime: 795.36 },
-                { startTime: 804.73, endTime: 805.74 },
+                { startTime: 794.83, endTime: 795.42 },
+                { startTime: 804.78, endTime: 805.77 },
               ],
               [
-                { startTime: 795.37, endTime: 797.59 },
-                { startTime: 805.75, endTime: 806.49 },
+                { startTime: 795.43, endTime: 797.62 },
+                { startTime: 805.78, endTime: 806.47 },
               ],
               [
-                { startTime: 797.6, endTime: 811.15 },
-                { startTime: 806.5, endTime: 811.15 },
+                { startTime: 797.63, endTime: 804.77 },
+                { startTime: 806.48, endTime: 811.34 },
               ],
-              [{ startTime: 811.16, endTime: 813.79 }],
+              [{ startTime: 811.35, endTime: 813.79 }],
             ],
           },
           {
@@ -27001,14 +27001,14 @@ export const audiosTafsir = [
             endTime: 1346.29,
             words: [
               [
-                { startTime: 1335.25, endTime: 1335.89 },
-                { startTime: 1341.11, endTime: 1342.01 },
+                { startTime: 1335.25, endTime: 1335.8 },
+                { startTime: 1341.18, endTime: 1342.01 },
               ],
               [
-                { startTime: 1335.9, endTime: 1344.16 },
-                { startTime: 1342.02, endTime: 1344.16 },
+                { startTime: 1335.81, endTime: 1341.17 },
+                { startTime: 1342.02, endTime: 1344.18 },
               ],
-              [{ startTime: 1344.17, endTime: 1346.29 }],
+              [{ startTime: 1344.19, endTime: 1346.29 }],
             ],
           },
           {
@@ -27017,18 +27017,18 @@ export const audiosTafsir = [
             endTime: 1359.15,
             words: [
               [
-                { startTime: 1346.3, endTime: 1347.32 },
-                { startTime: 1350.97, endTime: 1352.21 },
+                { startTime: 1346.3, endTime: 1347.41 },
+                { startTime: 1350.8, endTime: 1352.2 },
               ],
               [
-                { startTime: 1347.33, endTime: 1347.57 },
-                { startTime: 1352.22, endTime: 1352.5 },
+                { startTime: 1347.42, endTime: 1347.68 },
+                { startTime: 1352.21, endTime: 1352.56 },
               ],
               [
-                { startTime: 1347.58, endTime: 1355.38 },
-                { startTime: 1352.51, endTime: 1355.38 },
+                { startTime: 1347.69, endTime: 1350.79 },
+                { startTime: 1352.57, endTime: 1355.36 },
               ],
-              [{ startTime: 1355.39, endTime: 1359.15 }],
+              [{ startTime: 1355.37, endTime: 1359.15 }],
             ],
           },
           {
@@ -27101,18 +27101,18 @@ export const audiosTafsir = [
             endTime: 1536.6,
             words: [
               [
-                { startTime: 1458.38, endTime: 1459.06 },
-                { startTime: 1461.03, endTime: 1461.77 },
+                { startTime: 1458.38, endTime: 1459.23 },
+                { startTime: 1460.96, endTime: 1461.81 },
               ],
               [
-                { startTime: 1459.07, endTime: 1467.77 },
-                { startTime: 1461.78, endTime: 1467.77 },
+                { startTime: 1459.24, endTime: 1460.95 },
+                { startTime: 1461.82, endTime: 1467.8 },
               ],
-              [{ startTime: 1467.78, endTime: 1470.32 }],
-              [{ startTime: 1470.33, endTime: 1471.27 }],
-              [{ startTime: 1471.28, endTime: 1471.75 }],
-              [{ startTime: 1471.76, endTime: 1472.49 }],
-              [{ startTime: 1472.5, endTime: 1536.6 }],
+              [{ startTime: 1467.81, endTime: 1470.16 }],
+              [{ startTime: 1470.17, endTime: 1471.3 }],
+              [{ startTime: 1471.31, endTime: 1471.73 }],
+              [{ startTime: 1471.74, endTime: 1472.47 }],
+              [{ startTime: 1472.48, endTime: 1536.6 }],
             ],
           },
         ],

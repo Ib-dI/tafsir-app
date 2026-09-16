@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 443 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 435 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 443**
+**Progrès : 0 / 435**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -497,14 +497,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-muddathir-2, verset 53, mot #3 : occurrence 0 (1443.86-1447.9) chevauche occurrence 1 (1445.84-1447.9)
 - [ ] al-muddathir-2, verset 56, mot #5 : occurrence 0 (1477.83-1512.72) chevauche occurrence 1 (1510.89-1512.72)
 - [ ] al-muddathir-2, verset 56, mot #8 : occurrence 0 (1513.63-1525.92) chevauche occurrence 1 (1522.92-1525.92)
-
-## Chapitre 75 — Al-Qiyamah (8)
-
-- [ ] al-qiyamah-1, verset 3, mot #1 : occurrence 0 (220.73-230.02) chevauche occurrence 1 (226.91-230.02)
-- [ ] al-qiyamah-1, verset 12, mot #1 : occurrence 0 (535.38-544.3) chevauche occurrence 1 (541.25-544.3)
-- [ ] al-qiyamah-1, verset 13, mot #1 : occurrence 0 (556.8-565.32) chevauche occurrence 1 (562.81-565.32)
-- [ ] al-qiyamah-1, verset 16, mot #1 : occurrence 0 (778.82-786.48) chevauche occurrence 1 (784.08-786.48)
-- [ ] al-qiyamah-1, verset 17, mot #2 : occurrence 0 (797.6-811.15) chevauche occurrence 1 (806.5-811.15)
-- [ ] al-qiyamah-1, verset 34, mot #1 : occurrence 0 (1335.9-1344.16) chevauche occurrence 1 (1342.02-1344.16)
-- [ ] al-qiyamah-1, verset 35, mot #2 : occurrence 0 (1347.58-1355.38) chevauche occurrence 1 (1352.51-1355.38)
-- [ ] al-qiyamah-1, verset 40, mot #1 : occurrence 0 (1459.07-1467.77) chevauche occurrence 1 (1461.78-1467.77)
