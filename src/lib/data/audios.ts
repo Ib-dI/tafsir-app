@@ -27914,7 +27914,6 @@ export const audiosTafsir = [
             endTime: 252.04,
             words: [
               [{ startTime: 231.67, endTime: 252.04 }],
-              [{ startTime: 252.05, endTime: 252.05 }],
             ],
           },
           {
