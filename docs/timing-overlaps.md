@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 459 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 443 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 459**
+**Progrès : 0 / 443**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -508,22 +508,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-qiyamah-1, verset 34, mot #1 : occurrence 0 (1335.9-1344.16) chevauche occurrence 1 (1342.02-1344.16)
 - [ ] al-qiyamah-1, verset 35, mot #2 : occurrence 0 (1347.58-1355.38) chevauche occurrence 1 (1352.51-1355.38)
 - [ ] al-qiyamah-1, verset 40, mot #1 : occurrence 0 (1459.07-1467.77) chevauche occurrence 1 (1461.78-1467.77)
-
-## Chapitre 76 — Al-Insan (16)
-
-- [ ] al-insan-1, verset 5, mot #4 : occurrence 0 (396.95-411.91) chevauche occurrence 1 (408.76-411.91)
-- [ ] al-insan-1, verset 7, mot #1 : occurrence 0 (505.18-544.16) chevauche occurrence 1 (518.9-544.16)
-- [ ] al-insan-1, verset 8, mot #3 : occurrence 0 (592.14-617.52) chevauche occurrence 1 (597.05-602.9)
-- [ ] al-insan-1, verset 8, mot #3 : occurrence 0 (592.14-617.52) chevauche occurrence 2 (607.88-617.52)
-- [ ] al-insan-1, verset 9, mot #1 : occurrence 0 (700.38-755.23) chevauche occurrence 1 (748.35-750.77)
-- [ ] al-insan-1, verset 9, mot #1 : occurrence 0 (700.38-755.23) chevauche occurrence 2 (751.87-755.23)
-- [ ] al-insan-1, verset 9, mot #3 : occurrence 0 (755.98-769.22) chevauche occurrence 1 (760.02-763.25)
-- [ ] al-insan-1, verset 9, mot #3 : occurrence 0 (755.98-769.22) chevauche occurrence 2 (764.66-769.22)
-- [ ] al-insan-1, verset 13, mot #7 : occurrence 0 (957.71-976.97) chevauche occurrence 1 (973.31-976.97)
-- [ ] al-insan-1, verset 16, mot #2 : occurrence 0 (1064.29-1126.68) chevauche occurrence 1 (1122.17-1126.68)
-- [ ] al-insan-2, verset 19, mot #5 : occurrence 0 (101.29-112.91) chevauche occurrence 1 (108.97-112.91)
-- [ ] al-insan-2, verset 20, mot #2 : occurrence 0 (139.68-152.63) chevauche occurrence 1 (148.91-152.63)
-- [ ] al-insan-2, verset 22, mot #1 : occurrence 0 (292.48-300.45) chevauche occurrence 1 (295.16-300.45)
-- [ ] al-insan-2, verset 26, mot #3 : occurrence 0 (421.86-433.61) chevauche occurrence 1 (431.69-433.58)
-- [ ] al-insan-2, verset 30, mot #5 : occurrence 0 (588.56-643.66) chevauche occurrence 1 (618.88-643.66)
-- [ ] al-insan-2, verset 30, mot #9 : occurrence 0 (646.42-665.28) chevauche occurrence 1 (652.3-665.28)
