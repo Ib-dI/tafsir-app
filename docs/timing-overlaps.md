@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 475 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 464 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 475**
+**Progrès : 0 / 464**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -535,17 +535,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-mursalat-2, verset 38, mot #3 : occurrence 0 (410.66-437.63) chevauche occurrence 1 (432.45-437.63)
 - [ ] al-mursalat-2, verset 41, mot #1 : occurrence 0 (530.55-548.91) chevauche occurrence 1 (544.93-548.78)
 - [ ] al-mursalat-2, verset 50, mot #1 : occurrence 0 (898.17-906.32) chevauche occurrence 1 (903.09-906.32)
-
-## Chapitre 78 — An-Naba (11)
-
-- [ ] an-naba-1, verset 2, mot #1 : occurrence 0 (110.92-115.38) chevauche occurrence 1 (113.66-115.38)
-- [ ] an-naba-1, verset 6, mot #2 : occurrence 0 (164.01-190.56) chevauche occurrence 1 (181.59-190.56)
-- [ ] an-naba-1, verset 15, mot #1 : occurrence 0 (432.45-439.92) chevauche occurrence 1 (436.62-439.92)
-- [ ] an-naba-1, verset 17, mot #2 : occurrence 0 (499.42-516.64) chevauche occurrence 1 (508.72-516.64)
-- [ ] an-naba-1, verset 18, mot #3 : occurrence 0 (558.91-565.09) chevauche occurrence 1 (562.27-565.09)
-- [ ] an-naba-1, verset 28, mot #1 : occurrence 0 (848.71-863.46) chevauche occurrence 1 (861.17-863.46)
-- [ ] an-naba-1, verset 30, mot #2 : occurrence 0 (907.44-917.04) chevauche occurrence 1 (911.45-917.04)
-- [ ] an-naba-1, verset 37, mot #7 : occurrence 0 (1114.84-1119.45) chevauche occurrence 1 (1118.71-1119.45)
-- [ ] an-naba-1, verset 39, mot #2 : occurrence 0 (1207.03-1229.99) chevauche occurrence 1 (1213.82-1229.99)
-- [ ] an-naba-1, verset 40, mot #3 : occurrence 0 (1320.09-1361.8) chevauche occurrence 1 (1358.44-1361.8)
-- [ ] an-naba-1, verset 40, mot #9 : occurrence 0 (1370.55-1399.75) chevauche occurrence 1 (1396.79-1399.75)
