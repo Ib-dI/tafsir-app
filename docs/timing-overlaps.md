@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 418 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 402 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 418**
+**Progrès : 0 / 402**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -458,22 +458,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-jinn-2, verset 24, mot #2 : occurrence 0 (774.64-780.94) chevauche occurrence 1 (778.29-780.94)
 - [ ] al-jinn-2, verset 24, mot #7 : occurrence 0 (792.15-798.36) chevauche occurrence 1 (797.17-798.36)
 - [ ] al-jinn-2, verset 28, mot #5 : occurrence 0 (1024.56-1075.73) chevauche occurrence 1 (1073.69-1075.73)
-
-## Chapitre 73 — Al-Muzzammil (16)
-
-- [ ] al-muzzammil-1, verset 4, mot #2 : occurrence 0 (318.07-351.84) chevauche occurrence 1 (347.55-351.84)
-- [ ] al-muzzammil-1, verset 6, mot #5 : occurrence 0 (655.77-693.64) chevauche occurrence 1 (676.11-686.25)
-- [ ] al-muzzammil-1, verset 6, mot #5 : occurrence 0 (655.77-693.64) chevauche occurrence 2 (687.48-693.64)
-- [ ] al-muzzammil-1, verset 8, mot #4 : occurrence 0 (824.12-830.58) chevauche occurrence 1 (829.21-830.58)
-- [ ] al-muzzammil-1, verset 10, mot #3 : occurrence 0 (913.32-935.08) chevauche occurrence 1 (922.82-935.08)
-- [ ] al-muzzammil-1, verset 10, mot #5 : occurrence 0 (939.44-943.63) chevauche occurrence 1 (942.88-943.63)
-- [ ] al-muzzammil-1, verset 11, mot #3 : occurrence 0 (1017.33-1057.67) chevauche occurrence 1 (1035.28-1057.67)
-- [ ] al-muzzammil-1, verset 13, mot #2 : occurrence 0 (1165.89-1187.91) chevauche occurrence 1 (1171.19-1187.91)
-- [ ] al-muzzammil-1, verset 17, mot #1 : occurrence 0 (1350.03-1364.42) chevauche occurrence 1 (1357.48-1364.42)
-- [ ] al-muzzammil-1, verset 17, mot #3 : occurrence 0 (1364.89-1412.7) chevauche occurrence 1 (1402.67-1406.73)
-- [ ] al-muzzammil-1, verset 17, mot #3 : occurrence 0 (1364.89-1412.7) chevauche occurrence 2 (1411.31-1412.7)
-- [ ] al-muzzammil-1, verset 18, mot #2 : occurrence 0 (1444.01-1455.45) chevauche occurrence 1 (1448.84-1455.45)
-- [ ] al-muzzammil-1, verset 20, mot #1 : occurrence 0 (1528.92-1540.87) chevauche occurrence 1 (1538.38-1540.87)
-- [ ] al-muzzammil-1, verset 20, mot #24 : occurrence 0 (1609.12-1630.62) chevauche occurrence 1 (1627.65-1630.62)
-- [ ] al-muzzammil-1, verset 20, mot #33 : occurrence 0 (1681-1683.28) chevauche occurrence 1 (1682.45-1683.28)
-- [ ] al-muzzammil-1, verset 20, mot #47 : occurrence 0 (1715.97-1733.6) chevauche occurrence 1 (1732.2-1733.6)
