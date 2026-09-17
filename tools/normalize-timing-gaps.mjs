@@ -86,13 +86,13 @@ function flatten(audiosTafsir) {
         const loc = { chapter: chapter.id, part: part.id, verse: verse.id };
         let newEnd = null;
 
-        if (verse.endTime <= verse.startTime) {
+        if (verse.endTime < verse.startTime) {
           skipped.push({
             level: "verse",
             ...loc,
             start: verse.startTime,
             end: verse.endTime,
-            reason: "duree deja invalide (endTime <= startTime)",
+            reason: "duree deja invalide (endTime < startTime)",
           });
         } else if (next && next.startTime === verse.endTime) {
           const candidate = round2(verse.endTime - GAP);
@@ -133,15 +133,20 @@ function flatten(audiosTafsir) {
           for (const occ of curWord) {
             let wordNewEnd = null;
 
-            if (occ.endTime <= occ.startTime) {
+            if (occ.endTime < occ.startTime) {
               skipped.push({
                 level: "word",
                 ...loc,
                 wordIndex: w,
                 start: occ.startTime,
                 end: occ.endTime,
-                reason: "duree deja invalide (endTime <= startTime)",
+                reason: "duree deja invalide (endTime < startTime)",
               });
+            } else if (occ.endTime === occ.startTime) {
+              // Largeur nulle exacte : marqueur intentionnel pose par
+              // skipWord() cote versets-split pour un mot non prononce dans
+              // cette instance de recitation (voir docs/timing-anomalies.md)
+              // - pas une anomalie a corriger.
             } else if (nextWord && nextWord.some((o) => o.startTime === occ.endTime)) {
               const candidate = round2(occ.endTime - GAP);
               if (candidate > occ.startTime) {

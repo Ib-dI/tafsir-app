@@ -1,11 +1,17 @@
 # Timings invalides dans `audios.ts`
 
 Genere par `tools/normalize-timing-gaps.mjs` (mode dry-run). Ces entrees ont
-`endTime <= startTime` (duree nulle ou negative) et n'ont pas ete touchees
-par la normalisation des ecarts (0.01s). A corriger manuellement dans
+`endTime < startTime` (duree negative) et n'ont pas ete touchees par la
+normalisation des ecarts (0.01s). A corriger manuellement dans
 `versets-split`.
 
 `mot #N` = index du mot dans le tableau `words` du verset (0-indexe).
+
+Depuis le 2026-09-17, `endTime === startTime` (largeur nulle exacte) n'est
+plus liste ici : c'est desormais le marqueur intentionnel pose par
+`skipWord()` cote versets-split pour un mot non prononce dans l'instance de
+recitation (voir sa note plus bas) — le detecteur ne le signale plus comme
+anomalie. Les cas negatifs (`<`) ci-dessous restent de vraies erreurs.
 
 | # | Niveau | Chapitre | Partie | Verset | Mot | start | end |
 |---|--------|----------|--------|--------|-----|-------|-----|
@@ -16,8 +22,7 @@ par la normalisation des ecarts (0.01s). A corriger manuellement dans
 | 5 | mot | 2 | al-baqarah-11 | 103 | #7 | 888.88 | 888.77 |
 | 6 | verset | 15 | al-hijr-3 | 64 | — | 596.58 | 596.56 |
 | 7 | mot | 59 | al-hashr-2 | 17 | #3 | 936.21 | 936.19 |
-| 8 | mot | 59 | al-hashr-2 | 17 | #8 | 947.54 | 947.54 |
-| 9 | mot | 67 | al-mulk-2 | 23 | #11 | 558.64 | 514.16 |
+| 8 | mot | 67 | al-mulk-2 | 23 | #11 | 558.64 | 514.16 |
 
 Chapitre 2, al-baqarah-2, verset 19, mot #9 corrigé le 2026-09-14 (n'apparaît plus).
 Chapitre 107, al-maun-1, verset 3, mot #2 : introduit le 2026-09-14 lors de la correction du chevauchement du même chapitre, corrigé le jour même (n'apparaît plus).
@@ -27,6 +32,16 @@ Chapitre 85, al-buruj-1, verset 5, mot #2 corrigé le 2026-09-16 lors de la corr
 Chapitre 68, al-qalam-1, verset 32, mots #6 à #9 corrigés le 2026-09-16 : mots fantômes jamais cités dans l'audio, entrées retirées, `endTime` du verset ramené à la fin du dernier vrai mot (1975.38, n'apparaît plus).
 Chapitre 73, al-muzzammil-1, verset 6, mot #3 corrigé le 2026-09-16 : saut de mot lors du premier passage (occurrence 0 à durée nulle), le mot est bien cité plus loin dans le verset (3 occurrences valides restantes) — occurrence fantôme retirée (n'apparaît plus).
 Chapitre 92, al-layl-1, verset 11, mots #2 à #4 corrigés le 2026-09-16 : le récitateur s'est arrêté après 2 mots pour reprendre le verset 10, mots fantômes forcés par l'ancienne limite de versets-split (impossible de terminer un verset sans marquer tous ses mots) — les 4 entrées fantômes retirées (dont le mot #5, `endTime` auto-calé sur la fin du verset par le même mécanisme), `endTime` du verset ramené à la fin du dernier vrai mot (346.53). Le verset 11 est correctement redit en entier juste après (occurrence suivante).
+Chapitre 73, al-muzzammil-1, verset 6, mot #3 : le chevauchement du même chapitre corrigé le 2026-09-17 a réintroduit une occurrence fantôme à durée négative (654.32-654.31, même mot sauté qu'au 2026-09-16) — retirée à nouveau (n'apparaît plus).
+Chapitre 59, al-hashr-2, verset 17, mot #8 (947.54-947.54) reclassifié le 2026-09-17 : plus une anomalie, le detecteur reconnaît désormais la largeur nulle exacte comme marqueur intentionnel de mot non prononcé (voir plus haut) — retiré du tableau sans modification de la donnée.
+
+Suite à ces cas récurrents (chap 77, 92, 68, 73), versets-split a gagné le
+2026-09-17 un bouton/raccourci dédié « Mot non prononcé » (`k`,
+`skipWord()`) qui pose directement un marqueur à largeur nulle propre
+(calé sur la fin du mot précédent, jamais sur l'instant de lecture) au lieu
+de forcer un faux timestamp — plus besoin de ce nettoyage manuel pour les
+futurs marquages. Le détecteur ne signale plus ces largeurs nulles exactes
+comme anomalies (voir l'intro de ce document).
 
 ## A part : versets sans mot correspondant a leur fin
 
