@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 402 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 384 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 402**
+**Progrès : 0 / 384**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -437,24 +437,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] Nuh, verset 27, mot #4 : occurrence 0 (1558.12-1582.09) chevauche occurrence 1 (1579.58-1582.09)
 - [ ] Nuh, verset 28, mot #2 : occurrence 0 (1643.23-1651) chevauche occurrence 1 (1645.6-1647.82)
 - [ ] Nuh, verset 28, mot #2 : occurrence 0 (1643.23-1651) chevauche occurrence 2 (1649.3-1651)
-
-## Chapitre 72 — Al-Jinn (18)
-
-- [ ] al-jinn-1, verset 3, mot #3 : occurrence 0 (244.23-256.43) chevauche occurrence 1 (247.21-249.94)
-- [ ] al-jinn-1, verset 3, mot #3 : occurrence 0 (244.23-256.43) chevauche occurrence 2 (253.18-256.43)
-- [ ] al-jinn-1, verset 5, mot #1 : occurrence 0 (342.74-350.84) chevauche occurrence 1 (348.03-350.84)
-- [ ] al-jinn-1, verset 5, mot #4 : occurrence 0 (352.04-357.55) chevauche occurrence 1 (356.4-357.55)
-- [ ] al-jinn-1, verset 5, mot #5 : occurrence 0 (357.56-367.62) chevauche occurrence 1 (366.48-367.62)
-- [ ] al-jinn-1, verset 10, mot #7 : occurrence 0 (843.61-882.32) chevauche occurrence 1 (876.04-882.32)
-- [ ] al-jinn-2, verset 17, mot #1 : occurrence 0 (194.11-215.05) chevauche occurrence 1 (204.47-215.05)
-- [ ] al-jinn-2, verset 17, mot #3 : occurrence 0 (217.58-223) chevauche occurrence 1 (220.26-223)
-- [ ] al-jinn-2, verset 18, mot #2 : occurrence 0 (286.73-329.09) chevauche occurrence 1 (300.74-321.57)
-- [ ] al-jinn-2, verset 18, mot #2 : occurrence 0 (286.73-329.09) chevauche occurrence 2 (323.68-329.09)
-- [ ] al-jinn-2, verset 19, mot #6 : occurrence 0 (363.65-402.36) chevauche occurrence 1 (398.27-402.36)
-- [ ] al-jinn-2, verset 20, mot #1 : occurrence 0 (453.42-487.89) chevauche occurrence 1 (487.15-487.89)
-- [ ] al-jinn-2, verset 20, mot #2 : occurrence 0 (487.9-498.67) chevauche occurrence 1 (494.29-498.67)
-- [ ] al-jinn-2, verset 23, mot #3 : occurrence 0 (627.14-640.48) chevauche occurrence 1 (634.75-640.48)
-- [ ] al-jinn-2, verset 23, mot #4 : occurrence 0 (640.49-720.29) chevauche occurrence 1 (664.17-720.29)
-- [ ] al-jinn-2, verset 24, mot #2 : occurrence 0 (774.64-780.94) chevauche occurrence 1 (778.29-780.94)
-- [ ] al-jinn-2, verset 24, mot #7 : occurrence 0 (792.15-798.36) chevauche occurrence 1 (797.17-798.36)
-- [ ] al-jinn-2, verset 28, mot #5 : occurrence 0 (1024.56-1075.73) chevauche occurrence 1 (1073.69-1075.73)
