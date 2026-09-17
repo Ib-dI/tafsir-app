@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 372 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 367 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 372**
+**Progrès : 0 / 367**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -414,11 +414,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-haqqah-2, verset 34, mot #1 : occurrence 0 (393.59-402.33) chevauche occurrence 1 (397.96-402.33)
 - [ ] al-haqqah-2, verset 37, mot #1 : occurrence 0 (466.44-474.68) chevauche occurrence 1 (472.12-474.68)
 - [ ] al-haqqah-2, verset 47, mot #1 : occurrence 0 (719.23-726.21) chevauche occurrence 1 (721.24-726.21)
-
-## Chapitre 70 — Al-Ma'arij (5)
-
-- [ ] al-maarij-1, verset 1, mot #1 : occurrence 0 (127.21-135.45) chevauche occurrence 1 (132.93-135.45)
-- [ ] al-maarij-1, verset 4, mot #2 : occurrence 0 (236.01-244.06) chevauche occurrence 1 (241.98-244.06)
-- [ ] al-maarij-1, verset 11, mot #7 : occurrence 0 (694.55-705.48) chevauche occurrence 1 (703.23-705.48)
-- [ ] al-maarij-1, verset 24, mot #2 : occurrence 0 (1043.35-1051.83) chevauche occurrence 1 (1049.51-1051.83)
-- [ ] al-maarij-2, verset 30, mot #2 : occurrence 0 (154.13-166.15) chevauche occurrence 1 (160.38-166.15)
