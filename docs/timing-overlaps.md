@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 384 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 372 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 384**
+**Progrès : 0 / 372**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -422,18 +422,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-maarij-1, verset 11, mot #7 : occurrence 0 (694.55-705.48) chevauche occurrence 1 (703.23-705.48)
 - [ ] al-maarij-1, verset 24, mot #2 : occurrence 0 (1043.35-1051.83) chevauche occurrence 1 (1049.51-1051.83)
 - [ ] al-maarij-2, verset 30, mot #2 : occurrence 0 (154.13-166.15) chevauche occurrence 1 (160.38-166.15)
-
-## Chapitre 71 — Nuh (12)
-
-- [ ] Nuh, verset 1, mot #6 : occurrence 0 (55.02-64.37) chevauche occurrence 1 (61.86-64.37)
-- [ ] Nuh, verset 3, mot #2 : occurrence 0 (209.24-250.2) chevauche occurrence 1 (247.6-250.2)
-- [ ] Nuh, verset 4, mot #10 : occurrence 0 (319.82-348.16) chevauche occurrence 1 (344.96-348.16)
-- [ ] Nuh, verset 5, mot #1 : occurrence 0 (414.86-429.61) chevauche occurrence 1 (426.32-429.61)
-- [ ] Nuh, verset 7, mot #10 : occurrence 0 (510-573.02) chevauche occurrence 1 (561.68-573.02)
-- [ ] Nuh, verset 8, mot #1 : occurrence 0 (598.6-605.9) chevauche occurrence 1 (604.92-605.9)
-- [ ] Nuh, verset 14, mot #1 : occurrence 0 (895.04-905.07) chevauche occurrence 1 (902.02-905.07)
-- [ ] Nuh, verset 15, mot #1 : occurrence 0 (936.78-948.9) chevauche occurrence 1 (942.47-948.9)
-- [ ] Nuh, verset 25, mot #4 : occurrence 0 (1470.16-1488.03) chevauche occurrence 1 (1482.83-1488.03)
-- [ ] Nuh, verset 27, mot #4 : occurrence 0 (1558.12-1582.09) chevauche occurrence 1 (1579.58-1582.09)
-- [ ] Nuh, verset 28, mot #2 : occurrence 0 (1643.23-1651) chevauche occurrence 1 (1645.6-1647.82)
-- [ ] Nuh, verset 28, mot #2 : occurrence 0 (1643.23-1651) chevauche occurrence 2 (1649.3-1651)
