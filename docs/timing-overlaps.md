@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 367 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 360 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 367**
+**Progrès : 0 / 360**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -404,13 +404,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-qalam-2, verset 51, mot #3 : occurrence 0 (1146.42-1180.79) chevauche occurrence 2 (1174.41-1180.79)
 - [ ] al-qalam-2, verset 51, mot #4 : occurrence 0 (1180.8-1221.12) chevauche occurrence 1 (1218.53-1221.12)
 - [ ] al-qalam-2, verset 52, mot #1 : occurrence 0 (1247.41-1254.64) chevauche occurrence 1 (1253.21-1254.64)
-
-## Chapitre 69 — Al-Haqqah (7)
-
-- [ ] al-haqqah-1, verset 6, mot #4 : occurrence 0 (198.98-216.95) chevauche occurrence 1 (212.23-216.95)
-- [ ] al-haqqah-1, verset 8, mot #1 : occurrence 0 (415.98-424.57) chevauche occurrence 1 (421.63-424.57)
-- [ ] al-haqqah-1, verset 15, mot #1 : occurrence 0 (779.61-790.58) chevauche occurrence 1 (785.07-790.58)
-- [ ] al-haqqah-2, verset 32, mot #5 : occurrence 0 (315.12-351.69) chevauche occurrence 1 (349.41-351.69)
-- [ ] al-haqqah-2, verset 34, mot #1 : occurrence 0 (393.59-402.33) chevauche occurrence 1 (397.96-402.33)
-- [ ] al-haqqah-2, verset 37, mot #1 : occurrence 0 (466.44-474.68) chevauche occurrence 1 (472.12-474.68)
-- [ ] al-haqqah-2, verset 47, mot #1 : occurrence 0 (719.23-726.21) chevauche occurrence 1 (721.24-726.21)
