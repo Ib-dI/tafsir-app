@@ -1,10 +1,10 @@
 # Occurrences qui se chevauchent dans `audios.ts`
 
-Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 360 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
+Généré le 2026-09-14 par `tools/normalize-timing-gaps.mjs`. 338 cas au total, groupés par chapitre. Coche au fur et à mesure des corrections dans versets-split.
 
 Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du même mot — souvent avec la même fin exacte (ex: 269.2-277.73 / 273.41-277.73). Chapitre 58/verset 13/mot #6 (déjà corrigé) en était le cas le plus sévère.
 
-**Progrès : 0 / 360**
+**Progrès : 0 / 338**
 
 ## Chapitre 1 — Al-Fatihah (1)
 
@@ -379,28 +379,3 @@ Motif : l'occurrence 0 (la principale) d'un mot englobe une autre occurrence du 
 - [ ] al-mulk-2, verset 24, mot #5 : occurrence 0 (614.81-637.32) chevauche occurrence 1 (634.86-637.32)
 - [ ] al-mulk-2, verset 27, mot #7 : occurrence 0 (806.79-832.95) chevauche occurrence 1 (830.06-832.95)
 - [ ] al-mulk-2, verset 30, mot #5 : occurrence 0 (1005.42-1041.62) chevauche occurrence 1 (1037.86-1041.62)
-
-## Chapitre 68 — Al-Qalam (22)
-
-- [ ] al-qalam-1, verset 10, mot #1 : occurrence 0 (778.09-785.45) chevauche occurrence 1 (783.24-785.45)
-- [ ] al-qalam-1, verset 17, mot #1 : occurrence 0 (1321.76-1382.59) chevauche occurrence 1 (1340.77-1378.71)
-- [ ] al-qalam-1, verset 17, mot #1 : occurrence 0 (1321.76-1382.59) chevauche occurrence 2 (1379.29-1382.59)
-- [ ] al-qalam-1, verset 17, mot #3 : occurrence 0 (1383.06-1387.61) chevauche occurrence 1 (1384.63-1387.61)
-- [ ] al-qalam-1, verset 17, mot #5 : occurrence 0 (1388.74-1535.89) chevauche occurrence 1 (1532.78-1535.89)
-- [ ] al-qalam-1, verset 32, mot #1 : occurrence 0 (1946.68-1952.91) chevauche occurrence 1 (1950.12-1952.91)
-- [ ] al-qalam-1, verset 33, mot #1 : occurrence 0 (2028.58-2073.6) chevauche occurrence 1 (2044.53-2058.06)
-- [ ] al-qalam-1, verset 33, mot #1 : occurrence 0 (2028.58-2073.6) chevauche occurrence 2 (2058.92-2068.7)
-- [ ] al-qalam-1, verset 33, mot #1 : occurrence 0 (2028.58-2073.6) chevauche occurrence 3 (2069.49-2073.6)
-- [ ] al-qalam-2, verset 36, mot #1 : occurrence 0 (140.23-145.34) chevauche occurrence 1 (143.91-145.34)
-- [ ] al-qalam-2, verset 37, mot #1 : occurrence 0 (157.47-164.07) chevauche occurrence 1 (161.79-164.07)
-- [ ] al-qalam-2, verset 39, mot #1 : occurrence 0 (223.05-232.95) chevauche occurrence 1 (226.83-232.07)
-- [ ] al-qalam-2, verset 39, mot #1 : occurrence 0 (223.05-232.95) chevauche occurrence 2 (232.41-232.95)
-- [ ] al-qalam-2, verset 39, mot #4 : occurrence 0 (243.51-265.36) chevauche occurrence 1 (263.25-265.36)
-- [ ] al-qalam-2, verset 41, mot #2 : occurrence 0 (353.05-370.96) chevauche occurrence 1 (358.78-370.96)
-- [ ] al-qalam-2, verset 42, mot #3 : occurrence 0 (430.57-507.48) chevauche occurrence 1 (497.82-507.48)
-- [ ] al-qalam-2, verset 45, mot #1 : occurrence 0 (760.63-771.99) chevauche occurrence 1 (768.78-771.99)
-- [ ] al-qalam-2, verset 48, mot #6 : occurrence 0 (909.2-992.62) chevauche occurrence 1 (987.83-992.62)
-- [ ] al-qalam-2, verset 51, mot #3 : occurrence 0 (1146.42-1180.79) chevauche occurrence 1 (1157.77-1172.27)
-- [ ] al-qalam-2, verset 51, mot #3 : occurrence 0 (1146.42-1180.79) chevauche occurrence 2 (1174.41-1180.79)
-- [ ] al-qalam-2, verset 51, mot #4 : occurrence 0 (1180.8-1221.12) chevauche occurrence 1 (1218.53-1221.12)
-- [ ] al-qalam-2, verset 52, mot #1 : occurrence 0 (1247.41-1254.64) chevauche occurrence 1 (1253.21-1254.64)
