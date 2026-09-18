@@ -10615,7 +10615,7 @@ export const audiosTafsir = [
       {
         id: "sad-4",
         title: "Sad - Partie 4",
-        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Sad-part4.ogg",
+        url: "https://pub-075afd3200484286b840b84e242d0ba9.r2.dev/processed/Sad-part4-v2.ogg",
         timings: [
           { id: 44, startTime: 144.21, endTime: 238.08 },
           { id: 45, startTime: 238.09, endTime: 292.48 },
@@ -10633,7 +10633,7 @@ export const audiosTafsir = [
           { id: 57, startTime: 876.57, endTime: 924.5 },
           { id: 58, startTime: 924.51, endTime: 978.33 },
           { id: 59, startTime: 978.34, endTime: 1155.57 },
-          { id: 60, startTime: 1155.58, endTime: 1248.71 },
+          { id: 60, startTime: 1155.58, endTime: 1207.01 },
         ],
       },
       {
