@@ -267,7 +267,7 @@ export default function SettingsDrawer({
                     onChange={(e) =>
                       setFontStyle(e.target.value as ArabicFontStyle)
                     }
-                    className="max-w-[11rem] truncate rounded-full border border-[#3D3226]/15 bg-white px-3 py-1.5 text-xs font-medium text-[#3D3226]"
+                    className="max-w-44 truncate rounded-full border border-[#3D3226]/15 bg-white px-3 py-1.5 text-xs font-medium text-[#3D3226]"
                   >
                     {FONT_STYLE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
