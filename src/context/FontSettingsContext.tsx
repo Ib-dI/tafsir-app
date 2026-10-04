@@ -17,7 +17,7 @@ export const FONT_SCALE_STEPS_DESKTOP = [25, 27, 30, 33, 37, 42, 47] as const;
 export const DEFAULT_FONT_SCALE_INDEX = 2;
 
 export type ArabicScript = "uthmani" | "indopak" | "tajweed";
-export const DEFAULT_ARABIC_SCRIPT: ArabicScript = "uthmani";
+export const DEFAULT_ARABIC_SCRIPT: ArabicScript = "tajweed";
 
 // Matches quran.com's own naming for the default font (QuranFont.QPCHafs).
 // The other two are DigitalKhatt (https://digitalkhatt.org) engine fonts —
@@ -25,7 +25,7 @@ export const DEFAULT_ARABIC_SCRIPT: ArabicScript = "uthmani";
 // meaningful when arabicScript is "uthmani" or "tajweed" — IndoPak always
 // uses its own dedicated font.
 export type ArabicFontStyle = "default" | "digitalkhatt-v1" | "digitalkhatt-v2";
-export const DEFAULT_ARABIC_FONT_STYLE: ArabicFontStyle = "default";
+export const DEFAULT_ARABIC_FONT_STYLE: ArabicFontStyle = "digitalkhatt-v1";
 
 const SCRIPT_FONT_FAMILY: Record<ArabicScript, string> = {
   uthmani: "Uthmanic",
