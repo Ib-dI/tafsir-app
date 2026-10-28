@@ -44,13 +44,18 @@ export function TranslationDisplayProvider({
 }: {
   children: ReactNode;
 }) {
-  const [showTranslation, setShowTranslation] = useState(
+  // La sauvegarde dans localStorage se fait uniquement sur action de
+  // l'utilisateur, jamais dans un effet : un effet d'écriture tournerait au
+  // montage avec la valeur par défaut et, en dev (StrictMode rejoue les
+  // effets), la relecture suivante récupérerait ce défaut à la place de la
+  // préférence enregistrée.
+  const [showTranslation, setShowTranslationState] = useState(
     DEFAULT_SHOW_TRANSLATION,
   );
-  const [showTransliteration, setShowTransliteration] = useState(
+  const [showTransliteration, setShowTransliterationState] = useState(
     DEFAULT_SHOW_TRANSLITERATION,
   );
-  const [translationScaleIndex, setTranslationScaleIndex] = useState(
+  const [translationScaleIndex, setTranslationScaleIndexState] = useState(
     DEFAULT_TRANSLATION_SCALE_INDEX,
   );
 
@@ -59,14 +64,14 @@ export function TranslationDisplayProvider({
       TRANSLATION_STORAGE_KEY,
     );
     if (storedTranslation === "true" || storedTranslation === "false") {
-      setShowTranslation(storedTranslation === "true");
+      setShowTranslationState(storedTranslation === "true");
     }
 
     const storedTransliteration = window.localStorage.getItem(
       TRANSLITERATION_STORAGE_KEY,
     );
     if (storedTransliteration === "true" || storedTransliteration === "false") {
-      setShowTransliteration(storedTransliteration === "true");
+      setShowTransliterationState(storedTransliteration === "true");
     }
 
     const storedScale = window.localStorage.getItem(
@@ -79,35 +84,32 @@ export function TranslationDisplayProvider({
         parsed >= 0 &&
         parsed < TRANSLATION_SCALE_STEPS.length
       ) {
-        setTranslationScaleIndex(parsed);
+        setTranslationScaleIndexState(parsed);
       }
     }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(
-      TRANSLATION_STORAGE_KEY,
-      String(showTranslation),
-    );
-  }, [showTranslation]);
-
-  useEffect(() => {
-    window.localStorage.setItem(
-      TRANSLITERATION_STORAGE_KEY,
-      String(showTransliteration),
-    );
-  }, [showTransliteration]);
-
-  useEffect(() => {
-    window.localStorage.setItem(
-      TRANSLATION_SCALE_STORAGE_KEY,
-      String(translationScaleIndex),
-    );
     document.documentElement.style.setProperty(
       "--verse-translation-font-size",
       `${TRANSLATION_SCALE_STEPS[translationScaleIndex]}px`,
     );
   }, [translationScaleIndex]);
+
+  const setShowTranslation = (show: boolean) => {
+    window.localStorage.setItem(TRANSLATION_STORAGE_KEY, String(show));
+    setShowTranslationState(show);
+  };
+  const setShowTransliteration = (show: boolean) => {
+    window.localStorage.setItem(TRANSLITERATION_STORAGE_KEY, String(show));
+    setShowTransliterationState(show);
+  };
+  const setTranslationScaleIndex = (update: (i: number) => number) =>
+    setTranslationScaleIndexState((i) => {
+      const next = update(i);
+      window.localStorage.setItem(TRANSLATION_SCALE_STORAGE_KEY, String(next));
+      return next;
+    });
 
   const increaseTranslationScale = () =>
     setTranslationScaleIndex((i) =>
@@ -116,7 +118,7 @@ export function TranslationDisplayProvider({
   const decreaseTranslationScale = () =>
     setTranslationScaleIndex((i) => Math.max(i - 1, 0));
   const resetTranslationScale = () =>
-    setTranslationScaleIndex(DEFAULT_TRANSLATION_SCALE_INDEX);
+    setTranslationScaleIndex(() => DEFAULT_TRANSLATION_SCALE_INDEX);
 
   return (
     <TranslationDisplayContext.Provider

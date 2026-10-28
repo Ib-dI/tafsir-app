@@ -18,18 +18,24 @@ export const WordByWordContext =
   createContext<WordByWordContextValue | null>(null);
 
 export function WordByWordProvider({ children }: { children: ReactNode }) {
-  const [wordByWordEnabled, setWordByWordEnabled] = useState(DEFAULT_WORD_BY_WORD_ENABLED);
+  // La sauvegarde dans localStorage se fait uniquement sur action de
+  // l'utilisateur, jamais dans un effet : un effet d'écriture tournerait au
+  // montage avec la valeur par défaut et, en dev (StrictMode rejoue les
+  // effets), la relecture suivante récupérerait ce défaut à la place de la
+  // préférence enregistrée.
+  const [wordByWordEnabled, setWordByWordEnabledState] = useState(DEFAULT_WORD_BY_WORD_ENABLED);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored === "true" || stored === "false") {
-      setWordByWordEnabled(stored === "true");
+      setWordByWordEnabledState(stored === "true");
     }
   }, []);
 
-  useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, String(wordByWordEnabled));
-  }, [wordByWordEnabled]);
+  const setWordByWordEnabled = (enabled: boolean) => {
+    window.localStorage.setItem(STORAGE_KEY, String(enabled));
+    setWordByWordEnabledState(enabled);
+  };
 
   return (
     <WordByWordContext.Provider value={{ wordByWordEnabled, setWordByWordEnabled }}>

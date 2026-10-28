@@ -55,13 +55,18 @@ export const FontSettingsContext =
   createContext<FontSettingsContextValue | null>(null);
 
 export function FontSettingsProvider({ children }: { children: ReactNode }) {
-  const [fontScaleIndex, setFontScaleIndex] = useState(
+  // La sauvegarde dans localStorage se fait uniquement sur action de
+  // l'utilisateur, jamais dans un effet : un effet d'écriture tournerait au
+  // montage avec la valeur par défaut et, en dev (StrictMode rejoue les
+  // effets), la relecture suivante récupérerait ce défaut à la place de la
+  // préférence enregistrée.
+  const [fontScaleIndex, setFontScaleIndexState] = useState(
     DEFAULT_FONT_SCALE_INDEX,
   );
-  const [arabicScript, setArabicScript] = useState<ArabicScript>(
+  const [arabicScript, setArabicScriptState] = useState<ArabicScript>(
     DEFAULT_ARABIC_SCRIPT,
   );
-  const [fontStyle, setFontStyle] = useState<ArabicFontStyle>(
+  const [fontStyle, setFontStyleState] = useState<ArabicFontStyle>(
     DEFAULT_ARABIC_FONT_STYLE,
   );
 
@@ -74,7 +79,7 @@ export function FontSettingsProvider({ children }: { children: ReactNode }) {
         parsed >= 0 &&
         parsed < FONT_SCALE_STEPS_MOBILE.length
       ) {
-        setFontScaleIndex(parsed);
+        setFontScaleIndexState(parsed);
       }
     }
 
@@ -84,7 +89,7 @@ export function FontSettingsProvider({ children }: { children: ReactNode }) {
       storedScript === "indopak" ||
       storedScript === "tajweed"
     ) {
-      setArabicScript(storedScript);
+      setArabicScriptState(storedScript);
     }
 
     const storedFontStyle = window.localStorage.getItem(FONT_STYLE_STORAGE_KEY);
@@ -93,12 +98,11 @@ export function FontSettingsProvider({ children }: { children: ReactNode }) {
       storedFontStyle === "digitalkhatt-v1" ||
       storedFontStyle === "digitalkhatt-v2"
     ) {
-      setFontStyle(storedFontStyle);
+      setFontStyleState(storedFontStyle);
     }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(SCALE_STORAGE_KEY, String(fontScaleIndex));
     document.documentElement.style.setProperty(
       "--verse-arabic-font-size-mobile",
       `${FONT_SCALE_STEPS_MOBILE[fontScaleIndex]}px`,
@@ -110,7 +114,6 @@ export function FontSettingsProvider({ children }: { children: ReactNode }) {
   }, [fontScaleIndex]);
 
   useEffect(() => {
-    window.localStorage.setItem(SCRIPT_STORAGE_KEY, arabicScript);
     document.documentElement.style.setProperty(
       "--verse-arabic-font-family",
       SCRIPT_FONT_FAMILY[arabicScript],
@@ -118,7 +121,6 @@ export function FontSettingsProvider({ children }: { children: ReactNode }) {
   }, [arabicScript]);
 
   useEffect(() => {
-    window.localStorage.setItem(FONT_STYLE_STORAGE_KEY, fontStyle);
     if (fontStyle === "default") {
       delete document.documentElement.dataset.fontStyle;
     } else {
@@ -126,13 +128,28 @@ export function FontSettingsProvider({ children }: { children: ReactNode }) {
     }
   }, [fontStyle]);
 
+  const setFontScaleIndex = (update: (i: number) => number) =>
+    setFontScaleIndexState((i) => {
+      const next = update(i);
+      window.localStorage.setItem(SCALE_STORAGE_KEY, String(next));
+      return next;
+    });
+  const setArabicScript = (script: ArabicScript) => {
+    window.localStorage.setItem(SCRIPT_STORAGE_KEY, script);
+    setArabicScriptState(script);
+  };
+  const setFontStyle = (style: ArabicFontStyle) => {
+    window.localStorage.setItem(FONT_STYLE_STORAGE_KEY, style);
+    setFontStyleState(style);
+  };
+
   const increaseFontScale = () =>
     setFontScaleIndex((i) =>
       Math.min(i + 1, FONT_SCALE_STEPS_MOBILE.length - 1),
     );
   const decreaseFontScale = () => setFontScaleIndex((i) => Math.max(i - 1, 0));
   const resetFontScale = () => {
-    setFontScaleIndex(DEFAULT_FONT_SCALE_INDEX);
+    setFontScaleIndex(() => DEFAULT_FONT_SCALE_INDEX);
     setArabicScript(DEFAULT_ARABIC_SCRIPT);
     setFontStyle(DEFAULT_ARABIC_FONT_STYLE);
   };
