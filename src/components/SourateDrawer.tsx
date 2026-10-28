@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -122,6 +123,9 @@ export default function SourateDrawer({
       >
         <SheetHeader className="border-b border-[#3D3226]/10 p-4 pb-3">
           <SheetTitle className="text-[#3D3226]">Sourates</SheetTitle>
+          <SheetDescription className="sr-only">
+            Rechercher et ouvrir une sourate.
+          </SheetDescription>
           <div className="relative mt-1">
             <Search
               size={16}

@@ -6,6 +6,7 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -183,6 +184,9 @@ export default function SettingsDrawer({
       >
         <SheetHeader className="border-b border-[#3D3226]/10 p-4 pb-0">
           <SheetTitle className="text-[#3D3226]">Réglages</SheetTitle>
+          <SheetDescription className="sr-only">
+            Réglages d’affichage du texte arabe et de la traduction.
+          </SheetDescription>
           <div className="mt-3 flex gap-4" role="tablist" aria-label="Réglages">
             <button
               type="button"
