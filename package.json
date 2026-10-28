@@ -8,7 +8,7 @@
     "dev-ht": "next dev --experimental-https",
     "build": "node tools/prepare-quran-wbw-data.mjs && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "prepare-quran-data": "node tools/prepare-quran-wbw-data.mjs"
   },
   "dependencies": {
@@ -21,7 +21,7 @@
     "firebase": "^11.10.0",
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.525.0",
-    "next": "16.0.7",
+    "next": "16.4.3",
     "next-themes": "^0.4.6",
     "radix-ui": "^1.4.3",
     "react": "^19.0.0",
@@ -42,7 +42,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.3.3",
+    "eslint-config-next": "16.4.3",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4",
