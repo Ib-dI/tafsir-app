@@ -1,0 +1,26 @@
+{
+  "version": "0.2",
+  "language": "en,fr",
+  "import": [
+    "@cspell/dict-fr-fr/cspell-ext.json"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "project-words",
+      "path": "./project-words.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": [
+    "project-words"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    ".next",
+    "public",
+    "pnpm-lock.yaml",
+    "**/*.json",
+    "firestore-debug.log",
+    "tsconfig.tsbuildinfo"
+  ]
+}

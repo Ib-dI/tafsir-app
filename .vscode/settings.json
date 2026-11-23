@@ -1,13 +1,4 @@
 {
-  "cSpell.words": [
-    "Abasa",
-    "Applicattion",
-    "chargement",
-    "disponible",
-    "FICHIER",
-    "fois",
-    "Tafsir"
-  ],
   "css.lint.unknownAtRules": "ignore",
   "scss.lint.unknownAtRules": "ignore",
   "less.lint.unknownAtRules": "ignore"

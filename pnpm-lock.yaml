@@ -69,6 +69,9 @@ importers:
         specifier: ^7.9.5
         version: 7.12.5
     devDependencies:
+      '@cspell/dict-fr-fr':
+        specifier: ^2.3.2
+        version: 2.3.2
       '@eslint/eslintrc':
         specifier: ^3
         version: 3.3.5(supports-color@7.2.0)
@@ -184,6 +187,9 @@ packages:
   '@babel/types@7.29.11':
     resolution: {integrity: sha512-WCsemW40Cpc6gouC1SrY6PBaZ+oLRlEVY9XBvZBI7il/HyUrb2nJ505wE1MHEFyDZNnrWDEuy4jL50WVHfTTSQ==}
     engines: {node: '>=6.9.0'}
+
+  '@cspell/dict-fr-fr@2.3.2':
+    resolution: {integrity: sha512-cPNjlavSiMfH/bB/Zl5GEF+94s6C77mdvghvVsclco1Ly0VWN3EpH5L9EE3bDGLDpE7m9EnYfRs8TOfZugGrUg==}
 
   '@emnapi/core@1.9.2':
     resolution: {integrity: sha512-UC+ZhH3XtczQYfOlu3lNEkdW/p4dsJ1r/bP7H8+rhao3TTTMO1ATq/4DdIi23XuGoFY+Cz0JmCbdVl0hz9jZcA==}
@@ -3429,6 +3435,8 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.29.11
       '@babel/helper-validator-identifier': 7.29.7
+
+  '@cspell/dict-fr-fr@2.3.2': {}
 
   '@emnapi/core@1.9.2':
     dependencies:
